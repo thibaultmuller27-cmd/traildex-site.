@@ -197,14 +197,14 @@ function Wordmark({ color }: { color: string }) {
   )
 }
 
-function CardFront({ card, theme, placeholder }: { card: CardData; theme: Theme; placeholder?: boolean }) {
+export function CardFront({ card, theme, placeholder, transparent }: { card: CardData; theme: Theme; placeholder?: boolean; transparent?: boolean }) {
   const seed = hashSeed(card.race + card.id)
   const gid = React.useId().replace(/:/g, "")
   const rarity = RARITIES[card.rarity]
   const rank = parseRank(card.rank)
   const podium = rank && rank.pos <= 3
   return (
-    <div className="absolute inset-0 flex flex-col" style={{ background: theme.bg, color: theme.ink, padding: "5.5cqw" }}>
+    <div className="absolute inset-0 flex flex-col" style={{ background: transparent ? undefined : theme.bg, color: theme.ink, padding: "5.5cqw" }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <Wordmark color={theme.ink} />
@@ -258,7 +258,19 @@ function CardFront({ card, theme, placeholder }: { card: CardData; theme: Theme;
           <TopoLines seed={seed} color={theme.line} />
         )}
         {card.routePath && (
-          <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid meet" aria-hidden>
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden
+            // With a photo, the route becomes a mini-map in the corner so it
+            // never crosses the runner's face.
+            className={card.photo ? "absolute" : "absolute inset-0 h-full w-full"}
+            style={
+              card.photo
+                ? { right: "2.4cqw", bottom: "2.4cqw", width: "32cqw", height: "32cqw", borderRadius: "2.4cqw", background: "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.25)" }
+                : undefined
+            }
+          >
             <defs>
               <filter id={`glow-${gid}`} x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="1.6" />
@@ -278,7 +290,7 @@ function CardFront({ card, theme, placeholder }: { card: CardData; theme: Theme;
               d={card.routePath}
               fill="none"
               stroke={card.photo ? "#ffffff" : theme.route}
-              strokeWidth={1.25}
+              strokeWidth={card.photo ? 2.4 : 1.25}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeDasharray={placeholder ? "2 2.5" : undefined}
@@ -371,7 +383,7 @@ function BackRow({ label, value, theme }: { label: string; value: string; theme:
   )
 }
 
-function CardBack({ card, theme }: { card: CardData; theme: Theme }) {
+export function CardBack({ card, theme, transparent }: { card: CardData; theme: Theme; transparent?: boolean }) {
   const rank = parseRank(card.rank)
   const effort = effortKm(card.distanceKm, card.gain)
   const speed = card.timeSec && card.distanceKm ? (card.distanceKm / (card.timeSec / 3600)).toFixed(1).replace(".", ",") : "—"
@@ -379,7 +391,7 @@ function CardBack({ card, theme }: { card: CardData; theme: Theme }) {
   const rarity = RARITIES[card.rarity]
   const seed = hashSeed(card.id + "back")
   return (
-    <div className="absolute inset-0 flex flex-col" style={{ background: theme.backBg, color: theme.ink, padding: "6cqw" }}>
+    <div className="absolute inset-0 flex flex-col" style={{ background: transparent ? undefined : theme.backBg, color: theme.ink, padding: "6cqw" }}>
       <TopoLines seed={seed} color={theme.line} className="opacity-60" />
       <div className="relative flex items-center justify-between">
         <Wordmark color={theme.ink} />

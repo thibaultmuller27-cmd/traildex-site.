@@ -253,9 +253,19 @@ async function drawCard(ctx: CanvasRenderingContext2D, card: CardData, x: number
   }
   if (card.routePath) {
     // The route lives in a 100×100 box drawn "meet" (centred, uniform scale).
-    const s = Math.min(artW, artH) / 100
-    const ox = artX + (artW - 100 * s) / 2
-    const oy = artTop + (artH - 100 * s) / 2
+    // With a photo it shrinks to a mini-map in the corner, off the runner's face.
+    const mini = card.photo ? 32 * u : 0
+    const s = card.photo ? mini / 100 : Math.min(artW, artH) / 100
+    const ox = card.photo ? artX + artW - 2.4 * u - mini : artX + (artW - 100 * s) / 2
+    const oy = card.photo ? artTop + artH - 2.4 * u - mini : artTop + (artH - 100 * s) / 2
+    if (card.photo) {
+      roundRect(ctx, ox, oy, mini, mini, 2.4 * u)
+      ctx.fillStyle = "rgba(0,0,0,0.5)"
+      ctx.fill()
+      ctx.strokeStyle = "rgba(255,255,255,0.25)"
+      ctx.lineWidth = Math.max(1, 0.2 * u)
+      ctx.stroke()
+    }
     const route = new Path2D(card.routePath)
     ctx.save()
     ctx.translate(ox, oy)
@@ -265,7 +275,7 @@ async function drawCard(ctx: CanvasRenderingContext2D, card: CardData, x: number
     ctx.shadowColor = card.photo ? "rgba(0,0,0,0.6)" : t.routeGlow
     ctx.shadowBlur = 3 * u
     ctx.strokeStyle = card.photo ? "#ffffff" : t.route
-    ctx.lineWidth = 1.3
+    ctx.lineWidth = card.photo ? 2.4 : 1.3
     ctx.stroke(route)
     ctx.shadowBlur = 0
     ctx.stroke(route)

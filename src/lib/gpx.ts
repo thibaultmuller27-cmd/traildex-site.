@@ -72,7 +72,12 @@ export function parseGpx(xml: string): { name: string | null; points: TrackPoint
     doc.getElementsByTagNameNS("*", "trk")[0]?.getElementsByTagNameNS("*", "name")[0] ??
     doc.getElementsByTagNameNS("*", "metadata")[0]?.getElementsByTagNameNS("*", "name")[0] ??
     doc.getElementsByTagNameNS("*", "rte")[0]?.getElementsByTagNameNS("*", "name")[0]
-  const name = nameNode?.textContent?.trim() || null
+  // Strava and watches decorate names ("Finisher UTDP by UTMB®️ 🟢"): keep the words.
+  const name =
+    nameNode?.textContent
+      ?.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}®™©]/gu, "")
+      .replace(/\s+/g, " ")
+      .trim() || null
   return { name, points }
 }
 
@@ -128,8 +133,14 @@ export function computeStats(points: TrackPoint[], name: string | null = null): 
   const withEle = points.filter((p) => p.ele != null)
   const eles = withEle.map((p) => p.ele as number)
   const { gain, loss } = elevationChange(eles)
-  const minEle = eles.length ? Math.min(...eles) : null
-  const maxEle = eles.length ? Math.max(...eles) : null
+  // A loop, not Math.min(...eles): a long run has more points than an engine
+  // accepts as call arguments (Safari stops at 65 536).
+  let minEle: number | null = null
+  let maxEle: number | null = null
+  for (const e of eles) {
+    if (minEle == null || e < minEle) minEle = e
+    if (maxEle == null || e > maxEle) maxEle = e
+  }
 
   const times = points.map((p) => p.time).filter((t): t is number => t != null)
   const durationSec = times.length > 1 ? Math.round((times[times.length - 1] - times[0]) / 1000) : null
