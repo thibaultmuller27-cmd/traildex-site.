@@ -8,6 +8,8 @@ const LINKS = [
   { href: "#createur", label: "Créer" },
   { href: "#galerie", label: "Galerie" },
   { href: "#collection", label: "Ma collection" },
+  { href: "#jeu", label: "Le jeu" },
+  { href: "#abonnement", label: "Abonnement" },
   { href: "#faq", label: "FAQ" },
 ]
 
@@ -56,6 +58,12 @@ export function Nav() {
           ))}
         </ul>
         <div className="flex items-center gap-2">
+          <a
+            href="/jeu/"
+            className="holo-bg hidden h-8 items-center rounded-full px-4 text-[13px] font-semibold text-[#0c0b1d] sm:inline-flex"
+          >
+            Jouer
+          </a>
           <a
             href="#createur"
             className="hidden h-8 items-center rounded-full bg-ink px-4 text-[13px] font-medium text-white transition-colors hover:bg-black sm:inline-flex"

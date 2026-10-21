@@ -5,4 +5,12 @@ import { defineConfig } from "vite"
 export default defineConfig({
   plugins: [react()],
   resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+        jeu: path.resolve(__dirname, "jeu/index.html"),
+      },
+    },
+  },
 })

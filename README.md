@@ -2,11 +2,44 @@
 
 Site de vente de cartes de collection pour traileurs : le coureur importe le GPX de sa course, remplit ses infos et voit sa carte holographique se créer en direct avant de la précommander.
 
+## TrailDex Quest — le jeu (`/jeu/`)
+
+Chasse aux trésors façon Pokémon Go sur les sentiers réels autour du joueur :
+
+- **Carte 3D** (MapLibre + fond OpenFreeMap gratuit, sans clé) ; les sentiers sont chargés depuis OpenStreetMap (API Overpass) autour du joueur, avec des sentiers de démonstration si l'API ne répond pas.
+- **Coffres** posés chaque jour le long des sentiers (les mêmes pour tout le monde ce jour-là) : Commun, Rare, Épique (codes promo partenaires), Légendaire (gains rares, réservé Traileur+). Il faut être à moins de 35 m pour ouvrir.
+- **Défis** (distance, sentiers découverts / complétés, coffres…) qui débloquent de l'équipement ; **défi du jour**.
+- **Avatar** SVG qui évolue : 6 stades (aura verte → bleue → violette → holographique → or) + équipement (casquette, frontale, gilet, bâtons, chaussures, maillots holo/or).
+- **GPS réel** ou **mode démo** (toucher la carte pour courir). La progression est sauvegardée dans le navigateur.
+
+### Où modifier quoi (jeu)
+
+| Quoi | Fichier |
+| --- | --- |
+| **Prix de l'abonnement, liens Stripe**, limite de coffres gratuits | `src/game/config.ts` |
+| **Marques partenaires et codes promo** (exemples fictifs à remplacer) | `src/game/config.ts` (`PARTNERS`, `PRIZES`) |
+| Probabilités et XP des coffres, rayon d'ouverture, mode démo | `src/game/config.ts` |
+| Défis | `src/game/lib/challenges.ts` |
+| Équipements et stades d'évolution | `src/game/lib/items.ts` |
+| Dessin de l'avatar | `src/game/components/Avatar.tsx` |
+
+### Encaisser les abonnements (Stripe)
+
+1. Crée un compte sur https://stripe.com, puis deux **produits récurrents** : Traileur+ mensuel et annuel.
+2. Pour chacun, crée un **Payment Link**. Dans « Après le paiement », choisis « Rediriger vers ton site » :
+   `https://<ton-domaine>/jeu/?abonnement=merci&plan=mensuel` (ou `plan=annuel`).
+3. Colle les deux liens dans `STRIPE.monthly` / `STRIPE.yearly` de `src/game/config.ts`, et le lien du portail client (Settings → Billing → Customer portal) dans `STRIPE.portal` pour que les abonnés puissent résilier.
+4. Tant que les liens sont vides, le bouton propose un **essai gratuit de 7 jours** (local).
+
+Deuxième source de revenus : les **marques qui sponsorisent des coffres** (bouton « Sponsorise des coffres », adresse dans `PARTNER_CONTACT`).
+
+> ⚠️ Limites de cette première version : le statut Traileur+ et la progression sont stockés dans le navigateur, et les codes promo sont dans le code du site. Avant d'ouvrir à de vrais partenaires, il faut des comptes joueurs + un webhook Stripe côté serveur (Cloudflare Function) pour vérifier l'abonnement, et des codes uniques délivrés par le serveur. Désactive aussi `ALLOW_SIMULATION` pour que les gains exigent le vrai GPS.
+
 ## Démarrer
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
+npm run dev      # http://localhost:5173 (site) et http://localhost:5173/jeu/ (jeu)
 npm run build    # build de production dans dist/
 ```
 

@@ -6,6 +6,8 @@ import { Creator } from "@/components/sections/Creator"
 import { Gallery } from "@/components/sections/Gallery"
 import { Collection } from "@/components/sections/Collection"
 import { Faq } from "@/components/sections/Faq"
+import { Quest } from "@/components/sections/Quest"
+import { Pricing } from "@/components/sections/Pricing"
 import { Footer } from "@/components/sections/Footer"
 
 export default function App() {
@@ -18,6 +20,8 @@ export default function App() {
         <Creator />
         <Gallery />
         <Collection />
+        <Quest />
+        <Pricing />
         <Faq />
       </main>
       <Footer />
