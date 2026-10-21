@@ -228,7 +228,7 @@ function createRenderer(canvas: HTMLCanvasElement, finish: FoilFinish): Renderer
   }
 }
 
-const CSS_FOIL: Record<FoilFinish, string> = {
+export const CSS_FOIL: Record<FoilFinish, string> = {
   pearl:
     "repeating-linear-gradient(115deg,#ff8ad8 0%,#ffd36e 6%,#8cff9e 12%,#6ee7ff 18%,#9a8cff 24%,#ff8ad8 30%)",
   silver: "repeating-linear-gradient(115deg,#9aa4b5 0%,#ffffff 8%,#7c8799 16%,#e9eef6 24%,#9aa4b5 32%)",

@@ -40,15 +40,6 @@ const FOIL: Partial<Record<Rarity, string[]>> = {
 const SANS = "Inter, -apple-system, 'Segoe UI', sans-serif"
 const MONO = "'JetBrains Mono', ui-monospace, monospace"
 
-function loadImage(src: string) {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => resolve(img)
-    img.onerror = reject
-    img.src = src
-  })
-}
-
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath()
   ctx.moveTo(x + r, y)
@@ -235,47 +226,22 @@ async function drawCard(ctx: CanvasRenderingContext2D, card: CardData, x: number
   ctx.fillStyle = t.panel
   ctx.fill()
   ctx.clip()
-  if (card.photo) {
-    try {
-      const img = await loadImage(card.photo)
-      const s = Math.max(artW / img.width, artH / img.height)
-      ctx.drawImage(img, artX + (artW - img.width * s) / 2, artTop + (artH - img.height * s) / 2, img.width * s, img.height * s)
-      const shade = ctx.createLinearGradient(0, artTop + artH, 0, artTop)
-      shade.addColorStop(0, "rgba(0,0,0,0.55)")
-      shade.addColorStop(0.6, "rgba(0,0,0,0.05)")
-      ctx.fillStyle = shade
-      ctx.fillRect(artX, artTop, artW, artH)
-    } catch {
-      /* unreadable photo: keep the terrain */
-    }
-  } else {
-    topo(ctx, hashSeed(card.race + card.id), artX, artTop, artW, artH, t.line, Math.max(1, 0.18 * u))
-  }
+  topo(ctx, hashSeed(card.race + card.id), artX, artTop, artW, artH, t.line, Math.max(1, 0.18 * u))
   if (card.routePath) {
     // The route lives in a 100×100 box drawn "meet" (centred, uniform scale).
-    // With a photo it shrinks to a mini-map in the corner, off the runner's face.
-    const mini = card.photo ? 32 * u : 0
-    const s = card.photo ? mini / 100 : Math.min(artW, artH) / 100
-    const ox = card.photo ? artX + artW - 2.4 * u - mini : artX + (artW - 100 * s) / 2
-    const oy = card.photo ? artTop + artH - 2.4 * u - mini : artTop + (artH - 100 * s) / 2
-    if (card.photo) {
-      roundRect(ctx, ox, oy, mini, mini, 2.4 * u)
-      ctx.fillStyle = "rgba(0,0,0,0.5)"
-      ctx.fill()
-      ctx.strokeStyle = "rgba(255,255,255,0.25)"
-      ctx.lineWidth = Math.max(1, 0.2 * u)
-      ctx.stroke()
-    }
+    const s = Math.min(artW, artH) / 100
+    const ox = artX + (artW - 100 * s) / 2
+    const oy = artTop + (artH - 100 * s) / 2
     const route = new Path2D(card.routePath)
     ctx.save()
     ctx.translate(ox, oy)
     ctx.scale(s, s)
     ctx.lineCap = "round"
     ctx.lineJoin = "round"
-    ctx.shadowColor = card.photo ? "rgba(0,0,0,0.6)" : t.routeGlow
+    ctx.shadowColor = t.routeGlow
     ctx.shadowBlur = 3 * u
-    ctx.strokeStyle = card.photo ? "#ffffff" : t.route
-    ctx.lineWidth = card.photo ? 2.4 : 1.3
+    ctx.strokeStyle = t.route
+    ctx.lineWidth = 1.3
     ctx.stroke(route)
     ctx.shadowBlur = 0
     ctx.stroke(route)
@@ -285,14 +251,14 @@ async function drawCard(ctx: CanvasRenderingContext2D, card: CardData, x: number
       ctx.fillStyle = t.ink
       ctx.fill()
       ctx.lineWidth = 0.8
-      ctx.strokeStyle = card.photo ? "#000" : t.route
+      ctx.strokeStyle = t.route
       ctx.stroke()
     }
     if (card.end) {
       ctx.save()
       ctx.translate(card.end[0], card.end[1])
       ctx.rotate(Math.PI / 4)
-      ctx.fillStyle = card.photo ? "#fff" : t.route
+      ctx.fillStyle = t.route
       ctx.fillRect(-1.8, -1.8, 3.6, 3.6)
       ctx.restore()
     }

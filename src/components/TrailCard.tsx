@@ -237,7 +237,7 @@ export function CardFront({ card, theme, placeholder, transparent }: { card: Car
         </p>
       </div>
 
-      {/* Art window: photo or terrain, with the route on top */}
+      {/* Map window: the route, large, over the terrain. The photo lives on the back. */}
       <div
         className="relative overflow-hidden"
         style={{
@@ -249,28 +249,9 @@ export function CardFront({ card, theme, placeholder, transparent }: { card: Car
           boxShadow: `inset 0 0 0 1px ${theme.line}`,
         }}
       >
-        {card.photo ? (
-          <>
-            <img src={card.photo} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.05) 60%)" }} />
-          </>
-        ) : (
-          <TopoLines seed={seed} color={theme.line} />
-        )}
+        <TopoLines seed={seed} color={theme.line} />
         {card.routePath && (
-          <svg
-            viewBox="0 0 100 100"
-            preserveAspectRatio="xMidYMid meet"
-            aria-hidden
-            // With a photo, the route becomes a mini-map in the corner so it
-            // never crosses the runner's face.
-            className={card.photo ? "absolute" : "absolute inset-0 h-full w-full"}
-            style={
-              card.photo
-                ? { right: "2.4cqw", bottom: "2.4cqw", width: "32cqw", height: "32cqw", borderRadius: "2.4cqw", background: "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.25)" }
-                : undefined
-            }
-          >
+          <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid meet" aria-hidden>
             <defs>
               <filter id={`glow-${gid}`} x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="1.6" />
@@ -279,8 +260,8 @@ export function CardFront({ card, theme, placeholder, transparent }: { card: Car
             <path
               d={card.routePath}
               fill="none"
-              stroke={card.photo ? "rgba(255,255,255,0.6)" : theme.routeGlow}
-              strokeWidth={card.photo ? 3 : 3.2}
+              stroke={theme.routeGlow}
+              strokeWidth={3.2}
               strokeLinecap="round"
               strokeLinejoin="round"
               filter={`url(#glow-${gid})`}
@@ -289,24 +270,24 @@ export function CardFront({ card, theme, placeholder, transparent }: { card: Car
             <path
               d={card.routePath}
               fill="none"
-              stroke={card.photo ? "#ffffff" : theme.route}
-              strokeWidth={card.photo ? 2.4 : 1.25}
+              stroke={theme.route}
+              strokeWidth={1.25}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeDasharray={placeholder ? "2 2.5" : undefined}
               opacity={placeholder ? 0.45 : 1}
             />
             {!placeholder && card.start && (
-              <circle cx={card.start[0]} cy={card.start[1]} r={2} fill={theme.ink} stroke={card.photo ? "#000" : theme.route} strokeWidth={0.8} />
+              <circle cx={card.start[0]} cy={card.start[1]} r={2} fill={theme.ink} stroke={theme.route} strokeWidth={0.8} />
             )}
             {!placeholder && card.end && (
-              <rect x={card.end[0] - 1.8} y={card.end[1] - 1.8} width={3.6} height={3.6} fill={card.photo ? "#fff" : theme.route} transform={`rotate(45 ${card.end[0]} ${card.end[1]})`} />
+              <rect x={card.end[0] - 1.8} y={card.end[1] - 1.8} width={3.6} height={3.6} fill={theme.route} transform={`rotate(45 ${card.end[0]} ${card.end[1]})`} />
             )}
           </svg>
         )}
         <span
           className="absolute font-mono"
-          style={{ right: "2.6cqw", top: "2cqw", fontSize: "2.2cqw", letterSpacing: "0.1em", color: card.photo ? "#fff" : theme.sub }}
+          style={{ right: "2.6cqw", top: "2cqw", fontSize: "2.2cqw", letterSpacing: "0.1em", color: theme.sub }}
         >
           N ↑
         </span>
@@ -400,17 +381,30 @@ export function CardBack({ card, theme, transparent }: { card: CardData; theme: 
         </span>
       </div>
 
-      <div className="relative" style={{ marginTop: "7cqw" }}>
-        <p className="font-mono uppercase" style={{ fontSize: "2.4cqw", letterSpacing: "0.18em", color: theme.sub }}>
-          Fiche de course
-        </p>
-        <p className="font-bold" style={{ fontSize: "12cqw", lineHeight: 1, letterSpacing: "-0.05em", marginTop: "1.5cqw" }}>
-          {effort ? Math.round(effort) : "—"}
-          <span style={{ fontSize: "4cqw", letterSpacing: "0", marginLeft: "1.5cqw", color: theme.sub }}>km-effort</span>
-        </p>
+      <div className="relative flex items-end justify-between" style={{ marginTop: card.photo ? "5cqw" : "7cqw", gap: "4cqw" }}>
+        <div className="min-w-0">
+          <p className="font-mono uppercase" style={{ fontSize: "2.4cqw", letterSpacing: "0.18em", color: theme.sub }}>
+            Fiche de course
+          </p>
+          <p className="font-bold" style={{ fontSize: "12cqw", lineHeight: 1, letterSpacing: "-0.05em", marginTop: "1.5cqw" }}>
+            {effort ? Math.round(effort) : "—"}
+            <span className="block" style={{ fontSize: "3.6cqw", letterSpacing: "0", marginTop: "1cqw", color: theme.sub }}>
+              km-effort
+            </span>
+          </p>
+        </div>
+        {card.photo && (
+          <img
+            src={card.photo}
+            alt=""
+            draggable={false}
+            className="shrink-0 object-cover"
+            style={{ width: "40cqw", height: "30cqw", borderRadius: "2.4cqw", boxShadow: `0 0 0 1px ${theme.line}` }}
+          />
+        )}
       </div>
 
-      <div className="relative" style={{ marginTop: "5cqw" }}>
+      <div className="relative" style={{ marginTop: card.photo ? "4cqw" : "5cqw" }}>
         <BackRow label="Coureur" value={card.runner || "—"} theme={theme} />
         <BackRow label="Allure moyenne" value={fmtPace(card.timeSec, card.distanceKm)} theme={theme} />
         <BackRow label="Vitesse" value={speed === "—" ? "—" : `${speed} km/h`} theme={theme} />

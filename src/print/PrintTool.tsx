@@ -10,6 +10,7 @@
  */
 import * as React from "react"
 import { CardBack, CardFront, THEMES } from "@/components/TrailCard"
+import { CSS_FOIL } from "@/components/ui/holo-card"
 import type { CardData } from "@/lib/card"
 import { RARITIES } from "@/lib/config"
 
@@ -29,8 +30,38 @@ function loadCard(): CardData | null {
   }
 }
 
+/**
+ * A frozen frame of the holographic film, for mockups only. A printer lays
+ * the real film or gold foil as a separate pass, so the printer file stays
+ * clean unless asked.
+ */
+function FoilSim({ card }: { card: CardData }) {
+  const finish = THEMES[card.rarity].foil
+  if (!finish) return null
+  return (
+    <>
+      <div
+        className="absolute inset-0"
+        style={{ backgroundImage: CSS_FOIL[finish], backgroundSize: "300% 300%", backgroundPosition: "30% 40%", mixBlendMode: "color-dodge", opacity: finish === "gold" ? 0.32 : 0.38 }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "repeating-conic-gradient(from 0deg at 50% 46%, rgba(255,255,255,0) 0deg 2.2deg, rgba(255,255,255,0.16) 2.6deg 3deg)",
+          mixBlendMode: "overlay",
+          maskImage: "radial-gradient(circle at 50% 46%, #000 0%, #000 45%, transparent 75%)",
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{ background: "radial-gradient(circle at 28% 18%, rgba(255,255,255,0.5), rgba(255,255,255,0.1) 30%, transparent 60%)", mixBlendMode: "overlay" }}
+      />
+    </>
+  )
+}
+
 /** One face with its bleed: the background runs 3 mm past the trim line. */
-function Face({ card, side }: { card: CardData; side: "front" | "back" }) {
+function Face({ card, side, foil }: { card: CardData; side: "front" | "back"; foil: boolean }) {
   const theme = THEMES[card.rarity]
   return (
     <div
@@ -40,6 +71,7 @@ function Face({ card, side }: { card: CardData; side: "front" | "back" }) {
       <div className="absolute" style={{ left: `${BLEED}mm`, top: `${BLEED}mm`, width: `${W}mm`, height: `${H}mm`, containerType: "inline-size" }}>
         {side === "front" ? <CardFront card={card} theme={theme} transparent /> : <CardBack card={card} theme={theme} transparent />}
       </div>
+      {foil && side === "front" && <FoilSim card={card} />}
     </div>
   )
 }
@@ -72,6 +104,11 @@ export function PrintTool() {
   const [layout, setLayout] = React.useState<Layout>(() =>
     new URLSearchParams(location.search).get("layout") === "a4" ? "a4" : "bleed",
   )
+  // Holo/gold simulation: on for home mockups, off for the printer file.
+  const [foil, setFoil] = React.useState(() => {
+    const f = new URLSearchParams(location.search).get("foil")
+    return f ? f === "1" : new URLSearchParams(location.search).get("layout") === "a4"
+  })
   const [json, setJson] = React.useState("")
   const [error, setError] = React.useState<string | null>(null)
 
@@ -128,6 +165,9 @@ export function PrintTool() {
               {l === "bleed" ? "Imprimeur (fond perdu 3 mm)" : "A4 maison (traits de coupe)"}
             </button>
           ))}
+          <label className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[14px] ring-1 ring-line">
+            <input type="checkbox" checked={foil} onChange={(e) => setFoil(e.target.checked)} /> Simuler l'effet holo / or
+          </label>
           <button onClick={() => window.print()} disabled={!card} className="rounded-full bg-[#0071e3] px-4 py-2 text-[14px] font-medium text-white disabled:opacity-40">
             Imprimer / PDF
           </button>
@@ -155,7 +195,7 @@ export function PrintTool() {
           <div className="flex flex-col items-center gap-8 pb-10 print:block print:p-0">
             {(["front", "back"] as const).map((side) => (
               <div key={side} className="sheet w-fit shadow-xl" style={{ breakAfter: "page" }}>
-                <Face card={card} side={side} />
+                <Face card={card} side={side} foil={foil} />
               </div>
             ))}
           </div>
@@ -174,7 +214,7 @@ export function PrintTool() {
               {(["front", "back"] as const).map((side, i) => (
                 <div key={side} className="absolute" style={{ left: `${24 + i * 90}mm`, top: "52mm" }}>
                   <CropMarks />
-                  <Face card={card} side={side} />
+                  <Face card={card} side={side} foil={foil} />
                   <p className="mt-[8mm] text-center text-[9pt] text-[#6e6e73]">{side === "front" ? "Recto" : "Verso"}</p>
                 </div>
               ))}

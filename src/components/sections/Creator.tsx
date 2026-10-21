@@ -372,7 +372,7 @@ export function Creator() {
                 <Field label="Classement" hint="(ex. 42/612)" htmlFor="f-rank">
                   <Input id="f-rank" value={form.rank} onChange={set("rank")} placeholder="42/612" inputMode="numeric" />
                 </Field>
-                <Field label="Photo" hint="(optionnelle)">
+                <Field label="Photo" hint="(optionnelle, au verso)">
                   <input ref={photoInput} type="file" accept="image/*" className="hidden" onChange={(e) => onPhoto(e.target.files?.[0])} />
                   {form.photo ? (
                     <div className="flex h-12 items-center gap-3 rounded-xl border border-line bg-white px-2">
