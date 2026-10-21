@@ -13,7 +13,8 @@ export type PreorderPayload = {
   city: string
   qty: number
   finish: Finish
-  card: Omit<CardData, "photo">
+  /** The card; its `photo` is a small copy for the print files. */
+  card: CardData
   photo?: string
   /** Honeypot, must stay empty. */
   website?: string
@@ -60,7 +61,8 @@ export function buildRecord(p: PreorderPayload, reference: string) {
     fld3PaJa365DVv4SK: p.qty,
     // Price is taken from the server-side table, never from the browser.
     fldS8C6HkZ5ZqoK5B: finish.price,
-    fld1aonT4lBn1QhtB: JSON.stringify(c),
+    // Airtable long text holds 100 000 characters: drop the photo copy if it would not fit.
+    fld1aonT4lBn1QhtB: JSON.stringify(c).length < 95_000 ? JSON.stringify(c) : JSON.stringify({ ...c, photo: undefined }),
   }
   for (const k of Object.keys(fields)) if (fields[k] === undefined) delete fields[k]
   return fields

@@ -43,3 +43,12 @@ La clé Airtable n'est jamais dans le code du site : elle est stockée comme sec
 Les identifiants de la base et de la table sont dans `functions/api/preorder.ts`, ceux des champs dans `src/lib/preorder.ts` (renommer une colonne dans Airtable ne casse rien ; la supprimer, si).
 
 En local, `npm run dev` affiche le site mais pas l'API. Pour tester l'envoi : `npm run build && npx wrangler pages dev dist` avec un fichier `.dev.vars` contenant `AIRTABLE_TOKEN=...` (ne jamais le committer).
+
+## Impression chez Exaprint
+
+Outil : `/print.html` (section « Export Exaprint »).
+
+- Produit Exaprint : carte de visite, format personnalisé **63 × 88 mm**, recto verso, option **Sets** (jusqu'à 20 variantes, même quantité par variante).
+- Chaque carte = 1 PDF (page 1 recto, page 2 verso), échelle 1:1, fond perdu réglable, illustration à 600 dpi.
+- Dorure : formes vectorielles sur un calque **« Acabado »**, en couleur directe (nom réglable, à recopier du gabarit Exaprint), surimpression activée. Or → légendaire, Holo → rare/épique, Standard → pas de dorure.
+- Lot : dans Airtable, vue « À imprimer » → Télécharger CSV → déposer le fichier dans l'outil → un .zip avec un dossier par Set (≤ 20 cartes de même finition et quantité), `bordereau.pdf` (qui reçoit quelle carte) et `LISEZ-MOI.txt`. La référence de commande est imprimée en petit au verso.

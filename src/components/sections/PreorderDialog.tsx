@@ -9,6 +9,7 @@ import { useCollection } from "@/lib/collection"
 import { FINISHES, RARITIES, formatPrice } from "@/lib/config"
 import { fmtInt, fmtKm, type CardData, type Finish } from "@/lib/card"
 import type { PreorderPayload } from "@/lib/preorder"
+import { shrinkPhoto } from "@/lib/photo"
 
 type Props = { open: boolean; onOpenChange: (o: boolean) => void; card: CardData; finish: Finish }
 
@@ -44,7 +45,10 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
     setSendError(null)
     if (Object.keys(errs).length) return
 
-    const { photo, ...light } = card
+    const { photo } = card
+    // A small copy rides in the card data, so the print files can be made
+    // straight from the Airtable export (the full photo is an attachment).
+    const thumb = photo ? await shrinkPhoto(photo, 520).catch(() => undefined) : undefined
     const payload: PreorderPayload = {
       name: data.name,
       email: data.email,
@@ -54,7 +58,7 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
       website: data.website,
       qty,
       finish,
-      card: light,
+      card: { ...card, photo: thumb },
       photo,
     }
     setSending(true)

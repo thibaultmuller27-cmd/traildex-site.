@@ -13,6 +13,7 @@ import { CardBack, CardFront, THEMES } from "@/components/TrailCard"
 import { CSS_FOIL } from "@/components/ui/holo-card"
 import type { CardData } from "@/lib/card"
 import { RARITIES } from "@/lib/config"
+import { ExaprintPanel } from "./ExaprintPanel"
 
 const STORAGE_KEY = "traildex.print"
 type Layout = "bleed" | "a4"
@@ -188,6 +189,7 @@ export function PrintTool() {
           </label>
         </div>
         {error && <p className="mt-2 text-[14px] text-[#e30000]">{error}</p>}
+        <ExaprintPanel card={card} />
       </div>
 
       {card &&
