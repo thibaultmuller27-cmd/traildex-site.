@@ -84,7 +84,7 @@ function download(data: Uint8Array | Blob, name: string, type: string) {
 
 export function ExaprintPanel({ card }: { card: CardData | null }) {
   const [settings, setSettings] = React.useState<Settings>(() => {
-    const defaults = { bleedMm: 3, spotGold: "Dorure Or", spotHolo: "Dorure Holographique", dpi: 600 }
+    const defaults = { widthMm: 63, heightMm: 88, bleedMm: 3, spotGold: "Dorure Or", spotHolo: "Dorure Holographique", dpi: 600 }
     try {
       return { ...defaults, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") }
     } catch {
@@ -167,6 +167,14 @@ export function ExaprintPanel({ card }: { card: CardData | null }) {
         les noms de couleurs exacts du gabarit Exaprint.
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <label className="flex flex-col gap-1 text-[13px] font-medium">
+          Largeur (mm)
+          <input id="ex-w" type="number" step="0.5" min="40" max="105" value={settings.widthMm} onChange={(e) => update({ widthMm: +e.target.value || 63 })} className={input} />
+        </label>
+        <label className="flex flex-col gap-1 text-[13px] font-medium">
+          Hauteur (mm)
+          <input id="ex-h" type="number" step="0.5" min="40" max="210" value={settings.heightMm} onChange={(e) => update({ heightMm: +e.target.value || 88 })} className={input} />
+        </label>
         <label className="flex flex-col gap-1 text-[13px] font-medium">
           Fond perdu (mm)
           <input id="ex-bleed" type="number" step="0.5" min="0" max="5" value={settings.bleedMm} onChange={(e) => update({ bleedMm: Math.max(0, +e.target.value || 0) })} className={input} />

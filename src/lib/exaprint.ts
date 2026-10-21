@@ -1,5 +1,5 @@
 /**
- * Print files for Exaprint (business-card product, custom 63 × 88 mm size).
+ * Print files for Exaprint (hot-foil business card, custom size).
  *
  * One PDF per card, two pages (front, back), 1:1 scale with bleed. The
  * artwork is a 600 dpi image; the foil is real vector artwork in a spot
@@ -19,6 +19,9 @@ import { drawCardBack, drawCardFront, loadCardFonts, type BackGeometry, type Fro
 import type { CardData } from "./card"
 
 export type PrintSettings = {
+  /** Trimmed card size in mm (Exaprint's foil cards accept 40–55 × 55–95). */
+  widthMm: number
+  heightMm: number
   /** Bleed in mm, as given by the Exaprint template. */
   bleedMm: number
   /** Spot colour names, exactly as written in the Exaprint template. */
@@ -28,14 +31,14 @@ export type PrintSettings = {
 }
 
 export const DEFAULT_SETTINGS: PrintSettings = {
+  widthMm: 63,
+  heightMm: 88,
   bleedMm: 3,
   spotGold: "Dorure Or",
   spotHolo: "Dorure Holographique",
   dpi: 600,
 }
 
-export const TRIM_W = 63
-export const TRIM_H = 88
 const PT_PER_MM = 72 / 25.4
 
 /** Which spot colour a card's foil uses, or null for a Standard card. */
@@ -51,11 +54,11 @@ async function rasterFace(card: CardData, side: "front" | "back", s: PrintSettin
   const pxPerMm = s.dpi / 25.4
   const bleed = s.bleedMm * pxPerMm
   const canvas = document.createElement("canvas")
-  canvas.width = Math.round((TRIM_W + 2 * s.bleedMm) * pxPerMm)
-  canvas.height = Math.round((TRIM_H + 2 * s.bleedMm) * pxPerMm)
+  canvas.width = Math.round((s.widthMm + 2 * s.bleedMm) * pxPerMm)
+  canvas.height = Math.round((s.heightMm + 2 * s.bleedMm) * pxPerMm)
   const ctx = canvas.getContext("2d")!
-  const w = TRIM_W * pxPerMm
-  const h = TRIM_H * pxPerMm
+  const w = s.widthMm * pxPerMm
+  const h = s.heightMm * pxPerMm
   const opts = { print: true, bleed, h }
   const out: Raster = { jpg: new Uint8Array(), pxPerMm }
   if (side === "front") out.front = await drawCardFront(ctx, card, bleed, bleed, w, opts)
@@ -77,8 +80,9 @@ class Ops {
     const Y = this.pageH - (y / this.pxPerMm) * PT_PER_MM
     return `${X.toFixed(3)} ${Y.toFixed(3)}`
   }
-  mm(v: number) {
-    return (v * PT_PER_MM).toFixed(3)
+  /** A length in canvas pixels, as PDF points. */
+  px(v: number) {
+    return ((v / this.pxPerMm) * PT_PER_MM).toFixed(3)
   }
   polyline(pts: [number, number][], close = false) {
     pts.forEach(([x, y], i) => this.parts.push(`${this.p(x, y)} ${i ? "l" : "m"}`))
@@ -119,7 +123,7 @@ class Ops {
 /** The vector shapes that receive foil on the front. */
 function frontFoil(o: Ops, g: FrontGeometry, card: CardData) {
   const u = g.u
-  const stroke = (widthPx: number) => o.parts.push(`${o.mm(widthPx / g.u / 100 * TRIM_W)} w S`)
+  const stroke = (widthPx: number) => o.parts.push(`${o.px(widthPx)} w S`)
   o.parts.push("1 J 1 j")
   // Mountain mark
   o.polyline(g.logo)
@@ -160,7 +164,7 @@ function frontFoil(o: Ops, g: FrontGeometry, card: CardData) {
 function backFoil(o: Ops, g: BackGeometry) {
   o.parts.push("1 J 1 j")
   o.polyline(g.logo)
-  o.parts.push(`${o.mm((0.55 / 100) * TRIM_W)} w S`)
+  o.parts.push(`${o.px(0.55 * g.u)} w S`)
   // Authenticity seal ring: outer circle minus inner circle (even-odd fill)
   o.circle(g.seal.cx, g.seal.cy, g.seal.outer)
   o.circle(g.seal.cx, g.seal.cy, g.seal.inner)
@@ -195,15 +199,15 @@ export async function buildCardPdf(card: CardData, s: PrintSettings, reference?:
     ocg = ctx.register(ctx.obj({ Type: "OCG", Name: PDFString.of("Acabado") }))
     doc.catalog.set(PDFName.of("OCProperties"), ctx.obj({ OCGs: [ocg], D: { Order: [ocg], ON: [ocg] } }))
   }
-  const wPt = (TRIM_W + 2 * s.bleedMm) * PT_PER_MM
-  const hPt = (TRIM_H + 2 * s.bleedMm) * PT_PER_MM
+  const wPt = (s.widthMm + 2 * s.bleedMm) * PT_PER_MM
+  const hPt = (s.heightMm + 2 * s.bleedMm) * PT_PER_MM
   const b = s.bleedMm * PT_PER_MM
 
   for (const side of ["front", "back"] as const) {
     const r = await rasterFace(card, side, s, reference)
     const page = doc.addPage([wPt, hPt])
     page.setBleedBox(0, 0, wPt, hPt)
-    page.setTrimBox(b, b, TRIM_W * PT_PER_MM, TRIM_H * PT_PER_MM)
+    page.setTrimBox(b, b, s.widthMm * PT_PER_MM, s.heightMm * PT_PER_MM)
     const img = await doc.embedJpg(r.jpg)
     page.drawImage(img, { x: 0, y: 0, width: wPt, height: hPt })
     if (spot && ocg) {
@@ -294,7 +298,7 @@ export function readme(sets: PrintSet[], s: PrintSettings) {
   const lines = [
     "LOT TRAILDEX - COMMANDE EXAPRINT",
     "",
-    "Produit : Carte de visite, format personnalise 63 x 88 mm, recto verso.",
+    `Produit : Carte de visite dorure a chaud, format personnalise ${s.widthMm} x ${s.heightMm} mm, portrait, recto verso.`,
     `Fond perdu des fichiers : ${s.bleedMm} mm. Chaque PDF = 1 carte (page 1 recto, page 2 verso).`,
     `Dorure : calque "Acabado", couleur directe "${s.spotGold}" (Or) ou "${s.spotHolo}" (Holo), surimpression activee.`,
     "",
