@@ -1,6 +1,6 @@
 import * as React from "react"
 import { motion } from "framer-motion"
-import { Check, Minus, Plus } from "lucide-react"
+import { Check, Loader2, Minus, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Field, Input } from "@/components/ui/input"
@@ -8,28 +8,31 @@ import { THEMES } from "@/components/TrailCard"
 import { useCollection } from "@/lib/collection"
 import { FINISHES, RARITIES, formatPrice } from "@/lib/config"
 import { fmtInt, fmtKm, type CardData, type Finish } from "@/lib/card"
-
-const PREORDERS_KEY = "traildex.preorders.v1"
+import type { PreorderPayload } from "@/lib/preorder"
 
 type Props = { open: boolean; onOpenChange: (o: boolean) => void; card: CardData; finish: Finish }
 
 export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
   const { add } = useCollection()
   const [qty, setQty] = React.useState(1)
-  const [done, setDone] = React.useState(false)
+  const [done, setDone] = React.useState<string | null>(null)
+  const [sending, setSending] = React.useState(false)
+  const [sendError, setSendError] = React.useState<string | null>(null)
   const [errors, setErrors] = React.useState<Record<string, string>>({})
   const f = FINISHES.find((x) => x.id === finish)!
   const theme = THEMES[card.rarity]
 
   React.useEffect(() => {
     if (open) {
-      setDone(false)
+      setDone(null)
       setErrors({})
+      setSendError(null)
     }
   }, [open])
 
-  const submit = (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (sending) return
     const data = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>
     const errs: Record<string, string> = {}
     if (!data.name?.trim()) errs.name = "Indique ton nom."
@@ -38,27 +41,48 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
     if (!/^\d{4,5}$/.test((data.zip ?? "").trim())) errs.zip = "Code postal invalide."
     if (!data.city?.trim()) errs.city = "Indique ta ville."
     setErrors(errs)
+    setSendError(null)
     if (Object.keys(errs).length) return
 
-    const id = `c-${Date.now().toString(36)}`
-    const saved: CardData = { ...card, id }
-    // No payment and no server yet: the pre-order is kept on this device.
-    try {
-      const prev = JSON.parse(localStorage.getItem(PREORDERS_KEY) || "[]")
-      const { photo: _photo, ...light } = saved
-      prev.push({ ...data, qty, finish, total: f.price * qty, card: light, createdAt: new Date().toISOString() })
-      localStorage.setItem(PREORDERS_KEY, JSON.stringify(prev))
-    } catch {
-      /* storage unavailable */
+    const { photo, ...light } = card
+    const payload: PreorderPayload = {
+      name: data.name,
+      email: data.email,
+      address: data.address,
+      zip: data.zip,
+      city: data.city,
+      website: data.website,
+      qty,
+      finish,
+      card: light,
+      photo,
     }
-    add(saved)
-    setDone(true)
+    setSending(true)
+    try {
+      const res = await fetch("/api/preorder", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(body.error || "La précommande n'a pas pu être envoyée.")
+      add({ ...card, id: `c-${Date.now().toString(36)}` })
+      setDone(body.reference ?? "")
+    } catch (err) {
+      setSendError(
+        err instanceof Error && err.message !== "Failed to fetch"
+          ? err.message
+          : "Connexion impossible. Vérifie ta connexion et réessaie.",
+      )
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        {done ? (
+        {done !== null ? (
           <div className="flex flex-col items-center py-6 text-center">
             <motion.div
               initial={{ scale: 0 }}
@@ -71,6 +95,11 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
             <DialogTitle className="mt-6 text-[28px] font-semibold tracking-tight">Précommande enregistrée</DialogTitle>
             <DialogDescription className="mt-2 max-w-sm text-[16px] text-muted">
               Merci ! On te recontacte par e-mail pour confirmer l'impression. Ta carte a rejoint ta collection.
+              {done && (
+                <span className="mt-3 block text-[14px]">
+                  Référence : <strong className="font-mono text-ink">{done}</strong>
+                </span>
+              )}
             </DialogDescription>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a href="#collection" onClick={() => onOpenChange(false)}>
@@ -140,8 +169,21 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
                 <p className="text-[26px] font-semibold tabular-nums tracking-tight">{formatPrice(f.price * qty)}</p>
               </div>
             </div>
-            <Button type="submit" size="lg" className="mt-6 w-full">
-              Valider ma précommande
+            {/* Honeypot for bots, hidden from people and screen readers */}
+            <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+            {sendError && (
+              <p role="alert" className="mt-5 rounded-xl bg-[#e30000]/5 px-4 py-3 text-[14px] text-[#e30000]">
+                {sendError}
+              </p>
+            )}
+            <Button type="submit" size="lg" className="mt-6 w-full" disabled={sending}>
+              {sending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Envoi…
+                </>
+              ) : (
+                "Valider ma précommande"
+              )}
             </Button>
           </form>
         )}
