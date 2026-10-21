@@ -1,11 +1,12 @@
 import * as React from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Download, Eye, FileUp, ImagePlus, Loader2, Lock, Mountain, Route, Sparkles, Trash2, TrendingUp, Upload } from "lucide-react"
+import { Download, Eye, FileUp, ImagePlus, Loader2, Lock, Mountain, Route, Share2, Sparkles, Trash2, TrendingUp, Upload } from "lucide-react"
 import { TrailCard } from "@/components/TrailCard"
 import { Button } from "@/components/ui/button"
 import { Field, Input } from "@/components/ui/input"
 import { FadeIn } from "@/components/FadeIn"
 import { PreorderDialog } from "@/components/sections/PreorderDialog"
+import { ShareDialog } from "@/components/ShareDialog"
 import { computeStats, readGpxFile, toGpx, GpxError, type TrackStats } from "@/lib/gpx"
 import { CRETES_SPEC, HERO_CARD, makeTrack } from "@/lib/demo"
 import {
@@ -89,6 +90,7 @@ export function Creator() {
   const [form, setForm] = React.useState<Form>(EMPTY)
   const [finish, setFinish] = React.useState<Finish>("holo")
   const [orderOpen, setOrderOpen] = React.useState(false)
+  const [shareOpen, setShareOpen] = React.useState(false)
   const [number] = React.useState(() => 100 + Math.floor(Math.random() * 900))
   const fileInput = React.useRef<HTMLInputElement>(null)
   const photoInput = React.useRef<HTMLInputElement>(null)
@@ -231,6 +233,10 @@ export function Creator() {
                 </span>
                 Aperçu en direct · clique sur la carte pour la retourner
               </p>
+              <Button variant="secondary" className="mt-5" disabled={missing.length > 0} onClick={() => setShareOpen(true)}>
+                <Share2 className="h-4 w-4" /> Partager gratuitement
+              </Button>
+              {missing.length > 0 && <p className="mt-2 text-[12px] text-muted">Ajoute ton GPX, ton prénom et ta course pour partager.</p>}
             </div>
           </div>
 
@@ -472,6 +478,7 @@ export function Creator() {
       </AnimatePresence>
 
       <PreorderDialog open={orderOpen} onOpenChange={setOrderOpen} card={card} finish={finish} />
+      <ShareDialog open={shareOpen} onOpenChange={setShareOpen} card={card} />
     </section>
   )
 }

@@ -1,11 +1,13 @@
 import { motion } from "framer-motion"
-import { Lock, Plus } from "lucide-react"
+import * as React from "react"
+import { Lock, Plus, Share2 } from "lucide-react"
 import { FadeIn } from "@/components/FadeIn"
 import { TrailCard } from "@/components/TrailCard"
+import { ShareDialog } from "@/components/ShareDialog"
 import { useCollection } from "@/lib/collection"
 import { BADGES, levelOf, xpOf } from "@/lib/progress"
 import { RARITIES } from "@/lib/config"
-import { fmtInt, type Rarity } from "@/lib/card"
+import { fmtInt, type CardData, type Rarity } from "@/lib/card"
 import { cn } from "@/lib/utils"
 
 const ORDER: Rarity[] = ["commune", "rare", "epique", "legendaire"]
@@ -51,6 +53,7 @@ function LevelRing({ level, progress }: { level: number; progress: number }) {
 
 export function Collection() {
   const { cards, reset } = useCollection()
+  const [sharing, setSharing] = React.useState<CardData | null>(null)
   const xp = xpOf(cards)
   const lvl = levelOf(xp)
   const unlocked = BADGES.filter((b) => b.test(cards))
@@ -171,6 +174,12 @@ export function Collection() {
                 {RARITIES[c.rarity].label}
                 {c.demo && " · exemple"}
               </p>
+              <button
+                onClick={() => setSharing(c)}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium text-[#0066cc] transition-colors hover:bg-mist"
+              >
+                <Share2 className="h-3.5 w-3.5" /> Partager
+              </button>
             </div>
           ))}
           <a
@@ -184,6 +193,7 @@ export function Collection() {
           </a>
         </div>
       </div>
+      {sharing && <ShareDialog open onOpenChange={(o) => !o && setSharing(null)} card={sharing} />}
     </section>
   )
 }
