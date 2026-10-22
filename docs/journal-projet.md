@@ -36,6 +36,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - `/print.html` → section Factures : CSV de la table Factures → PDF par facture + `livre-des-recettes.csv` (totaux mensuels). Spécimens tant que `COMPANY` (SIRET, adresse, e-mail) n'est pas rempli dans `src/lib/config.ts`.
 - **À faire par Thibault** : créer et activer l'automatisation « Commande payée → facture » (pas d'outil pour la créer depuis Claude) et passer les champs Total au format monétaire. Détail : `docs/facturation.md`.
 
+- Logiciel de facturation (étude `docs/finance/logiciels-facturation.md`, 22/10) : **Abby** recommandé (plateforme agréée, gratuit, API + Make/Airtable), **Tiime** en secours. Ouvrir le compte gratuit dès le SIREN (réception obligatoire). Une seule numérotation : celle du logiciel dès la première vraie vente (notre générateur reste pour les spécimens/tests). Nouvelle mention TVA « art. L. 233-3 du CIBS » au 01/01/2027 (à confirmer). Fonctions URSSAF du logiciel à ignorer (cotisations CCSS).
+
 ### Juridique
 - Étude `docs/juridique/etude-statut-frontalier.md` : micro-entreprise française recommandée, cotisations à la CCSS Luxembourg (dispense possible sous ≈ 11 085 €/an), télétravail salarié à garder < 25 %, pas de société au Luxembourg, Legalstart non nécessaire (INPI gratuit). **À valider avec un expert-comptable frontaliers.**
 

@@ -69,6 +69,8 @@ Automations → Create automation :
 
 Générées par `src/lib/invoice.ts` : vendeur (nom, « Entrepreneur individuel (EI) », adresse, SIRET), numéro, date d'émission, date de la vente, client et adresse, désignation, quantité, prix unitaire, total HT, TVA 0, total TTC, « TVA non applicable, art. 293 B du CGI », date et mode de paiement. Pour un avoir : référence de la facture d'origine.
 
+Choix du logiciel de facturation pour la réforme : voir `docs/finance/logiciels-facturation.md` (Abby recommandé). **Dès la première vraie vente, une seule numérotation** : si Abby est adopté, c'est lui qui numérote et l'outil maison ne sert plus que de secours.
+
 À faire vérifier par l'expert-comptable (agent `juridique-fiscal` pour la veille) :
 - la mention TVA pourrait évoluer au 1er janvier 2027 (référence au CIBS, non confirmé) ;
 - facturation électronique : réception obligatoire dès le 1er septembre 2026, émission et e-reporting des ventes aux particuliers au plus tard le 1er septembre 2027 via une plateforme agréée → prévoir le passage à un outil compatible avant cette date.
