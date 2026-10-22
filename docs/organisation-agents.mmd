@@ -1,0 +1,44 @@
+flowchart TD
+    T(["Thibault — fondateur<br/>décide, valide, envoie"])
+    M{{"Monde réel<br/>fournisseurs · clients · organisateurs"}}
+    N["Notion · TrailDex Direction<br/>rapport du mercredi + base Décisions"]
+    C["Agent CEO<br/>mercredi 7 h 41 · ou /ceo<br/>arbitre, max 5 décisions"]
+    O["Opérations<br/>commandes, retards, lot Exaprint"]
+    P["Produit & site<br/>santé du site, améliorations"]
+    K["Marketing<br/>courses, posts, partenariats"]
+    F["Finance & fournisseurs<br/>marges, imprimeurs, brouillons"]
+    A[("Airtable<br/>commandes, lecture seule")]
+    G[("GitHub<br/>branche + PR en brouillon")]
+    W>"Web<br/>recherche d'infos"]
+    E[("Gmail<br/>lecture + brouillons")]
+    V["🔒 Verrou : pas d'envoi · pas de suppression<br/>pas de dépense · pas de fusion de code"]
+
+    T ==>|seul à envoyer| M
+    T <-->|valide / refuse| N
+    N <-->|lit les décisions · publie le rapport| C
+    C -->|délègue| O & P & K & F
+    O -.-> A
+    P -.-> G
+    K -.-> W
+    F -.-> E
+    E -.->|brouillons à relire| T
+    V ~~~ O
+
+    classDef boss fill:#f7c948,stroke:#b8860b,color:#1d1d1f
+    classDef ceo fill:#8e44ad,stroke:#5e2d75,color:#fff
+    classDef notion fill:#f3e8fb,stroke:#8e44ad,color:#1d1d1f
+    classDef ops fill:#fde3cf,stroke:#e67e22,color:#1d1d1f
+    classDef prod fill:#d6e9fb,stroke:#2f80ed,color:#1d1d1f
+    classDef mkt fill:#fbd9df,stroke:#e74c3c,color:#1d1d1f
+    classDef fin fill:#d4f3e9,stroke:#16a085,color:#1d1d1f
+    classDef ext fill:#7b8794,stroke:#52606d,color:#fff
+    classDef lock fill:#fff,stroke:#e74c3c,stroke-dasharray:5 4,color:#c0392b
+    class T boss
+    class C ceo
+    class N notion
+    class O,A ops
+    class P,G prod
+    class K,W mkt
+    class F,E fin
+    class M ext
+    class V lock
