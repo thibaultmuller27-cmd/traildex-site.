@@ -139,7 +139,7 @@ export type TrailCardProps = {
   placeholder?: boolean
 }
 
-export function TrailCard({ card, width, spin, idle = true, webgl = true, flippable = true, className, placeholder }: TrailCardProps) {
+export function TrailCard({ card, width, spin, idle = true, webgl = false, flippable = true, className, placeholder }: TrailCardProps) {
   const theme = THEMES[card.rarity]
   return (
     <HoloCard
@@ -355,10 +355,8 @@ export function CardBack({ card, theme, transparent }: { card: CardData; theme: 
   const speed = card.timeSec && card.distanceKm ? (card.distanceKm / (card.timeSec / 3600)).toFixed(1).replace(".", ",") : "—"
   const dPerKm = card.gain && card.distanceKm ? Math.round(card.gain / card.distanceKm) : null
   const rarity = RARITIES[card.rarity]
-  const seed = hashSeed(card.id + "back")
   return (
     <div className="absolute inset-0 flex flex-col" style={{ background: transparent ? undefined : theme.backBg, color: theme.ink, padding: "6cqw" }}>
-      <TopoLines seed={seed} color={theme.line} className="opacity-60" />
       <div className="relative flex items-center justify-between">
         <Wordmark color={theme.ink} />
         <span className="font-mono" style={{ fontSize: "2.3cqw", letterSpacing: "0.14em", color: theme.sub }}>

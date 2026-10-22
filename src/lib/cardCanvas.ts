@@ -468,7 +468,6 @@ export async function drawCardBack(
   fillBackground(ctx, BACK_BG[card.rarity], x, y, w, h, print ? opts.bleed ?? 0 : 0)
   ctx.save()
   ctx.globalAlpha = 0.6
-  topo(ctx, hashSeed(card.id + "back"), x, y, w, h, t.line, Math.max(1, 0.18 * u))
   ctx.restore()
 
   // Header
