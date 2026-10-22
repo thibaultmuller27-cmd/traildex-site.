@@ -7,20 +7,24 @@ flowchart TD
     P["Produit & site<br/>santé du site, améliorations"]
     K["Marketing<br/>courses, posts, partenariats"]
     F["Finance & fournisseurs<br/>marges, imprimeurs, brouillons"]
+    J["Juridique & fiscalité<br/>statut, frontalier, TVA, CGV<br/>(si question ouverte)"]
     A[("Airtable<br/>commandes, lecture seule")]
     G[("GitHub<br/>branche + PR en brouillon")]
     W>"Web<br/>recherche d'infos"]
     E[("Gmail<br/>lecture + brouillons")]
+    D[("docs/juridique<br/>études sourcées")]
     V["🔒 Verrou : pas d'envoi · pas de suppression<br/>pas de dépense · pas de fusion de code"]
 
     T ==>|seul à envoyer| M
     T <-->|valide / refuse| N
     N <-->|lit les décisions · publie le rapport| C
     C -->|délègue| O & P & K & F
+    C -.->|si besoin| J
     O -.-> A
     P -.-> G
     K -.-> W
     F -.-> E
+    J -.-> D
     E -.->|brouillons à relire| T
     V ~~~ O
 
@@ -31,6 +35,7 @@ flowchart TD
     classDef prod fill:#d6e9fb,stroke:#2f80ed,color:#1d1d1f
     classDef mkt fill:#fbd9df,stroke:#e74c3c,color:#1d1d1f
     classDef fin fill:#d4f3e9,stroke:#16a085,color:#1d1d1f
+    classDef jur fill:#ece7f6,stroke:#5b4b8a,color:#1d1d1f
     classDef ext fill:#7b8794,stroke:#52606d,color:#fff
     classDef lock fill:#fff,stroke:#e74c3c,stroke-dasharray:5 4,color:#c0392b
     class T boss
@@ -40,5 +45,6 @@ flowchart TD
     class P,G prod
     class K,W mkt
     class F,E fin
+    class J,D jur
     class M ext
     class V lock

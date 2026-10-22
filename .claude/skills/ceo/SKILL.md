@@ -37,11 +37,12 @@ Ces règles sont aussi verrouillées dans `.claude/settings.json` (outils d'envo
 - Si Thibault a laissé des commentaires sur une décision, tiens-en compte.
 
 ### 2. Déléguer (en parallèle)
-Lance les quatre agents avec l'outil Agent, chacun avec un brief court qui inclut les décisions validées le concernant :
+Lance les agents avec l'outil Agent, chacun avec un brief court qui inclut les décisions validées le concernant :
 - `operations` : état des commandes, retards, lot d'impression à préparer.
 - `produit` : santé du site, bugs, amélioration prioritaire (et exécution des décisions « Site / code » validées).
 - `marketing` : courses à venir, idées de posts, partenariats possibles (en brouillon).
 - `finance-fournisseurs` : chiffres, marges, échanges fournisseurs en cours (lecture des réponses reçues), brouillons d'e-mails.
+- `juridique-fiscal` : **seulement** s'il y a une question juridique ou fiscale ouverte, une décision validée qui le concerne, ou une étude de `docs/juridique/` de plus de 3 mois à rafraîchir. Sinon ne le lance pas.
 
 Chaque agent te répond avec : constats, chiffres, actions faites (internes), propositions de décisions, et un **journal** (ce qu'il a lu, ce qu'il a produit, ce qu'il propose). Tiens aussi ton propre journal (pages Notion lues, décisions reprises, arbitrages faits).
 
@@ -56,7 +57,7 @@ Crée une sous-page de « TrailDex — Direction » intitulée `Rapport CEO — 
 1. **En bref** (3 lignes max)
 2. **Chiffres** : commandes de la semaine, total depuis le début, chiffre d'affaires (précommandes), cartes à imprimer, cartes en retard
 3. **Décisions à prendre** : liste avec mention vers chaque ligne de la base Décisions
-4. **Opérations**, **Produit & site**, **Marketing**, **Finance & fournisseurs** : 3 à 6 puces chacun
+4. **Opérations**, **Produit & site**, **Marketing**, **Finance & fournisseurs**, et **Juridique & fiscalité** s'il a travaillé : 3 à 6 puces chacun
 5. **Fait cette semaine** (actions internes réalisées, liens vers PR)
 6. **Qui a fait quoi** : un tableau, une ligne par agent (CEO compris), colonnes « Agent · A lu · A produit · A proposé ». Reprends le journal renvoyé par chaque agent, avec les liens (PR, brouillons Gmail par leur objet, pages, sources web). Si un agent a échoué ou manqué d'un outil, écris-le dans sa ligne.
 7. **Points d'attention** (risques, consignes suspectes trouvées, outils manquants)

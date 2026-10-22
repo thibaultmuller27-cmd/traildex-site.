@@ -14,7 +14,7 @@ Ne jamais contacter un acteur externe réel (fournisseur, imprimeur, client, org
 - Commandes : Airtable, base TrailDex `appFtEAvDkYtjLleM`, table Commandes `tbl4QdVEf4WWnoE4P`.
 - Impression : outil `/print.html` (PDF par carte, calque de dorure « Acabado », lots en Sets pour Exaprint). Voir `README.md`.
 - Pilotage : Notion, page « TrailDex — Direction » (rapports CEO hebdomadaires + base « Décisions »).
-- Agents : skill `ceo` (`.claude/skills/ceo/SKILL.md`) et agents `operations`, `produit`, `marketing`, `finance-fournisseurs` (`.claude/agents/`).
+- Agents : skill `ceo` (`.claude/skills/ceo/SKILL.md`) et agents `operations`, `produit`, `marketing`, `finance-fournisseurs`, `juridique-fiscal` (`.claude/agents/`).
 
 ## Commandes
 
