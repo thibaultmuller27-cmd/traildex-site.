@@ -2,7 +2,7 @@ import { Logo } from "@/components/sections/Nav"
 
 const COLS = [
   { title: "Créer", links: [["Créateur de carte", "#createur"], ["Comment ça marche", "#comment"], ["Finitions et prix", "#createur"]] },
-  { title: "Collection", links: [["Galerie", "#galerie"], ["Ma collection", "#collection"]] },
+  { title: "Collection", links: [["Ma collection", "#collection"]] },
   { title: "Aide", links: [["Questions fréquentes", "#faq"], ["Contact", "mailto:contact@traildex.fr"]] },
 ]
 

@@ -5,7 +5,7 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 ## État au 22 octobre 2026
 
 ### Site (branche `claude/practical-cray-da49sb`)
-- Site React/Vite/Tailwind complet : accueil 3D, comment ça marche, créateur (import GPX, aperçu en direct), galerie par rareté, collection (sans niveaux ni badges depuis le 22/10), FAQ.
+- Site React/Vite/Tailwind complet : accueil 3D, comment ça marche, créateur (import GPX, aperçu en direct), collection (sans niveaux ni badges ; galerie retirée le 22/10), FAQ.
 - Composants 21st.dev adaptés : « Holo Card » (@kedhareswer) et « Phone Scroll Hero » (@ruixen.ui).
 - Design de carte validé par Thibault : **recto = tracé en grand + effet holographique**, **verso = photo en petit + fiche de course**.
 - Partage gratuit Instagram/Strava : image Story 9:16 ou post 4:5 générée dans le navigateur.

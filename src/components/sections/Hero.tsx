@@ -22,8 +22,8 @@ export function Hero() {
               <a href="#createur" className={buttonClass("primary", "lg")}>
                 Créer ma carte
               </a>
-              <a href="#galerie" className="inline-flex items-center gap-1 text-[17px] text-[#0066cc] hover:underline">
-                Voir la galerie <ChevronRight className="h-4 w-4" />
+              <a href="#comment" className="inline-flex items-center gap-1 text-[17px] text-[#0066cc] hover:underline">
+                Comment ça marche <ChevronRight className="h-4 w-4" />
               </a>
             </div>
           </>
