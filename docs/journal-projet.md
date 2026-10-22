@@ -22,7 +22,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 ### Organisation (agents)
 - Skill `ceo` + agents `operations`, `produit`, `marketing`, `finance-fournisseurs`, `juridique-fiscal`. Schéma : `docs/organisation-agents.png`.
 - Tâche programmée « Point CEO TrailDex » : mercredi 7 h 41 (Paris). **Connexions Notion/Airtable/Gmail et dépôt à ajouter par Thibault** dans la tâche sur claude.ai.
-- Notion : page privée « TrailDex — Direction » + base « Décisions ».
+- Notion : page privée « TrailDex — Direction » + base « Décisions ». Section « État du projet » ajoutée le 22/10 et 4 décisions « À valider » créées (format dorure, prix définitifs, expert-comptable, mise en ligne).
+- Vérifié le 22/10 : la tâche n'a encore **aucune connexion** (Notion, Airtable, Gmail) ; aucun e-mail d'Exaprint dans Gmail.
 - Verrou `.claude/settings.json` : aucun envoi, aucune suppression, aucune fusion, aucune tâche programmée sans accord.
 
 ### Juridique
