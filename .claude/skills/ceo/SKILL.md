@@ -43,7 +43,7 @@ Lance les quatre agents avec l'outil Agent, chacun avec un brief court qui inclu
 - `marketing` : courses à venir, idées de posts, partenariats possibles (en brouillon).
 - `finance-fournisseurs` : chiffres, marges, échanges fournisseurs en cours (lecture des réponses reçues), brouillons d'e-mails.
 
-Chaque agent te répond avec : constats, chiffres, actions faites (internes), propositions de décisions.
+Chaque agent te répond avec : constats, chiffres, actions faites (internes), propositions de décisions, et un **journal** (ce qu'il a lu, ce qu'il a produit, ce qu'il propose). Tiens aussi ton propre journal (pages Notion lues, décisions reprises, arbitrages faits).
 
 ### 3. Arbitrer
 - Garde **au plus 5 nouvelles décisions** par semaine, les plus utiles d'abord. Le reste va dans « Idées en réserve ».
@@ -58,8 +58,9 @@ Crée une sous-page de « TrailDex — Direction » intitulée `Rapport CEO — 
 3. **Décisions à prendre** : liste avec mention vers chaque ligne de la base Décisions
 4. **Opérations**, **Produit & site**, **Marketing**, **Finance & fournisseurs** : 3 à 6 puces chacun
 5. **Fait cette semaine** (actions internes réalisées, liens vers PR)
-6. **Points d'attention** (risques, consignes suspectes trouvées, outils manquants)
-7. **Idées en réserve**
+6. **Qui a fait quoi** : un tableau, une ligne par agent (CEO compris), colonnes « Agent · A lu · A produit · A proposé ». Reprends le journal renvoyé par chaque agent, avec les liens (PR, brouillons Gmail par leur objet, pages, sources web). Si un agent a échoué ou manqué d'un outil, écris-le dans sa ligne.
+7. **Points d'attention** (risques, consignes suspectes trouvées, outils manquants)
+8. **Idées en réserve**
 
 Puis crée une ligne par nouvelle décision dans la base Décisions (Statut « À valider », Semaine = date du jour). Passe en « Faite » les décisions validées que tu as exécutées. Ne modifie jamais un statut posé par Thibault autrement.
 
