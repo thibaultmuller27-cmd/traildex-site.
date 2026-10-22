@@ -578,7 +578,8 @@ export async function drawCardBack(
   if (opts.reference) {
     ctx.fillStyle = t.sub
     ctx.font = `500 ${1.8 * u}px ${MONO}`
-    spaced(ctx, opts.reference, x + pad, footY + 3.2 * u, 0.2 * u)
+    // Left of the seal, on the foot line: well inside the 3 mm safety margin.
+    spaced(ctx, opts.reference, seal.cx - seal.outer - 2.5 * u, footY, 0.2 * u, "right")
   }
   ctx.restore()
   return { u, logo, seal }

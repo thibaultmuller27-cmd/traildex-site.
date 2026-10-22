@@ -49,6 +49,9 @@ En local, `npm run dev` affiche le site mais pas l'API. Pour tester l'envoi : `n
 Outil : `/print.html` (section « Export Exaprint »).
 
 - Produit Exaprint : carte de visite, format personnalisé **63 × 88 mm**, recto verso, option **Sets** (jusqu'à 20 variantes, même quantité par variante).
-- Chaque carte = 1 PDF (page 1 recto, page 2 verso), échelle 1:1, fond perdu réglable, illustration à 600 dpi.
-- Dorure : formes vectorielles sur un calque **« Acabado »**, en couleur directe (nom réglable, à recopier du gabarit Exaprint), surimpression activée. Or → légendaire, Holo → rare/épique, Standard → pas de dorure.
+- Chaque carte = PDF 2 pages (recto, verso), échelle 1:1, fond perdu réglable, illustration à 600 dpi.
+- **Couleurs CMJN** : l'outil convertit l'illustration avec un profil ICC (LittleCMS, `src/lib/cmyk.ts`) et l'intègre au PDF comme profil de sortie. Profil conseillé : `ISOcoated_v2_300_eci.icc` (archive « ECI Offset 2009 », gratuite sur eci.org), à choisir une fois dans l'outil ; il est gardé dans le navigateur, pas dans le dépôt (licence). L'outil affiche l'encrage maximal (doit rester ≤ 300 %). Sans profil, le PDF reste en RVB.
+- **Dorure, mode « Fichier séparé » (par défaut, guide Exaprint France)** : pour les cartes Holo et Or, un second PDF `*_dorure.pdf` avec uniquement les éléments à dorer, en vecteurs noir 100 % K, mêmes dimensions et repères que `*_impression.pdf`. Or → légendaire, Holo → rare/épique, Standard → pas de fichier de dorure.
+- Mode « Calque Acabado » (ancien) : la dorure dans le même PDF, sur un calque « Acabado » en couleur directe (nom réglable), surimpression activée.
+- Contrôles faits sur les fichiers : traits de dorure ≥ 0,62 pt (min. 0,5 pt), dorure à ≥ 3,4 mm de la coupe (min. 2 mm), textes dans la zone de sécurité de 3 mm.
 - Lot : dans Airtable, vue « À imprimer » → Télécharger CSV → déposer le fichier dans l'outil → un .zip avec un dossier par Set (≤ 20 cartes de même finition et quantité), `bordereau.pdf` (qui reçoit quelle carte) et `LISEZ-MOI.txt`. La référence de commande est imprimée en petit au verso.

@@ -16,7 +16,7 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 ### Impression
 - Imprimeur visé : **Exaprint**, produit « Carte de visite dorure à chaud », option **Sets** (≤ 20 variantes, même quantité).
 - Contrainte découverte : avec dorure, format personnalisé limité à **40–55 mm × 55–95 mm** → 63 × 88 mm impossible en dorure. Question posée à trancher : demander le 63 × 88 avec dorure à Exaprint, sinon 55 × 77 mm, ou un autre imprimeur (MakePlayingCards) pour Or/Holo.
-- Export `/print.html` : PDF par carte (calque « Acabado », couleur directe, surimpression), taille et fond perdu réglables. **À régler avec le gabarit Exaprint** : fond perdu exact et noms des couleurs de dorure.
+- Export `/print.html` (revu le 22/10, conforme au guide Exaprint France) : par carte, un PDF d'impression **CMJN** (profil ISO Coated v2 300 %, encrage max ≈ 297 %) + un PDF de **dorure séparé en 100 % K vectoriel** pour Holo/Or. Ancien mode calque « Acabado » gardé en option. Testé de bout en bout. **À confirmer avec le gabarit Exaprint** : fond perdu exact et profil ICC attendu. Textes de 3 à 4 pt au verso (libellés, sceau) : lisibles en numérique mais sous les 6 pt souvent conseillés.
 - Maquette réalisée sur la course de Thibault (UTDP · Trail Alsace, 112,65 km, 3 927 m D+, 22 h 11). Nom exact de la course et classement : à confirmer par Thibault.
 
 ### Organisation (agents)

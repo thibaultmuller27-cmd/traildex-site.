@@ -1,10 +1,13 @@
 /**
  * Print files for Exaprint (hot-foil business card, custom size).
  *
- * One PDF per card, two pages (front, back), 1:1 scale with bleed. The
- * artwork is a 600 dpi image; the foil is real vector artwork in a spot
- * colour named after the finish, on a layer (optional content group) called
- * "Acabado", with overprint on — as Exaprint's file guide asks.
+ * Per card, two pages (front, back), 1:1 scale with bleed. The artwork is a
+ * 600 dpi image, converted to CMYK with the printer's ICC profile when one is
+ * given. The foil is real vector artwork, either:
+ * - "separate" (Exaprint's French file guide): a second PDF with the foil
+ *   shapes only, in 100 % K, same size and boxes as the print file;
+ * - "layer": in the print file, a spot colour on a layer called "Acabado",
+ *   with overprint on.
  */
 import {
   PDFDocument,
@@ -15,8 +18,11 @@ import {
   type PDFPage,
   type PDFRef,
 } from "pdf-lib"
+import type { CmykProfile } from "./cmyk"
 import { drawCardBack, drawCardFront, loadCardFonts, type BackGeometry, type FrontGeometry } from "./cardCanvas"
 import type { CardData } from "./card"
+
+export type FoilMode = "separate" | "layer"
 
 export type PrintSettings = {
   /** Trimmed card size in mm (Exaprint's foil cards accept 40–55 × 55–95). */
@@ -28,6 +34,7 @@ export type PrintSettings = {
   spotGold: string
   spotHolo: string
   dpi: number
+  foilMode: FoilMode
 }
 
 export const DEFAULT_SETTINGS: PrintSettings = {
@@ -37,6 +44,7 @@ export const DEFAULT_SETTINGS: PrintSettings = {
   spotGold: "Dorure Or",
   spotHolo: "Dorure Holographique",
   dpi: 600,
+  foilMode: "separate",
 }
 
 const PT_PER_MM = 72 / 25.4
@@ -48,7 +56,7 @@ export function foilSpot(card: CardData, s: PrintSettings) {
   return null
 }
 
-type Raster = { jpg: Uint8Array; front?: FrontGeometry; back?: BackGeometry; pxPerMm: number }
+type Raster = { canvas: HTMLCanvasElement; front?: FrontGeometry; back?: BackGeometry; pxPerMm: number }
 
 async function rasterFace(card: CardData, side: "front" | "back", s: PrintSettings, reference?: string): Promise<Raster> {
   const pxPerMm = s.dpi / 25.4
@@ -60,12 +68,43 @@ async function rasterFace(card: CardData, side: "front" | "back", s: PrintSettin
   const w = s.widthMm * pxPerMm
   const h = s.heightMm * pxPerMm
   const opts = { print: true, bleed, h }
-  const out: Raster = { jpg: new Uint8Array(), pxPerMm }
+  const out: Raster = { canvas, pxPerMm }
   if (side === "front") out.front = await drawCardFront(ctx, card, bleed, bleed, w, opts)
   else out.back = await drawCardBack(ctx, card, bleed, bleed, w, { ...opts, reference })
-  const blob = await new Promise<Blob>((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error("toBlob"))), "image/jpeg", 0.92))
-  out.jpg = new Uint8Array(await blob.arrayBuffer())
   return out
+}
+
+/** Draws the face as an RGB JPEG, or as a CMYK image through the ICC profile. Returns the max ink, in %. */
+async function drawArtwork(doc: PDFDocument, page: PDFPage, canvas: HTMLCanvasElement, cmyk?: CmykProfile) {
+  const { width: wPt, height: hPt } = page.getSize()
+  if (!cmyk) {
+    const blob = await new Promise<Blob>((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error("toBlob"))), "image/jpeg", 0.92))
+    page.drawImage(await doc.embedJpg(new Uint8Array(await blob.arrayBuffer())), { x: 0, y: 0, width: wPt, height: hPt })
+    return undefined
+  }
+  const px = canvas.getContext("2d")!.getImageData(0, 0, canvas.width, canvas.height).data
+  const { cmyk: data, maxInk } = cmyk.convert(px)
+  const ctx = doc.context
+  const img = ctx.register(
+    ctx.flateStream(data, { Type: "XObject", Subtype: "Image", Width: canvas.width, Height: canvas.height, ColorSpace: "DeviceCMYK", BitsPerComponent: 8 }),
+  )
+  const name = page.node.newXObject("Im", img)
+  page.node.addContentStream(ctx.register(ctx.flateStream(`q ${wPt.toFixed(3)} 0 0 ${hPt.toFixed(3)} 0 0 cm ${name} Do Q`)))
+  return maxInk
+}
+
+/** PDF/X-style output intent: tells the printer which press condition the CMYK targets. */
+function addOutputIntent(doc: PDFDocument, cmyk: CmykProfile) {
+  const ctx = doc.context
+  const icc = ctx.register(ctx.flateStream(cmyk.icc, { N: 4 }))
+  const intent = ctx.obj({
+    Type: "OutputIntent",
+    S: "GTS_PDFX",
+    OutputConditionIdentifier: PDFString.of(cmyk.name),
+    Info: PDFString.of(cmyk.name),
+    DestOutputProfile: icc,
+  })
+  doc.catalog.set(PDFName.of("OutputIntents"), ctx.obj([intent]))
 }
 
 /** Builds PDF path operators from canvas-pixel points. */
@@ -186,38 +225,64 @@ function addFoilLayer(doc: PDFDocument, page: PDFPage, ops: string, spot: { name
   page.node.addContentStream(ctx.register(ctx.flateStream(content)))
 }
 
-/** One card → one PDF (front, back), ready for an Exaprint "Set" variant. */
-export async function buildCardPdf(card: CardData, s: PrintSettings, reference?: string): Promise<Uint8Array> {
-  await loadCardFonts()
+export type CardFiles = {
+  /** Artwork, front and back. */
+  print: Uint8Array
+  /** Foil shapes only, in 100 % K ("separate" mode, Holo and Or cards). */
+  foil?: Uint8Array
+  /** Highest total ink in the artwork, in % (CMYK only). */
+  maxInk?: number
+}
+
+async function newDoc(card: CardData, reference?: string) {
   const doc = await PDFDocument.create()
   doc.setTitle(`TrailDex ${reference ?? ""} ${card.race}`.trim())
   doc.setCreator("TrailDex")
+  return doc
+}
+
+function addTrimmedPage(doc: PDFDocument, s: PrintSettings) {
+  const wPt = (s.widthMm + 2 * s.bleedMm) * PT_PER_MM
+  const hPt = (s.heightMm + 2 * s.bleedMm) * PT_PER_MM
+  const b = s.bleedMm * PT_PER_MM
+  const page = doc.addPage([wPt, hPt])
+  page.setBleedBox(0, 0, wPt, hPt)
+  page.setTrimBox(b, b, s.widthMm * PT_PER_MM, s.heightMm * PT_PER_MM)
+  return page
+}
+
+/** One card → its Exaprint files (one "Set" variant). */
+export async function buildCardFiles(card: CardData, s: PrintSettings, reference?: string, cmyk?: CmykProfile): Promise<CardFiles> {
+  await loadCardFonts()
+  const doc = await newDoc(card, reference)
+  if (cmyk) addOutputIntent(doc, cmyk)
   const spot = foilSpot(card, s)
+  const foilDoc = spot && s.foilMode === "separate" ? await newDoc(card, reference) : null
   let ocg: PDFRef | null = null
-  if (spot) {
+  if (spot && s.foilMode === "layer") {
     const ctx = doc.context
     ocg = ctx.register(ctx.obj({ Type: "OCG", Name: PDFString.of("Acabado") }))
     doc.catalog.set(PDFName.of("OCProperties"), ctx.obj({ OCGs: [ocg], D: { Order: [ocg], ON: [ocg] } }))
   }
-  const wPt = (s.widthMm + 2 * s.bleedMm) * PT_PER_MM
-  const hPt = (s.heightMm + 2 * s.bleedMm) * PT_PER_MM
-  const b = s.bleedMm * PT_PER_MM
+  let maxInk: number | undefined
 
   for (const side of ["front", "back"] as const) {
     const r = await rasterFace(card, side, s, reference)
-    const page = doc.addPage([wPt, hPt])
-    page.setBleedBox(0, 0, wPt, hPt)
-    page.setTrimBox(b, b, s.widthMm * PT_PER_MM, s.heightMm * PT_PER_MM)
-    const img = await doc.embedJpg(r.jpg)
-    page.drawImage(img, { x: 0, y: 0, width: wPt, height: hPt })
-    if (spot && ocg) {
-      const o = new Ops(r.pxPerMm, hPt)
-      if (r.front) frontFoil(o, r.front, card)
-      if (r.back) backFoil(o, r.back)
-      addFoilLayer(doc, page, o.parts.join("\n"), spot, ocg)
+    const page = addTrimmedPage(doc, s)
+    const ink = await drawArtwork(doc, page, r.canvas, cmyk)
+    if (ink !== undefined) maxInk = Math.max(maxInk ?? 0, ink)
+    if (!spot) continue
+    const o = new Ops(r.pxPerMm, page.getSize().height)
+    if (r.front) frontFoil(o, r.front, card)
+    if (r.back) backFoil(o, r.back)
+    const ops = o.parts.join("\n")
+    if (ocg) addFoilLayer(doc, page, ops, spot, ocg)
+    if (foilDoc) {
+      const fp = addTrimmedPage(foilDoc, s)
+      fp.node.addContentStream(foilDoc.context.register(foilDoc.context.flateStream(`q 0 0 0 1 k 0 0 0 1 K\n${ops}\nQ`)))
     }
   }
-  return doc.save()
+  return { print: await doc.save(), foil: foilDoc ? await foilDoc.save() : undefined, maxInk }
 }
 
 export type BatchOrder = {
@@ -261,7 +326,8 @@ const slug = (s: string) =>
 export const setFolder = (set: PrintSet) =>
   `Set-${String(set.index).padStart(2, "0")}_${slug(set.finish) || "Standard"}_${set.orders.length}-variantes_x${set.qty}`
 
-export const cardFileName = (o: BatchOrder, i: number) => `${String(i + 1).padStart(2, "0")}_${slug(o.reference)}.pdf`
+export const cardFileName = (o: BatchOrder, i: number, part?: "impression" | "dorure") =>
+  `${String(i + 1).padStart(2, "0")}_${slug(o.reference)}${part ? `_${part}` : ""}.pdf`
 
 /** Packing slip: which card goes to which address. */
 export async function buildPackingSlip(sets: PrintSet[]): Promise<Uint8Array> {
@@ -294,15 +360,23 @@ export async function buildPackingSlip(sets: PrintSet[]): Promise<Uint8Array> {
   return doc.save()
 }
 
-export function readme(sets: PrintSet[], s: PrintSettings) {
+export function readme(sets: PrintSet[], s: PrintSettings, cmykName?: string) {
+  const foil =
+    s.foilMode === "separate"
+      ? [
+          "Dorure : fichier separe *_dorure.pdf (recto, verso), elements vectoriels en noir 100 % K, meme format et memes reperes que *_impression.pdf.",
+          "Cartes Standard : un seul fichier, sans dorure.",
+        ]
+      : [`Dorure : calque "Acabado", couleur directe "${s.spotGold}" (Or) ou "${s.spotHolo}" (Holo), surimpression activee.`]
   const lines = [
     "LOT TRAILDEX - COMMANDE EXAPRINT",
     "",
     `Produit : Carte de visite dorure a chaud, format personnalise ${s.widthMm} x ${s.heightMm} mm, portrait, recto verso.`,
     `Fond perdu des fichiers : ${s.bleedMm} mm. Chaque PDF = 1 carte (page 1 recto, page 2 verso).`,
-    `Dorure : calque "Acabado", couleur directe "${s.spotGold}" (Or) ou "${s.spotHolo}" (Holo), surimpression activee.`,
+    cmykName ? `Couleurs : CMJN, profil ${cmykName} (integre au PDF).` : "Couleurs : RVB (aucun profil CMJN choisi, conversion laissee a l'imprimeur).",
+    ...foil,
     "",
-    "Une commande Exaprint par dossier Set : option Sets, une variante par PDF, quantite indiquee dans le nom du dossier.",
+    "Une commande Exaprint par dossier Set : option Sets, une variante par carte, quantite indiquee dans le nom du dossier.",
     "",
   ]
   for (const set of sets) {

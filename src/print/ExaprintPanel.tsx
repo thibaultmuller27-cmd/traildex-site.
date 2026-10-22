@@ -8,6 +8,7 @@ import { RARITIES } from "@/lib/config"
 
 type Settings = import("@/lib/exaprint").PrintSettings
 type BatchOrder = import("@/lib/exaprint").BatchOrder
+type CmykProfile = import("@/lib/cmyk").CmykProfile
 
 const SETTINGS_KEY = "traildex.exaprint.settings"
 
@@ -84,7 +85,7 @@ function download(data: Uint8Array | Blob, name: string, type: string) {
 
 export function ExaprintPanel({ card }: { card: CardData | null }) {
   const [settings, setSettings] = React.useState<Settings>(() => {
-    const defaults = { widthMm: 63, heightMm: 88, bleedMm: 3, spotGold: "Dorure Or", spotHolo: "Dorure Holographique", dpi: 600 }
+    const defaults = { widthMm: 63, heightMm: 88, bleedMm: 3, spotGold: "Dorure Or", spotHolo: "Dorure Holographique", dpi: 600, foilMode: "separate" as const }
     try {
       return { ...defaults, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") }
     } catch {
@@ -94,6 +95,30 @@ export function ExaprintPanel({ card }: { card: CardData | null }) {
   const [busy, setBusy] = React.useState<string | null>(null)
   const [batch, setBatch] = React.useState<{ orders: BatchOrder[]; skipped: string[] } | null>(null)
   const [error, setError] = React.useState<string | null>(null)
+  const [cmyk, setCmyk] = React.useState<CmykProfile | null>(null)
+  const [maxInk, setMaxInk] = React.useState<number | null>(null)
+
+  // Reload the CMYK profile chosen on a previous visit.
+  React.useEffect(() => {
+    ;(async () => {
+      const { loadSavedProfileBytes, loadCmykProfile } = await import("@/lib/cmyk")
+      const icc = await loadSavedProfileBytes()
+      if (icc) setCmyk(await loadCmykProfile(icc).catch(() => null))
+    })()
+  }, [])
+
+  const loadIcc = async (file?: File) => {
+    if (!file) return
+    setError(null)
+    try {
+      const { loadCmykProfile, saveProfileBytes } = await import("@/lib/cmyk")
+      const icc = new Uint8Array(await file.arrayBuffer())
+      setCmyk(await loadCmykProfile(icc))
+      await saveProfileBytes(icc).catch(() => undefined)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Profil ICC illisible.")
+    }
+  }
 
   const update = (patch: Partial<Settings>) => {
     const next = { ...settings, ...patch }
@@ -110,9 +135,11 @@ export function ExaprintPanel({ card }: { card: CardData | null }) {
     setBusy("Génération du PDF…")
     setError(null)
     try {
-      const { buildCardPdf } = await import("@/lib/exaprint")
-      const pdf = await buildCardPdf(card, settings)
-      download(pdf, `traildex-${card.id}-exaprint.pdf`, "application/pdf")
+      const { buildCardFiles } = await import("@/lib/exaprint")
+      const files = await buildCardFiles(card, settings, undefined, cmyk ?? undefined)
+      setMaxInk(files.maxInk ?? null)
+      download(files.print, `traildex-${card.id}-impression.pdf`, "application/pdf")
+      if (files.foil) download(files.foil, `traildex-${card.id}-dorure.pdf`, "application/pdf")
     } catch (e) {
       console.error(e)
       setError("Le PDF n'a pas pu être généré.")
@@ -138,16 +165,23 @@ export function ExaprintPanel({ card }: { card: CardData | null }) {
       const zip = new JSZip()
       const sets = ex.groupIntoSets(batch.orders)
       let n = 0
+      let worst = 0
       for (const set of sets) {
         const folder = zip.folder(ex.setFolder(set))!
         for (const [i, o] of set.orders.entries()) {
           setBusy(`Carte ${++n} / ${batch.orders.length}…`)
-          folder.file(ex.cardFileName(o, i), await ex.buildCardPdf(o.card, settings, o.reference))
+          const files = await ex.buildCardFiles(o.card, settings, o.reference, cmyk ?? undefined)
+          worst = Math.max(worst, files.maxInk ?? 0)
+          if (files.foil) {
+            folder.file(ex.cardFileName(o, i, "impression"), files.print)
+            folder.file(ex.cardFileName(o, i, "dorure"), files.foil)
+          } else folder.file(ex.cardFileName(o, i), files.print)
         }
       }
       setBusy("Bordereau…")
       zip.file("bordereau.pdf", await ex.buildPackingSlip(sets))
-      zip.file("LISEZ-MOI.txt", ex.readme(sets, settings))
+      zip.file("LISEZ-MOI.txt", ex.readme(sets, settings, cmyk?.name))
+      setMaxInk(cmyk ? worst : null)
       const blob = await zip.generateAsync({ type: "blob" })
       download(blob, `traildex-lot-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip")
     } catch (e) {
@@ -163,9 +197,25 @@ export function ExaprintPanel({ card }: { card: CardData | null }) {
     <section className="mt-8 rounded-2xl bg-white p-5 ring-1 ring-line">
       <h2 className="text-[20px] font-semibold tracking-tight">Export Exaprint</h2>
       <p className="mt-1 text-[14px] text-muted">
-        Un PDF par carte (recto, verso), à l'échelle 1:1 avec fond perdu. La dorure est un calque « Acabado » en couleur directe, en surimpression. Recopie le fond perdu et
-        les noms de couleurs exacts du gabarit Exaprint.
+        Par carte : un PDF d'impression (recto, verso, 1:1 avec fond perdu) et, pour les cartes Holo et Or, un PDF de dorure en noir 100 % K, comme le demande le guide
+        Exaprint. Recopie le fond perdu du gabarit Exaprint.
       </p>
+      <div className="mt-4 rounded-xl bg-mist p-4 text-[14px]">
+        <p className="font-medium">Profil couleur CMJN</p>
+        {cmyk ? (
+          <p className="mt-1 text-muted">
+            {cmyk.name} : les fichiers sont convertis en CMJN.{maxInk !== null && <> Encrage maximal du dernier export : {maxInk} %.</>}
+          </p>
+        ) : (
+          <p className="mt-1 text-[#b25000]">
+            Aucun profil : les fichiers restent en RVB. Choisis ISOcoated_v2_300_eci.icc (archive « ECI Offset 2009 » sur eci.org), il est gardé dans ce navigateur.
+          </p>
+        )}
+        <label className="mt-3 inline-block rounded-full bg-white px-4 py-2 text-[14px] font-medium ring-1 ring-line">
+          {cmyk ? "Changer de profil…" : "Choisir le profil .icc…"}
+          <input id="ex-icc" type="file" accept=".icc,.icm" className="hidden" onChange={(e) => loadIcc(e.target.files?.[0])} />
+        </label>
+      </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <label className="flex flex-col gap-1 text-[13px] font-medium">
           Largeur (mm)
@@ -180,13 +230,24 @@ export function ExaprintPanel({ card }: { card: CardData | null }) {
           <input id="ex-bleed" type="number" step="0.5" min="0" max="5" value={settings.bleedMm} onChange={(e) => update({ bleedMm: Math.max(0, +e.target.value || 0) })} className={input} />
         </label>
         <label className="flex flex-col gap-1 text-[13px] font-medium">
-          Couleur directe Or
-          <input id="ex-gold" value={settings.spotGold} onChange={(e) => update({ spotGold: e.target.value })} className={input} />
+          Fichier de dorure
+          <select id="ex-foil" value={settings.foilMode} onChange={(e) => update({ foilMode: e.target.value as Settings["foilMode"] })} className={input}>
+            <option value="separate">Fichier séparé, 100 % K</option>
+            <option value="layer">Calque « Acabado »</option>
+          </select>
         </label>
-        <label className="flex flex-col gap-1 text-[13px] font-medium">
-          Couleur directe Holo
-          <input id="ex-holo" value={settings.spotHolo} onChange={(e) => update({ spotHolo: e.target.value })} className={input} />
-        </label>
+        {settings.foilMode === "layer" && (
+          <>
+            <label className="flex flex-col gap-1 text-[13px] font-medium">
+              Couleur directe Or
+              <input id="ex-gold" value={settings.spotGold} onChange={(e) => update({ spotGold: e.target.value })} className={input} />
+            </label>
+            <label className="flex flex-col gap-1 text-[13px] font-medium">
+              Couleur directe Holo
+              <input id="ex-holo" value={settings.spotHolo} onChange={(e) => update({ spotHolo: e.target.value })} className={input} />
+            </label>
+          </>
+        )}
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
