@@ -7,7 +7,7 @@ import { RARITIES } from "@/lib/config"
 import { fmtInt, fmtKm, type Rarity } from "@/lib/card"
 import { cn } from "@/lib/utils"
 
-const ORDER: Rarity[] = ["commune", "rare", "epique", "legendaire"]
+const ORDER: Rarity[] = ["rare", "epique", "legendaire"]
 
 export function Gallery() {
   const [filter, setFilter] = React.useState<Rarity | "all">("all")
@@ -21,7 +21,7 @@ export function Gallery() {
         <FadeIn className="text-center">
           <p className="eyebrow text-white/50">Galerie</p>
           <h2 className="headline mx-auto mt-3 max-w-3xl text-[40px] sm:text-6xl md:text-7xl">
-            Quatre raretés.
+            Trois raretés.
             <br />
             <span className="text-gradient-holo">Une seule légende.</span>
           </h2>

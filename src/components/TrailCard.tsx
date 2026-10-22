@@ -32,21 +32,6 @@ type Theme = {
 }
 
 export const THEMES: Record<Rarity, Theme> = {
-  commune: {
-    bg: "linear-gradient(160deg,#fdfcf9 0%,#f1eee6 100%)",
-    ink: "#141414",
-    sub: "rgba(20,20,20,0.55)",
-    line: "rgba(20,20,20,0.12)",
-    panel: "rgba(20,20,20,0.04)",
-    route: "#e2562b",
-    routeGlow: "rgba(226,86,43,0.25)",
-    profile: "#141414",
-    pill: "#141414",
-    pillInk: "#ffffff",
-    foil: null,
-    foilOpacity: 0,
-    backBg: "linear-gradient(160deg,#f6f3ec,#e7e2d6)",
-  },
   rare: {
     bg: "radial-gradient(120% 80% at 20% 0%,#1d4f86 0%,#0b2546 45%,#061325 100%)",
     ink: "#ffffff",
@@ -218,7 +203,7 @@ export function CardFront({ card, theme, placeholder, transparent }: { card: Car
             padding: "0.9cqw 2.2cqw",
           }}
         >
-          <Gems rarity={card.rarity} color={card.rarity === "legendaire" ? theme.pillInk : card.rarity === "commune" ? "#fff" : rarity.color} />
+          <Gems rarity={card.rarity} color={card.rarity === "legendaire" ? theme.pillInk : rarity.color} />
           {rarity.label}
         </span>
       </div>

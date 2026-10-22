@@ -1,7 +1,7 @@
 import { Award, Crown, Flag, Footprints, Gem, Layers, Medal, Mountain, MountainSnow, Rainbow, type LucideIcon } from "lucide-react"
 import { effortKm, parseRank, type CardData, type Rarity } from "./card"
 
-export const XP: Record<Rarity, number> = { commune: 100, rare: 250, epique: 500, legendaire: 1000 }
+export const XP: Record<Rarity, number> = { rare: 250, epique: 500, legendaire: 1000 }
 
 export const LEVELS = [
   { at: 0, name: "Randonneur" },

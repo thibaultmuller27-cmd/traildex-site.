@@ -10,7 +10,7 @@ import { RARITIES } from "@/lib/config"
 import { fmtInt, type CardData, type Rarity } from "@/lib/card"
 import { cn } from "@/lib/utils"
 
-const ORDER: Rarity[] = ["commune", "rare", "epique", "legendaire"]
+const ORDER: Rarity[] = ["rare", "epique", "legendaire"]
 
 function LevelRing({ level, progress }: { level: number; progress: number }) {
   const r = 52
@@ -89,7 +89,7 @@ export function Collection() {
                     transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
                   />
                 </div>
-                <p className="mt-3 text-[13px] text-muted">Commune +100 XP · Rare +250 · Épique +500 · Légendaire +1 000 · +1 XP par km-effort</p>
+                <p className="mt-3 text-[13px] text-muted">Rare +250 XP · Épique +500 · Légendaire +1 000 · +1 XP par km-effort</p>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-3 rounded-[28px] bg-mist p-7 md:p-9">

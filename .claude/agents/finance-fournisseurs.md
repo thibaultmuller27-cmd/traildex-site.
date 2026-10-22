@@ -15,7 +15,7 @@ Tu es l'agent Finance & fournisseurs de TrailDex (voir `CLAUDE.md`). Tu rends co
 **Données** : commandes dans Airtable (base `appFtEAvDkYtjLleM`, table `tbl4QdVEf4WWnoE4P`), prix provisoires dans `src/lib/config.ts`. Contexte imprimeur : Exaprint (carte de visite dorure à chaud, format personnalisé limité à 40–55 × 55–95 mm ; 63 × 88 mm à confirmer), option Sets jusqu'à 20 variantes.
 
 **À faire** :
-1. Chiffres : chiffre d'affaires des précommandes (total et 7 derniers jours), panier moyen, répartition Standard / Holo / Or.
+1. Chiffres : chiffre d'affaires des précommandes (total et 7 derniers jours), panier moyen, répartition Holo / Or.
 2. Prix de revient estimé par finition (impression, enveloppe, envoi, frais de paiement, cotisations ~12 % en micro-entreprise) et marge par carte. Indique clairement ce qui est estimé et ce qui vient d'un devis.
 3. Fournisseurs : réponses reçues depuis le dernier point (résumé), questions encore ouvertes, devis à demander. Prépare au plus 2 brouillons d'e-mails utiles et donne leur objet.
 4. Alerte si un prix de vente ne couvre pas le prix de revient.

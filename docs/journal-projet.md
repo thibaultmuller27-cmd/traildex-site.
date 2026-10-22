@@ -10,7 +10,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Design de carte validé par Thibault : **recto = tracé en grand + effet holographique**, **verso = photo en petit + fiche de course**.
 - Partage gratuit Instagram/Strava : image Story 9:16 ou post 4:5 générée dans le navigateur.
 - Précommande → fonction Cloudflare `functions/api/preorder.ts` → Airtable. **Pas encore déployé** (Cloudflare Pages + secret `AIRTABLE_TOKEN` à configurer par Thibault).
-- Prix **provisoires** : Standard 9,90 €, Holo 14,90 €, Or 24,90 € (`src/lib/config.ts`).
+- **Deux finitions seulement depuis le 22/10** : Holo (Rare, ou Épique dès 60 km-effort) et Or (Légendaire). Standard et rareté « Commune » retirées (coût d'impression quasi identique sur le produit dorure, marge la plus faible, Sets plus faciles à remplir). L'image de partage gratuite sert d'entrée de gamme.
+- Prix **provisoires** : Holo 14,90 €, Or 24,90 € (`src/lib/config.ts`).
 - Aperçu en ligne (privé) : https://claude.ai/artifact/L6g2axqytsZ13j8B78hwgA
 
 ### Impression

@@ -1,5 +1,7 @@
 # Prix de revient et marges — étude du 22 octobre 2026
 
+> **Mise à jour du 22/10 :** la Standard a été retirée de l'offre (seulement Holo et Or). Les lignes Standard ci-dessous sont gardées pour mémoire.
+
 But : préparer la décision « Fixer les prix définitifs ». Les prix actuels (9,90 / 14,90 / 24,90 €, livraison offerte) sont dans `src/lib/config.ts`.
 
 ## Ce qui est connu

@@ -16,7 +16,7 @@ const QA = [
   },
   {
     q: "Quelle est la différence entre les finitions ?",
-    a: "Standard : carton 350 g mat soft-touch. Holo : film holographique dont les reflets bougent avec la lumière ; la carte devient Rare, ou Épique à partir de 60 km-effort. Or : dorure à chaud, carte numérotée et étui rigide — c'est la Légendaire.",
+    a: "Deux finitions. Holo : film holographique dont les reflets bougent avec la lumière ; la carte devient Rare, ou Épique à partir de 60 km-effort. Or : dorure à chaud, carte numérotée et étui rigide — c'est la Légendaire.",
   },
   {
     q: "C'est quoi le km-effort ?",

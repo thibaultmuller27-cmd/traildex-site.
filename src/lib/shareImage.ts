@@ -15,7 +15,6 @@ export const FORMATS: Record<ShareFormat, { w: number; h: number; label: string 
 
 /** The glow behind the card on the share backdrop. */
 const GLOW: Record<Rarity, string> = {
-  commune: "rgba(226,86,43,0.35)",
   rare: "rgba(80,170,255,0.45)",
   epique: "rgba(220,90,255,0.5)",
   legendaire: "rgba(255,190,80,0.45)",

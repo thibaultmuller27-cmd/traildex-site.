@@ -109,8 +109,8 @@ type DemoInput = {
 
 const DEMOS: DemoInput[] = [
   { id: "d-cretes", runner: "Camille", race: "Crêtes Vosgiennes", rank: "42/612", rarity: "epique", number: 53, spec: CRETES_SPEC },
-  { id: "d-balcon", runner: "Léa", race: "Balcons du Lac", rank: "118/740", rarity: "commune", number: 7, spec: { seed: 11, km: 21.4, gain: 820, durationSec: 2 * 3600 + 41 * 60, date: "2026-04-19", lat: 45.86, lon: 6.17, baseEle: 450 } },
-  { id: "d-douaniers", runner: "Hugo", race: "Sentier des Douaniers", rank: "64/980", rarity: "commune", number: 12, spec: { seed: 27, km: 32, gain: 610, durationSec: 3 * 3600 + 5 * 60, date: "2026-05-03", lat: 48.7, lon: -3.5, baseEle: 5, loop: false } },
+  { id: "d-balcon", runner: "Léa", race: "Balcons du Lac", rank: "118/740", rarity: "rare", number: 7, spec: { seed: 11, km: 21.4, gain: 820, durationSec: 2 * 3600 + 41 * 60, date: "2026-04-19", lat: 45.86, lon: 6.17, baseEle: 450 } },
+  { id: "d-douaniers", runner: "Hugo", race: "Sentier des Douaniers", rank: "64/980", rarity: "rare", number: 12, spec: { seed: 27, km: 32, gain: 610, durationSec: 3 * 3600 + 5 * 60, date: "2026-05-03", lat: 48.7, lon: -3.5, baseEle: 5, loop: false } },
   { id: "d-aiguille", runner: "Inès", race: "Trail du Mont Aiguille", rank: "9/430", rarity: "rare", number: 31, spec: { seed: 4, km: 38, gain: 1950, durationSec: 5 * 3600 + 2 * 60, date: "2026-07-05", lat: 44.84, lon: 5.55, baseEle: 830 } },
   { id: "d-calanques", runner: "Nathan", race: "Ultra des Calanques", rank: "27/350", rarity: "rare", number: 18, spec: { seed: 91, km: 45, gain: 1400, durationSec: 5 * 3600 + 48 * 60, date: "2026-03-08", lat: 43.21, lon: 5.45, baseEle: 10, loop: false } },
   { id: "d-vercors", runner: "Jules", race: "Traversée du Vercors", rank: "15/520", rarity: "epique", number: 77, spec: { seed: 65, km: 86, gain: 3900, durationSec: 13 * 3600 + 22 * 60, date: "2026-08-23", lat: 45.0, lon: 5.5, baseEle: 640, loop: false } },

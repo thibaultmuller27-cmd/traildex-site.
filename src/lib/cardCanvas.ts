@@ -10,7 +10,6 @@ import { seeded } from "./utils"
 
 /** Canvas versions of the card backgrounds (the CSS ones are gradient strings). */
 const CARD_BG: Record<Rarity, { stops: [number, string][]; radial?: [number, number] }> = {
-  commune: { stops: [[0, "#fdfcf9"], [1, "#f1eee6"]] },
   rare: { stops: [[0, "#1d4f86"], [0.45, "#0b2546"], [1, "#061325"]], radial: [0.2, 0] },
   epique: { stops: [[0, "#6a1f9a"], [0.45, "#2a0d4f"], [1, "#12062a"]], radial: [0.8, 0] },
   legendaire: { stops: [[0, "#3a2a0c"], [0.5, "#15100a"], [1, "#050403"]], radial: [0.5, 0] },
@@ -18,7 +17,6 @@ const CARD_BG: Record<Rarity, { stops: [number, string][]; radial?: [number, num
 
 /** Backs of the cards (CSS backBg in TrailCard). */
 const BACK_BG: Record<Rarity, { stops: [number, string][]; radial?: [number, number] }> = {
-  commune: { stops: [[0, "#f6f3ec"], [1, "#e7e2d6"]] },
   rare: { stops: [[0, "#174476"], [0.6, "#081a33"], [1, "#040b17"]], radial: [0.5, 0.1] },
   epique: { stops: [[0, "#4a1675"], [0.6, "#1b0838"], [1, "#0a0318"]], radial: [0.5, 0.1] },
   legendaire: { stops: [[0, "#33250b"], [0.6, "#120d06"], [1, "#000000"]], radial: [0.5, 0.1] },
@@ -227,7 +225,7 @@ export async function drawCardFront(
     ctx.fillStyle = pg
   } else ctx.fillStyle = t.pill
   ctx.fill()
-  const gemColor = card.rarity === "legendaire" ? t.pillInk : card.rarity === "commune" ? "#fff" : rarity.color
+  const gemColor = card.rarity === "legendaire" ? t.pillInk : rarity.color
   for (let i = 0; i < 4; i++) {
     const gx = pillX + 2.2 * u + i * 2.8 * u + 1.1 * u
     const gy = pillY + pillH / 2

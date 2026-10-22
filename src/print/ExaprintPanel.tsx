@@ -64,7 +64,7 @@ function toOrders(rows: Record<string, string>[]): { orders: BatchOrder[]; skipp
         zip: r["Code postal"] ?? "",
         city: r["Ville"] ?? "",
         qty: Math.max(1, parseInt(r["Quantité"] || "1", 10) || 1),
-        finish: r["Finition"] || "Standard",
+        finish: r["Finition"] || "Holo",
         card: { ...card, id: card.id === "draft" ? ref : card.id },
       })
     } catch {

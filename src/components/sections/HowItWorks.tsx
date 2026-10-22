@@ -56,12 +56,12 @@ function FormVisual() {
         </motion.div>
       ))}
       <div className="mt-1 flex gap-2">
-        {["Standard", "Holo", "Or"].map((f, i) => (
+        {["Holo", "Or"].map((f, i) => (
           <span
             key={f}
             className={
               "flex-1 rounded-full py-2 text-center text-[12px] font-semibold " +
-              (i === 1 ? "bg-ink text-white" : "bg-white text-ink ring-1 ring-black/5")
+              (i === 0 ? "bg-ink text-white" : "bg-white text-ink ring-1 ring-black/5")
             }
           >
             {f}
@@ -112,7 +112,7 @@ const STEPS = [
     n: "03",
     icon: PackageCheck,
     title: "Reçois ta carte",
-    text: "Imprimée sur carton premium, finition Standard, Holo ou Or. Livrée sous étui, prête à collectionner.",
+    text: "Imprimée sur carton premium, finition Holo ou Or. Livrée sous étui, prête à collectionner.",
     visual: <DeliveryVisual />,
   },
 ]

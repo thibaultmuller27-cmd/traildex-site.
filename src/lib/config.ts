@@ -12,13 +12,6 @@ export const FINISHES: {
   price: number
 }[] = [
   {
-    id: "standard",
-    name: "Standard",
-    tagline: "Mat premium",
-    details: "Carton 350 g, finition mate soft-touch, coins arrondis.",
-    price: 9.9, // PRIX À DÉFINIR
-  },
-  {
     id: "holo",
     name: "Holo",
     tagline: "Film holographique",
@@ -38,12 +31,6 @@ export const RARITIES: Record<
   Rarity,
   { label: string; gems: number; color: string; description: string }
 > = {
-  commune: {
-    label: "Commune",
-    gems: 1,
-    color: "#8e8e93",
-    description: "La carte de toutes tes sorties. Mate, sobre, élégante.",
-  },
   rare: {
     label: "Rare",
     gems: 2,

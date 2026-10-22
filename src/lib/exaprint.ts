@@ -49,7 +49,7 @@ export const DEFAULT_SETTINGS: PrintSettings = {
 
 const PT_PER_MM = 72 / 25.4
 
-/** Which spot colour a card's foil uses, or null for a Standard card. */
+/** Which spot colour a card's foil uses (Or → gold, Holo → holographic). */
 export function foilSpot(card: CardData, s: PrintSettings) {
   if (card.rarity === "legendaire") return { name: s.spotGold, cmyk: [0, 0.25, 0.7, 0.15] }
   if (card.rarity === "rare" || card.rarity === "epique") return { name: s.spotHolo, cmyk: [0.25, 0, 0.05, 0] }
@@ -324,7 +324,7 @@ const slug = (s: string) =>
     .replace(/^-|-$/g, "")
 
 export const setFolder = (set: PrintSet) =>
-  `Set-${String(set.index).padStart(2, "0")}_${slug(set.finish) || "Standard"}_${set.orders.length}-variantes_x${set.qty}`
+  `Set-${String(set.index).padStart(2, "0")}_${slug(set.finish) || "Holo"}_${set.orders.length}-variantes_x${set.qty}`
 
 export const cardFileName = (o: BatchOrder, i: number, part?: "impression" | "dorure") =>
   `${String(i + 1).padStart(2, "0")}_${slug(o.reference)}${part ? `_${part}` : ""}.pdf`
@@ -365,7 +365,6 @@ export function readme(sets: PrintSet[], s: PrintSettings, cmykName?: string) {
     s.foilMode === "separate"
       ? [
           "Dorure : fichier separe *_dorure.pdf (recto, verso), elements vectoriels en noir 100 % K, meme format et memes reperes que *_impression.pdf.",
-          "Cartes Standard : un seul fichier, sans dorure.",
         ]
       : [`Dorure : calque "Acabado", couleur directe "${s.spotGold}" (Or) ou "${s.spotHolo}" (Holo), surimpression activee.`]
   const lines = [

@@ -1,6 +1,6 @@
 # TrailDex
 
-Site et petite entreprise de **cartes de collection pour traileurs** : le coureur importe le GPX de sa course, personnalise sa carte (prénom, course, chrono, classement, photo), la voit en 3D holographique, la précommande (Standard / Holo / Or-Légendaire), et peut la partager gratuitement sur Instagram et Strava.
+Site et petite entreprise de **cartes de collection pour traileurs** : le coureur importe le GPX de sa course, personnalise sa carte (prénom, course, chrono, classement, photo), la voit en 3D holographique, la précommande (Holo / Or-Légendaire ; la Standard a été retirée le 22/10/2026), et peut la partager gratuitement sur Instagram et Strava.
 
 Fondateur : Thibault Muller. **Il garde la main sur tout ce qui touche au monde réel.**
 

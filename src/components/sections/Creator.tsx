@@ -76,7 +76,6 @@ function Panel({ step, title, children, aside }: { step: string; title: string; 
 }
 
 const FINISH_SWATCH: Record<Finish, string> = {
-  standard: "linear-gradient(160deg,#fdfcf9,#e7e2d6)",
   holo: "linear-gradient(110deg,#ff8ad8,#ffd36e,#8cff9e,#6ee7ff,#9a8cff,#ff8ad8)",
   or: "linear-gradient(135deg,#f9e3a3,#c99332 50%,#fff1c4 70%,#a86b1f)",
 }
@@ -399,7 +398,7 @@ export function Creator() {
             </Panel>
 
             <Panel step="3" title="Ta finition">
-              <div role="radiogroup" aria-label="Finition" className="grid gap-3 sm:grid-cols-3">
+              <div role="radiogroup" aria-label="Finition" className="grid gap-3 sm:grid-cols-2">
                 {FINISHES.map((f) => {
                   const active = f.id === finish
                   return (

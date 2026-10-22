@@ -1,5 +1,5 @@
-export type Rarity = "commune" | "rare" | "epique" | "legendaire"
-export type Finish = "standard" | "holo" | "or"
+export type Rarity = "rare" | "epique" | "legendaire"
+export type Finish = "holo" | "or"
 
 export type CardData = {
   id: string
@@ -30,7 +30,6 @@ export const effortKm = (km: number | null, gain: number | null) =>
   (km ?? 0) + (gain ?? 0) / 100
 
 export function rarityFor(finish: Finish, km: number | null, gain: number | null): Rarity {
-  if (finish === "standard") return "commune"
   if (finish === "or") return "legendaire"
   return effortKm(km, gain) >= 60 ? "epique" : "rare"
 }

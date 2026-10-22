@@ -10,7 +10,8 @@ const STARTER = [DEMO_CARDS[1], DEMO_CARDS[3]]
 function load(): CardData[] {
   try {
     const raw = localStorage.getItem(KEY)
-    if (raw) return JSON.parse(raw)
+    // Cards saved before the Standard finish was dropped were "commune": show them as Rare.
+    if (raw) return (JSON.parse(raw) as CardData[]).map((c) => ((c.rarity as string) === "commune" ? { ...c, rarity: "rare" } : c))
   } catch {
     /* private mode or corrupt data: fall back to the starter set */
   }
