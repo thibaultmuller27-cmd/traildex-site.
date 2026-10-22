@@ -55,3 +55,7 @@ Outil : `/print.html` (section « Export Exaprint »).
 - Mode « Calque Acabado » (ancien) : la dorure dans le même PDF, sur un calque « Acabado » en couleur directe (nom réglable), surimpression activée.
 - Contrôles faits sur les fichiers : traits de dorure ≥ 0,62 pt (min. 0,5 pt), dorure à ≥ 3,4 mm de la coupe (min. 2 mm), textes dans la zone de sécurité de 3 mm.
 - Lot : dans Airtable, vue « À imprimer » → Télécharger CSV → déposer le fichier dans l'outil → un .zip avec un dossier par Set (≤ 20 cartes de même finition et quantité), `bordereau.pdf` (qui reçoit quelle carte) et `LISEZ-MOI.txt`. La référence de commande est imprimée en petit au verso.
+
+## Factures
+
+Processus complet : `docs/facturation.md`. Outil : `/print.html`, section « Factures » (CSV de la table Factures → PDF + livre des recettes). Les coordonnées du vendeur sont dans `COMPANY` (`src/lib/config.ts`) ; tant que le SIRET manque, les PDF sont marqués « SPÉCIMEN ».

@@ -53,3 +53,17 @@ export const RARITIES: Record<
 
 export const formatPrice = (n: number) =>
   n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+
+/**
+ * The seller, as printed on invoices. Until the business is registered
+ * (no SIRET yet), invoices come out as specimens.
+ */
+export const COMPANY = {
+  name: "Thibault Muller",
+  tradeName: "TrailDex",
+  legalForm: "Entrepreneur individuel (EI)",
+  address: "", // ADRESSE À COMPLÉTER
+  siret: "", // SIRET À COMPLÉTER après l'immatriculation
+  email: "", // E-MAIL À COMPLÉTER
+  vatMention: "TVA non applicable, art. 293 B du CGI",
+}

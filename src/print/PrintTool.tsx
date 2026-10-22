@@ -14,6 +14,7 @@ import { CSS_FOIL } from "@/components/ui/holo-card"
 import type { CardData } from "@/lib/card"
 import { RARITIES } from "@/lib/config"
 import { ExaprintPanel } from "./ExaprintPanel"
+import { InvoicePanel } from "./InvoicePanel"
 
 const STORAGE_KEY = "traildex.print"
 type Layout = "bleed" | "a4"
@@ -190,6 +191,7 @@ export function PrintTool() {
         </div>
         {error && <p className="mt-2 text-[14px] text-[#e30000]">{error}</p>}
         <ExaprintPanel card={card} />
+        <InvoicePanel />
       </div>
 
       {card &&

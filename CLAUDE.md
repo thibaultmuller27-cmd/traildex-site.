@@ -11,7 +11,7 @@ Ne jamais contacter un acteur externe réel (fournisseur, imprimeur, client, org
 ## Où sont les choses
 
 - Code : React + Vite + Tailwind (`src/`), fonction serveur de précommande `functions/api/preorder.ts` (Cloudflare Pages → Airtable).
-- Commandes : Airtable, base TrailDex `appFtEAvDkYtjLleM`, table Commandes `tbl4QdVEf4WWnoE4P`.
+- Commandes : Airtable, base TrailDex `appFtEAvDkYtjLleM`, table Commandes `tbl4QdVEf4WWnoE4P`, Factures `tblnHe0PLIy4tyDMe`, Achats `tbltV5C5VnJiuuowM`. Processus de facturation : `docs/facturation.md`.
 - Impression : outil `/print.html` (PDF par carte, calque de dorure « Acabado », lots en Sets pour Exaprint). Voir `README.md`.
 - Pilotage : Notion, page « TrailDex — Direction » (rapports CEO hebdomadaires + base « Décisions »).
 - Historique et état du projet : `docs/journal-projet.md` (à lire en début de session, à mettre à jour après chaque étape importante).

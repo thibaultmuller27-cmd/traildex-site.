@@ -31,6 +31,11 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Étude `docs/finance/prix-de-revient.md` (22/10) : marges par niveau selon le coût d'impression. **Inconnue décisive : quantité minimale par variante dans les Sets Exaprint** (cartes uniques). Brouillon de 4 questions pour Exaprint inclus, non envoyé.
 - Airtable : seule la commande de test « Camille » (TD-EXEMPLE).
 
+### Facturation (22/10)
+- Airtable : tables **Factures** (numéro F-AAAA-0001 / AV-AAAA-0001, avoirs, paiement) et **Achats** (registre des achats) créées ; lien Commande ↔ Facture.
+- `/print.html` → section Factures : CSV de la table Factures → PDF par facture + `livre-des-recettes.csv` (totaux mensuels). Spécimens tant que `COMPANY` (SIRET, adresse, e-mail) n'est pas rempli dans `src/lib/config.ts`.
+- **À faire par Thibault** : créer et activer l'automatisation « Commande payée → facture » (pas d'outil pour la créer depuis Claude) et passer les champs Total au format monétaire. Détail : `docs/facturation.md`.
+
 ### Juridique
 - Étude `docs/juridique/etude-statut-frontalier.md` : micro-entreprise française recommandée, cotisations à la CCSS Luxembourg (dispense possible sous ≈ 11 085 €/an), télétravail salarié à garder < 25 %, pas de société au Luxembourg, Legalstart non nécessaire (INPI gratuit). **À valider avec un expert-comptable frontaliers.**
 
