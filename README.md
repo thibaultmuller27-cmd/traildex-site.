@@ -48,7 +48,7 @@ En local, `npm run dev` affiche le site mais pas l'API. Pour tester l'envoi : `n
 Outil : `/print.html` (section « Export Exaprint »).
 
 - Produit Exaprint : carte de visite, format personnalisé **63 × 88 mm**, recto verso, option **Sets** (jusqu'à 20 variantes, même quantité par variante).
-- Chaque carte = PDF 2 pages (recto, verso), échelle 1:1, fond perdu réglable, illustration à 600 dpi.
+- Chaque carte = PDF 2 pages (recto, verso), échelle 1:1, fond perdu réglable. **Textes en vectoriel** (polices Inter et JetBrains Mono intégrées, fichiers TTF dans `public/fonts/`, licence OFL) ; fond, courbes et tracé en image à 600 dpi.
 - **Couleurs CMJN** : l'outil convertit l'illustration avec un profil ICC (LittleCMS, `src/lib/cmyk.ts`) et l'intègre au PDF comme profil de sortie. Profil conseillé : `ISOcoated_v2_300_eci.icc` (archive « ECI Offset 2009 », gratuite sur eci.org), à choisir une fois dans l'outil ; il est gardé dans le navigateur, pas dans le dépôt (licence). L'outil affiche l'encrage maximal (doit rester ≤ 300 %). Sans profil, le PDF reste en RVB.
 - **Dorure, mode « Fichier séparé » (par défaut, guide Exaprint France)** : pour les cartes Holo et Or, un second PDF `*_dorure.pdf` avec uniquement les éléments à dorer, en vecteurs noir 100 % K, mêmes dimensions et repères que `*_impression.pdf`. Or → légendaire, Holo → rare/épique : toutes les cartes ont un fichier de dorure.
 - Mode « Calque Acabado » (ancien) : la dorure dans le même PDF, sur un calque « Acabado » en couleur directe (nom réglable), surimpression activée.
