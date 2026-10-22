@@ -38,6 +38,10 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - Logiciel de facturation (étude `docs/finance/logiciels-facturation.md`, 22/10) : **Abby** recommandé (plateforme agréée, gratuit, API + Make/Airtable), **Tiime** en secours. Ouvrir le compte gratuit dès le SIREN (réception obligatoire). Une seule numérotation : celle du logiciel dès la première vraie vente (notre générateur reste pour les spécimens/tests). Nouvelle mention TVA « art. L. 233-3 du CIBS » au 01/01/2027 (à confirmer). Fonctions URSSAF du logiciel à ignorer (cotisations CCSS).
 
+### Business model (22/10)
+- Étude des 4 agents : `docs/etude-modeles/` (00-synthese + marché, finances, commercial, opérations). Page Notion « Étude business model — B2C, B2B ou hybride » sous Direction.
+- **Recommandation : démarrer en B2B (éditions de cartes vendues aux organisateurs, 2,50–3 € HT/carte, forfait min. 200 €, acompte 30 %) avec un QR code vers la carte personnalisée, sans remise.** B2C ouvert seulement via QR/communauté, pas de pub. Plan 90 jours jusqu'au 20/01/2027, critère d'arrêt : < 2 bons de commande sur ≈ 25 contacts chauds fin février. Décision à valider dans Notion.
+
 ### Juridique
 - Étude `docs/juridique/etude-statut-frontalier.md` : micro-entreprise française recommandée, cotisations à la CCSS Luxembourg (dispense possible sous ≈ 11 085 €/an), télétravail salarié à garder < 25 %, pas de société au Luxembourg, Legalstart non nécessaire (INPI gratuit). **À valider avec un expert-comptable frontaliers.**
 
