@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "mcp__Gmail__send_message",
+      "mcp__Gmail__reply",
+      "mcp__Gmail__forward",
+      "mcp__Gmail__trash_message",
+      "mcp__Gmail__trash_thread",
+      "mcp__Gmail__delete_draft",
+      "mcp__Gmail__delete_label",
+      "mcp__Gmail__mark_message_spam",
+      "mcp__Gmail__mark_thread_spam",
+
+      "mcp__Airtable__create_records_for_table",
+      "mcp__Airtable__update_records_for_table",
+      "mcp__Airtable__delete_records_for_table",
+      "mcp__Airtable__delete_table",
+      "mcp__Airtable__create_automation",
+      "mcp__Airtable__update_automation",
+      "mcp__Airtable__delete_automation",
+      "mcp__Airtable__test_automation_webhook_trigger",
+      "mcp__Airtable__submit_form",
+      "mcp__Airtable__publish_form",
+      "mcp__Airtable__publish_interface",
+      "mcp__Airtable__revert_action",
+
+      "mcp__Notion__notion-calendar-create-events",
+      "mcp__Notion__notion-calendar-update-events",
+      "mcp__Notion__notion-calendar-cancel-events",
+      "mcp__Notion__notion-send-message-to-session",
+      "mcp__Notion__notion-spawn-session",
+      "mcp__Notion__notion-delete-pages",
+      "mcp__Notion__notion-delete-databases",
+
+      "mcp__github__merge_pull_request",
+      "mcp__github__enable_pr_auto_merge",
+      "mcp__github__delete_file",
+      "mcp__github__create_repository",
+      "mcp__github__fork_repository",
+      "mcp__github__actions_run_trigger",
+
+      "mcp__claude-code-remote__create_trigger",
+      "mcp__claude-code-remote__update_trigger",
+      "mcp__claude-code-remote__delete_trigger",
+      "mcp__claude-code-remote__fire_trigger",
+      "mcp__claude-code-remote__send_message",
+      "mcp__claude-code-remote__create_session",
+
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push origin --delete:*)"
+    ]
+  }
+}
