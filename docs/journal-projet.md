@@ -18,7 +18,7 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Imprimeur visé : **Exaprint**, produit « Carte de visite dorure à chaud », option **Sets** (≤ 20 variantes, même quantité).
 - Contrainte découverte : avec dorure, format personnalisé limité à **40–55 mm × 55–95 mm** → 63 × 88 mm impossible en dorure. Question posée à trancher : demander le 63 × 88 avec dorure à Exaprint, sinon 55 × 77 mm, ou un autre imprimeur (MakePlayingCards) pour Or/Holo.
 - Export `/print.html` (revu le 22/10, conforme au guide Exaprint France) : par carte, un PDF d'impression **CMJN** (profil ISO Coated v2 300 %, encrage max ≈ 297 %) + un PDF de **dorure séparé en 100 % K vectoriel** pour Holo/Or. Ancien mode calque « Acabado » gardé en option. Testé de bout en bout. **À confirmer avec le gabarit Exaprint** : fond perdu exact et profil ICC attendu. Textes de 3 à 4 pt au verso (libellés, sceau) : lisibles en numérique mais sous les 6 pt souvent conseillés.
-- 22/10 : fichiers test 55 × 85 mm (cartes démo Or « Grand Raid du Mercantour » et Holo « Crêtes Vosgiennes », CMJN 600 dpi + dorure 100 % K) envoyés à Thibault ; brouillon Gmail Exaprint mis à jour avec 5 questions. Pièces jointes à ajouter par Thibault (trop lourdes pour l'outil Gmail). Régénérables dans /print.html (format 55 × 85, fond perdu 3).
+- 22/10 : fichiers test 55 × 85 mm (cartes démo Or « Grand Raid du Mercantour » et Holo « Crêtes Vosgiennes », CMJN 600 dpi + dorure 100 % K) envoyés à Thibault ; brouillon Gmail Exaprint recentré sur les cartes finisher (vérification des fichiers + demande de 2 exemplaires test, un holo et un or). Pièces jointes à ajouter par Thibault (trop lourdes pour l'outil Gmail). Régénérables dans /print.html (format 55 × 85, fond perdu 3).
 - Maquette réalisée sur la course de Thibault (UTDP · Trail Alsace, 112,65 km, 3 927 m D+, 22 h 11). Nom exact de la course et classement : à confirmer par Thibault.
 
 ### Organisation (agents)
@@ -41,7 +41,7 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 ### Business model (22/10)
 - Étude des 4 agents : `docs/etude-modeles/` (00-synthese + marché, finances, commercial, opérations). Page Notion « Étude business model — B2C, B2B ou hybride » sous Direction.
-- **Recommandation : démarrer en B2B (éditions de cartes vendues aux organisateurs, 2,50–3 € HT/carte, forfait min. 200 €, acompte 30 %) avec un QR code vers la carte personnalisée, sans remise.** B2C ouvert seulement via QR/communauté, pas de pub. Plan 90 jours jusqu'au 20/01/2027, critère d'arrêt : < 2 bons de commande sur ≈ 25 contacts chauds fin février. Décision à valider dans Notion.
+- **Recommandation : démarrer en B2B (éditions de cartes vendues aux organisateurs, 2,50–3 € HT/carte, forfait min. 200 €, acompte 30 %) avec un QR code vers la carte personnalisée, sans remise.** B2C ouvert seulement via QR/communauté, pas de pub. Plan 90 jours jusqu'au 20/01/2027, critère d'arrêt : < 2 bons de commande sur ≈ 25 contacts chauds fin février. **Validé par Thibault le 22/10 : on commence par les cartes finisher pour les organisateurs, le personnalisé viendra ensuite.**
 
 ### Juridique
 - Étude `docs/juridique/etude-statut-frontalier.md` : micro-entreprise française recommandée, cotisations à la CCSS Luxembourg (dispense possible sous ≈ 11 085 €/an), télétravail salarié à garder < 25 %, pas de société au Luxembourg, Legalstart non nécessaire (INPI gratuit). **À valider avec un expert-comptable frontaliers.**
