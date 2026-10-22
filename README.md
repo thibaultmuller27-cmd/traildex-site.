@@ -17,7 +17,6 @@ npm run build    # build de production dans dist/
 | **Prix des finitions** (provisoires) | `src/lib/config.ts` |
 | Raretés, couleurs, descriptions | `src/lib/config.ts`, `src/components/TrailCard.tsx` (`THEMES`) |
 | Cartes de démo (galerie) | `src/lib/demo.ts` |
-| Niveaux, XP, badges | `src/lib/progress.ts` |
 | FAQ | `src/components/sections/Faq.tsx` |
 
 ## Notes techniques
