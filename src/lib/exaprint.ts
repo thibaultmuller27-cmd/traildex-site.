@@ -1,30 +1,22 @@
 /**
  * Print files for Exaprint (hot-foil business card, custom size).
  *
- * Per card, two pages (front, back), 1:1 scale with bleed. The artwork is a
- * 600 dpi image, converted to CMYK with the printer's ICC profile when one is
- * given. Text is real vector text in the embedded card typefaces (Inter,
- * JetBrains Mono), so it stays sharp at any zoom. The foil is real vector
- * artwork, either:
+ * Per card, two pages (front, back), 1:1 scale with bleed. The whole card is
+ * vector: the drawing code of the live card (cardCanvas.ts) runs on a
+ * PdfCanvas, which writes paths, gradients and text in the embedded card
+ * typefaces (Inter, JetBrains Mono), in CMYK through the printer's ICC profile
+ * when one is given. Only a runner's photo is a bitmap. The foil is vector
+ * artwork too, either:
  * - "separate" (Exaprint's French file guide): a second PDF with the foil
  *   shapes only, in 100 % K, same size and boxes as the print file;
  * - "layer": in the print file, a spot colour on a layer called "Acabado",
  *   with overprint on.
  */
 import fontkit from "@pdf-lib/fontkit"
-import {
-  PDFDocument,
-  type PDFFont,
-  PDFName,
-  PDFString,
-  StandardFonts,
-  cmyk as pdfCmyk,
-  rgb,
-  type PDFPage,
-  type PDFRef,
-} from "pdf-lib"
+import { PDFDocument, PDFName, PDFString, StandardFonts, rgb, type PDFPage, type PDFRef } from "pdf-lib"
 import type { CmykProfile } from "./cmyk"
-import { drawCardBack, drawCardFront, loadCardFonts, type BackGeometry, type FrontGeometry } from "./cardCanvas"
+import { drawCardBack, drawCardFront, type BackGeometry, type FrontGeometry } from "./cardCanvas"
+import { embedCardFonts, PdfCanvas } from "./pdfCanvas"
 import type { CardData } from "./card"
 
 export type FoilMode = "separate" | "layer"
@@ -61,76 +53,6 @@ export function foilSpot(card: CardData, s: PrintSettings) {
   return null
 }
 
-/** A piece of text the card drew, captured to be written as vector text. */
-type TextOp = { text: string; x: number; y: number; size: number; weight: number; mono: boolean; color: string; alpha: number; align: "left" | "right" | "center" }
-
-type Raster = { canvas: HTMLCanvasElement; front?: FrontGeometry; back?: BackGeometry; pxPerMm: number; texts: TextOp[] }
-
-/**
- * Lets the card draw as usual, but takes over its fillText calls: plain-colour
- * text is recorded (position after transforms, font, colour) instead of being
- * rasterised. Anything unusual (gradient fill, other baseline) is drawn as before.
- */
-function captureText(ctx: CanvasRenderingContext2D, texts: TextOp[]) {
-  const draw = ctx.fillText.bind(ctx)
-  ctx.fillText = (text: string, x: number, y: number, maxWidth?: number) => {
-    const font = ctx.font.match(/(\d+|bold|normal)\s+([\d.]+)px\s+(.+)/)
-    const m = ctx.getTransform()
-    if (!font || typeof ctx.fillStyle !== "string" || ctx.textBaseline !== "alphabetic" || m.b || m.c || maxWidth !== undefined) {
-      draw(text, x, y, maxWidth)
-      return
-    }
-    const align = ctx.textAlign === "right" || ctx.textAlign === "end" ? "right" : ctx.textAlign === "center" ? "center" : "left"
-    texts.push({
-      text,
-      x: m.a * x + m.e,
-      y: m.d * y + m.f,
-      size: +font[2] * m.a,
-      weight: font[1] === "bold" ? 700 : font[1] === "normal" ? 400 : +font[1],
-      mono: /JetBrains/i.test(font[3]),
-      color: ctx.fillStyle,
-      alpha: ctx.globalAlpha,
-      align,
-    })
-  }
-}
-
-async function rasterFace(card: CardData, side: "front" | "back", s: PrintSettings, reference?: string): Promise<Raster> {
-  const pxPerMm = s.dpi / 25.4
-  const bleed = s.bleedMm * pxPerMm
-  const canvas = document.createElement("canvas")
-  canvas.width = Math.round((s.widthMm + 2 * s.bleedMm) * pxPerMm)
-  canvas.height = Math.round((s.heightMm + 2 * s.bleedMm) * pxPerMm)
-  const ctx = canvas.getContext("2d")!
-  const w = s.widthMm * pxPerMm
-  const h = s.heightMm * pxPerMm
-  const opts = { print: true, bleed, h }
-  const out: Raster = { canvas, pxPerMm, texts: [] }
-  captureText(ctx, out.texts)
-  if (side === "front") out.front = await drawCardFront(ctx, card, bleed, bleed, w, opts)
-  else out.back = await drawCardBack(ctx, card, bleed, bleed, w, { ...opts, reference })
-  return out
-}
-
-/** Draws the face as an RGB JPEG, or as a CMYK image through the ICC profile. Returns the max ink, in %. */
-async function drawArtwork(doc: PDFDocument, page: PDFPage, canvas: HTMLCanvasElement, cmyk?: CmykProfile) {
-  const { width: wPt, height: hPt } = page.getSize()
-  if (!cmyk) {
-    const blob = await new Promise<Blob>((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error("toBlob"))), "image/jpeg", 0.92))
-    page.drawImage(await doc.embedJpg(new Uint8Array(await blob.arrayBuffer())), { x: 0, y: 0, width: wPt, height: hPt })
-    return undefined
-  }
-  const px = canvas.getContext("2d")!.getImageData(0, 0, canvas.width, canvas.height).data
-  const { cmyk: data, maxInk } = cmyk.convert(px)
-  const ctx = doc.context
-  const img = ctx.register(
-    ctx.flateStream(data, { Type: "XObject", Subtype: "Image", Width: canvas.width, Height: canvas.height, ColorSpace: "DeviceCMYK", BitsPerComponent: 8 }),
-  )
-  const name = page.node.newXObject("Im", img)
-  page.node.addContentStream(ctx.register(ctx.flateStream(`q ${wPt.toFixed(3)} 0 0 ${hPt.toFixed(3)} 0 0 cm ${name} Do Q`)))
-  return maxInk
-}
-
 let fontBytes: Promise<Record<string, ArrayBuffer>> | null = null
 
 /** The card typefaces as TTF (public/fonts, SIL Open Font License). */
@@ -143,55 +65,6 @@ function loadFontBytes() {
     }),
   ).then(Object.fromEntries)
   return fontBytes
-}
-
-type Fonts = { pick: (op: TextOp) => PDFFont; clean: (font: PDFFont, text: string) => string }
-
-async function embedFonts(doc: PDFDocument): Promise<Fonts> {
-  doc.registerFontkit(fontkit)
-  const bytes = await loadFontBytes()
-  const [medium, semibold, bold, mono] = await Promise.all(
-    ["Inter-Medium", "Inter-SemiBold", "Inter-Bold", "JetBrainsMono-Medium"].map((n) => doc.embedFont(bytes[n], { subset: true })),
-  )
-  const charsets = new Map<PDFFont, Set<number>>()
-  const has = (font: PDFFont, c: string) => {
-    if (!charsets.has(font)) charsets.set(font, new Set(font.getCharacterSet()))
-    return charsets.get(font)!.has(c.codePointAt(0)!)
-  }
-  return {
-    pick: (op) => (op.mono ? mono : op.weight >= 700 ? bold : op.weight >= 600 ? semibold : medium),
-    // French number formatting uses narrow no-break spaces that JetBrains Mono lacks.
-    clean: (font, text) => [...text].map((c) => (has(font, c) ? c : /\s/.test(c) ? (has(font, "\u00a0") ? "\u00a0" : " ") : "?")).join(""),
-  }
-}
-
-/** "#rrggbb" or "rgba(r, g, b, a)" → [r, g, b, a]. */
-function parseColor(c: string): [number, number, number, number] {
-  const hex = c.match(/^#([0-9a-f]{6})$/i)
-  if (hex) return [0, 2, 4].map((i) => parseInt(hex[1].slice(i, i + 2), 16)).concat(1) as [number, number, number, number]
-  const m = c.match(/rgba?\(([^)]+)\)/)
-  if (!m) return [0, 0, 0, 1]
-  const [r, g, b, a = "1"] = m[1].split(",").map((v) => v.trim())
-  return [+r, +g, +b, +a]
-}
-
-function drawTexts(page: PDFPage, texts: TextOp[], pxPerMm: number, fonts: Fonts, cmyk?: CmykProfile) {
-  const toPt = (px: number) => (px / pxPerMm) * PT_PER_MM
-  const pageH = page.getSize().height
-  for (const op of texts) {
-    const font = fonts.pick(op)
-    const text = fonts.clean(font, op.text)
-    const size = toPt(op.size)
-    const width = font.widthOfTextAtSize(text, size)
-    const x = toPt(op.x) - (op.align === "right" ? width : op.align === "center" ? width / 2 : 0)
-    const [r, g, b, a] = parseColor(op.color)
-    let color = rgb(r / 255, g / 255, b / 255)
-    if (cmyk) {
-      const k = cmyk.convert(new Uint8ClampedArray([r, g, b, 255])).cmyk
-      color = pdfCmyk(k[0] / 255, k[1] / 255, k[2] / 255, k[3] / 255) as unknown as typeof color
-    }
-    page.drawText(text, { x, y: pageH - toPt(op.y), size, font, color, opacity: a * op.alpha })
-  }
 }
 
 /** PDF/X-style output intent: tells the printer which press condition the CMYK targets. */
@@ -354,10 +227,10 @@ function addTrimmedPage(doc: PDFDocument, s: PrintSettings) {
 
 /** One card → its Exaprint files (one "Set" variant). */
 export async function buildCardFiles(card: CardData, s: PrintSettings, reference?: string, cmyk?: CmykProfile): Promise<CardFiles> {
-  await loadCardFonts()
   const doc = await newDoc(card, reference)
   if (cmyk) addOutputIntent(doc, cmyk)
-  const fonts = await embedFonts(doc)
+  doc.registerFontkit(fontkit)
+  const fonts = await embedCardFonts(doc, await loadFontBytes())
   const spot = foilSpot(card, s)
   const foilDoc = spot && s.foilMode === "separate" ? await newDoc(card, reference) : null
   let ocg: PDFRef | null = null
@@ -367,17 +240,26 @@ export async function buildCardFiles(card: CardData, s: PrintSettings, reference
     doc.catalog.set(PDFName.of("OCProperties"), ctx.obj({ OCGs: [ocg], D: { Order: [ocg], ON: [ocg] } }))
   }
   let maxInk: number | undefined
+  // The card is drawn in pixels at the export resolution (as the raster
+  // renderer did), each pixel mapped to its exact size in points.
+  const pxPerMm = s.dpi / 25.4
+  const b = s.bleedMm * pxPerMm
+  const w = s.widthMm * pxPerMm
+  const opts = { print: true, bleed: b, h: s.heightMm * pxPerMm }
 
   for (const side of ["front", "back"] as const) {
-    const r = await rasterFace(card, side, s, reference)
     const page = addTrimmedPage(doc, s)
-    const ink = await drawArtwork(doc, page, r.canvas, cmyk)
-    if (ink !== undefined) maxInk = Math.max(maxInk ?? 0, ink)
-    drawTexts(page, r.texts, r.pxPerMm, fonts, cmyk)
+    // The card's top-left corner sits at the bleed.
+    const pc = new PdfCanvas(doc, page, fonts, cmyk, s.dpi, PT_PER_MM / pxPerMm)
+    const ctx = pc as unknown as CanvasRenderingContext2D
+    const front = side === "front" ? await drawCardFront(ctx, card, b, b, w, opts) : null
+    const back = side === "back" ? await drawCardBack(ctx, card, b, b, w, { ...opts, reference }) : null
+    pc.finish()
+    if (cmyk) maxInk = Math.max(maxInk ?? 0, pc.maxInk)
     if (!spot) continue
-    const o = new Ops(r.pxPerMm, page.getSize().height)
-    if (r.front) frontFoil(o, r.front, card)
-    if (r.back) backFoil(o, r.back)
+    const o = new Ops(pxPerMm, page.getSize().height)
+    if (front) frontFoil(o, front, card)
+    if (back) backFoil(o, back)
     const ops = o.parts.join("\n")
     if (ocg) addFoilLayer(doc, page, ops, spot, ocg)
     if (foilDoc) {

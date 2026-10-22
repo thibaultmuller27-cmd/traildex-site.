@@ -1,7 +1,8 @@
 /**
  * Draws TrailDex cards with Canvas 2D, from the same data and colours as the
- * live card. Used for the share images and for the print files. Route and
- * profile reuse the card's SVG path data through Path2D.
+ * live card. Used for the share images and, through PdfCanvas (pdfCanvas.ts),
+ * for the vector print files. Route and profile reuse the card's SVG path
+ * data (M/L/Z commands), traced point by point so both targets understand it.
  */
 import { THEMES } from "@/components/TrailCard"
 import { RARITIES } from "./config"
@@ -54,6 +55,19 @@ function spaced(ctx: CanvasRenderingContext2D, text: string, x: number, y: numbe
   return width
 }
 
+/** Traces an M/L/Z SVG path, mapped through (ox, oy, sx, sy), as the current path. */
+function tracePath(ctx: CanvasRenderingContext2D, d: string, ox = 0, oy = 0, sx = 1, sy = 1) {
+  ctx.beginPath()
+  const re = /([MLZ])\s*([-\d.]+)?[\s,]*([-\d.]+)?/gi
+  let m: RegExpExecArray | null
+  while ((m = re.exec(d))) {
+    const c = m[1].toUpperCase()
+    if (c === "Z") ctx.closePath()
+    else if (c === "M") ctx.moveTo(ox + +m[2] * sx, oy + +m[3] * sy)
+    else ctx.lineTo(ox + +m[2] * sx, oy + +m[3] * sy)
+  }
+}
+
 function wrap(ctx: CanvasRenderingContext2D, text: string, maxW: number, maxLines: number) {
   const words = text.split(/\s+/)
   const lines: string[] = []
@@ -89,8 +103,9 @@ function topo(ctx: CanvasRenderingContext2D, seed: number, x: number, y: number,
     const cy = y + (0.2 + rnd() * 0.6) * h
     for (let r = 0.06; r < 0.7; r += 0.065) {
       ctx.beginPath()
-      for (let i = 0; i <= 48; i++) {
-        const a = (i / 48) * Math.PI * 2
+      // 160 points per contour: smooth even when the vector print file is zoomed.
+      for (let i = 0; i <= 160; i++) {
+        const a = (i / 160) * Math.PI * 2
         const m = 1 + 0.18 * Math.sin(3 * a + ph[0] + r * 5) + 0.1 * Math.cos(5 * a + ph[1])
         const px = cx + Math.cos(a) * r * size * m
         const py = cy + Math.sin(a) * r * size * m * 0.8
@@ -283,7 +298,6 @@ export async function drawCardFront(
     const ox = artX + (artW - 100 * s) / 2
     const oy = artTop + (artH - 100 * s) / 2
     geo.route = { ox, oy, s }
-    const route = new Path2D(card.routePath)
     ctx.save()
     ctx.translate(ox, oy)
     ctx.scale(s, s)
@@ -293,9 +307,10 @@ export async function drawCardFront(
     ctx.shadowBlur = 3 * u
     ctx.strokeStyle = t.route
     ctx.lineWidth = 1.3
-    ctx.stroke(route)
+    tracePath(ctx, card.routePath)
+    ctx.stroke()
     ctx.shadowBlur = 0
-    ctx.stroke(route)
+    ctx.stroke()
     if (card.start) {
       ctx.beginPath()
       ctx.arc(card.start[0], card.start[1], 2, 0, Math.PI * 2)
@@ -346,14 +361,14 @@ export async function drawCardFront(
     pf.addColorStop(0, hexA(t.profile, 0.45))
     pf.addColorStop(1, hexA(t.profile, 0))
     ctx.fillStyle = pf
-    ctx.fill(new Path2D(card.profileArea))
+    tracePath(ctx, card.profileArea)
+    ctx.fill()
     ctx.restore()
-    // The line is transformed path by path, so the pen is not stretched.
-    const line = new Path2D()
-    line.addPath(new Path2D(card.profileLine), new DOMMatrix().translate(x + pad, profTop).scale(artW / 100, profH / 30))
+    // The line's points are mapped, not the context, so the pen is not stretched.
+    tracePath(ctx, card.profileLine, x + pad, profTop, artW / 100, profH / 30)
     ctx.strokeStyle = t.profile
     ctx.lineWidth = Math.max(1.5, 0.35 * u)
-    ctx.stroke(line)
+    ctx.stroke()
   }
 
   // Stats
