@@ -39,6 +39,8 @@ La clé Airtable n'est jamais dans le code du site : elle est stockée comme sec
    - dossier de sortie : `dist`.
 3. Dans le projet Cloudflare → Settings → Variables and Secrets, ajoute le secret `AIRTABLE_TOKEN` avec le jeton, puis redéploie.
 
+Le site est en pause (page « Bientôt disponible », précommandes refusées) tant que la variable `SITE_OUVERT` ne vaut pas `oui` dans Cloudflare (Settings → Variables and secrets, puis redéployer) : voir `functions/_middleware.ts`.
+
 Les identifiants de la base et de la table sont dans `functions/api/preorder.ts`, ceux des champs dans `src/lib/preorder.ts` (renommer une colonne dans Airtable ne casse rien ; la supprimer, si).
 
 En local, `npm run dev` affiche le site mais pas l'API. Pour tester l'envoi : `npm run build && npx wrangler pages dev dist` avec un fichier `.dev.vars` contenant `AIRTABLE_TOKEN=...` (ne jamais le committer).
