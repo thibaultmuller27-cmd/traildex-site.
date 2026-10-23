@@ -16,7 +16,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 ### Paiement en ligne (23/10)
 - Stripe Checkout branché, **pas encore activé** : `functions/api/preorder.ts` ouvre le paiement si `STRIPE_SECRET_KEY` existe, `functions/api/stripe-webhook.ts` passe la commande **Payée** (+ champs Airtable créés : `Paiement Stripe`, `Payé le`, `Montant payé`) ou **Annulée** si la session expire. Écran « Merci pour ta commande » au retour. 15 tests (signature, prix serveur, statuts, pause) OK en local.
-- À faire par Thibault : compte Stripe (mode test), webhook, 2 secrets dans Cloudflare. Mode réel après SIREN + IBAN + CGV/mentions légales. Pas à pas : `docs/paiement-stripe.md`.
+- **Activé en mode test le 23/10** (compte Stripe « TrailDex », webhook vers `/api/stripe-webhook` avec 4 événements, secrets `STRIPE_SECRET_KEY` sk_test + `STRIPE_WEBHOOK_SECRET` dans Cloudflare ; jeton Airtable régénéré et passé en Secret). **Test réussi de bout en bout** : commande TD-L581LBDQ (Or, 24,90 €) payée avec la carte 4242 → Airtable Payée + pi_… + date + montant. Commandes de test à supprimer : TD-L2ME6F2V, TD-L5296NVT, TD-L581LBDQ. `GET /api/preorder` indique oui/non pour chaque réglage.
+- Reste avant le réel : Mode réel après SIREN + IBAN + CGV/mentions légales. Pas à pas : `docs/paiement-stripe.md`.
 
 ### Impression
 - Imprimeur visé : **Exaprint**, produit « Carte de visite dorure à chaud », option **Sets** (≤ 20 variantes, même quantité).
