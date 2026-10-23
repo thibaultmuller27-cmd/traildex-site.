@@ -35,7 +35,7 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 ### Édition course (23/10)
 - Modèle « carte finisher » pour les organisateurs dans `/print.html` (section Édition course) : GPX → carte identique pour tous, recto FINISHER + stats course, verso fiche + logos organisateur/partenaire + QR code (~12 mm, lisible) vers la page de la course. Export Exaprint vectoriel. Exemple : « Trail des Crêtes Vosgiennes, Édition 2027 ».
-- **Outil d'impression en ligne (privé)** : https://claude.ai/artifact/LtuVK93ipUN6rCrfubbnvT — même outil que `/print.html` (édition course, export Exaprint, factures), polices intégrées. Chaque téléchargement de PDF demande une confirmation. Pour du CMJN, choisir une fois le profil `ISOcoated_v2_300_eci.icc` (sinon export RVB). À republier depuis Claude après chaque modification de l'outil.
+- **Outil d'impression en ligne (privé)** : https://claude.ai/artifact/LtuVK93ipUN6rCrfubbnvT — même outil que `/print.html` (édition course, export Exaprint, factures), polices intégrées. Chaque téléchargement de PDF demande une confirmation. Pour du CMJN, choisir une fois le profil `ISOcoated_v2_300_eci.icc` (sinon export RVB). À republier depuis Claude après chaque modification de l'outil. **23/10 : décision de Thibault, l'outil reste privé** : retiré du build du site public (`vite.config.ts`), construit à part par `npm run build:outil`.
 
 ### Facturation (22/10)
 - Airtable : tables **Factures** (numéro F-AAAA-0001 / AV-AAAA-0001, avoirs, paiement) et **Achats** (registre des achats) créées ; lien Commande ↔ Facture.
