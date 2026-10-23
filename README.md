@@ -58,3 +58,11 @@ Outil : `/print.html` (section « Export Exaprint »).
 ## Factures
 
 Processus complet : `docs/facturation.md`. Outil : `/print.html`, section « Factures » (CSV de la table Factures → PDF + livre des recettes). Les coordonnées du vendeur sont dans `COMPANY` (`src/lib/config.ts`) ; tant que le SIRET manque, les PDF sont marqués « SPÉCIMEN ».
+
+## Édition course (cartes finisher pour les organisateurs)
+
+`/print.html`, section « Édition course » : GPX de la course, nom, date, lieu, édition (ex. « Édition 2027 »), nombre de cartes, finition Or ou Holo, logos de l'organisateur et du partenaire, lien du QR code (par défaut `https://traildex.fr/c/<nom-de-la-course>`). Aperçu recto/verso, puis « Utiliser cette carte pour l'export Exaprint ».
+
+- Recto : FINISHER au lieu de la rareté, distance, D+, altitude max, km-effort, nom de l'édition et nombre d'exemplaires.
+- Verso : fiche de course, logos sur pastilles blanches, QR code vectoriel d'environ 12 mm (vérifié lisible). Garder des liens courts : moins de modules, lecture plus facile.
+- Les logos sont des images (PNG, JPEG ou SVG) placées à la résolution d'export.

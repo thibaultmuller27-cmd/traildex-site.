@@ -179,6 +179,7 @@ function backFoil(o: Ops, g: BackGeometry) {
   o.polyline(g.logo)
   o.parts.push(`${o.px(0.55 * g.u)} w S`)
   // Authenticity seal ring: outer circle minus inner circle (even-odd fill)
+  if (!g.seal) return
   o.circle(g.seal.cx, g.seal.cy, g.seal.outer)
   o.circle(g.seal.cx, g.seal.cy, g.seal.inner)
   o.parts.push("f*")

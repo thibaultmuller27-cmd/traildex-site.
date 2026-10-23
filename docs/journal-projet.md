@@ -33,6 +33,9 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Étude `docs/finance/prix-de-revient.md` (22/10) : marges par niveau selon le coût d'impression. **Inconnue décisive : quantité minimale par variante dans les Sets Exaprint** (cartes uniques). Brouillon de 4 questions pour Exaprint inclus, non envoyé.
 - Airtable : seule la commande de test « Camille » (TD-EXEMPLE).
 
+### Édition course (23/10)
+- Modèle « carte finisher » pour les organisateurs dans `/print.html` (section Édition course) : GPX → carte identique pour tous, recto FINISHER + stats course, verso fiche + logos organisateur/partenaire + QR code (~12 mm, lisible) vers la page de la course. Export Exaprint vectoriel. Exemple : « Trail des Crêtes Vosgiennes, Édition 2027 ».
+
 ### Facturation (22/10)
 - Airtable : tables **Factures** (numéro F-AAAA-0001 / AV-AAAA-0001, avoirs, paiement) et **Achats** (registre des achats) créées ; lien Commande ↔ Facture.
 - `/print.html` → section Factures : CSV de la table Factures → PDF par facture + `livre-des-recettes.csv` (totaux mensuels). Spécimens tant que `COMPANY` (SIRET, adresse, e-mail) n'est pas rempli dans `src/lib/config.ts`.

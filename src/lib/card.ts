@@ -1,6 +1,25 @@
 export type Rarity = "rare" | "epique" | "legendaire"
 export type Finish = "holo" | "or"
 
+/**
+ * An organiser's edition: one card for the whole race, printed in series and
+ * handed to every finisher. Replaces the runner's own figures on the card.
+ */
+export type Edition = {
+  /** e.g. "Édition 2027" */
+  label: string
+  /** Town or area, shown on the back */
+  place?: string
+  /** Copies printed, shown as "300 EX." */
+  copies?: number
+  sponsorName?: string
+  /** Data URLs (PNG, JPEG or SVG) */
+  sponsorLogo?: string
+  organizerLogo?: string
+  /** Where the QR code leads: the race page to order a personalised card */
+  qrUrl?: string
+}
+
 export type CardData = {
   id: string
   runner: string
@@ -23,6 +42,7 @@ export type CardData = {
   rarity: Rarity
   number: number
   demo?: boolean
+  edition?: Edition
 }
 
 /** Kilomètre-effort: 1 km + 1 km per 100 m of climbing. */

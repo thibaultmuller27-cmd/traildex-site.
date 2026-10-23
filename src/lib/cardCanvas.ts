@@ -4,6 +4,7 @@
  * for the vector print files. Route and profile reuse the card's SVG path
  * data (M/L/Z commands), traced point by point so both targets understand it.
  */
+import QRCode from "qrcode"
 import { THEMES } from "@/components/TrailCard"
 import { RARITIES } from "./config"
 import { effortKm, fmtDate, fmtDuration, fmtInt, fmtKm, fmtPace, fmtRank, parseRank, type CardData, type Rarity } from "./card"
@@ -146,7 +147,8 @@ export type FrontGeometry = {
 export type BackGeometry = {
   u: number
   logo: [number, number][]
-  seal: { cx: number; cy: number; outer: number; inner: number }
+  /** The authenticity seal; organiser editions carry a QR code instead. */
+  seal: { cx: number; cy: number; outer: number; inner: number } | null
 }
 
 function fillBackground(
@@ -225,10 +227,12 @@ export async function drawCardFront(
   spaced(ctx, "TRAILDEX", lx + 4 * u, headY, 0.6 * u)
 
   const rarity = RARITIES[card.rarity]
+  const edition = card.edition
   ctx.font = `600 ${2.3 * u}px ${SANS}`
-  const label = rarity.label.toUpperCase()
+  // Organiser editions say FINISHER; the rarity gems belong to personal cards.
+  const label = (edition ? "FINISHER" : rarity.label).toUpperCase()
   const labelW = [...label].reduce((s, c) => s + ctx.measureText(c).width + 0.32 * u, 0)
-  const pillW = labelW + 4.4 * u + 4 * 2.8 * u
+  const pillW = labelW + 4.4 * u + (edition ? 0 : 4 * 2.8 * u)
   const pillH = 4.4 * u
   const pillX = x + w - pad - pillW
   const pillY = headY - 3.3 * u
@@ -241,7 +245,7 @@ export async function drawCardFront(
   } else ctx.fillStyle = t.pill
   ctx.fill()
   const gemColor = card.rarity === "legendaire" ? t.pillInk : rarity.color
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < (edition ? 0 : 4); i++) {
     const gx = pillX + 2.2 * u + i * 2.8 * u + 1.1 * u
     const gy = pillY + pillH / 2
     ctx.globalAlpha = i < rarity.gems ? 1 : 0.28
@@ -270,7 +274,9 @@ export async function drawCardFront(
   cy -= 7.6 * u
   ctx.fillStyle = t.sub
   ctx.font = `500 ${2.4 * u}px ${MONO}`
-  const dateLine = (fmtDate(card.date) + (card.maxEle != null ? ` · alt. ${fmtInt(card.maxEle)} m` : "")).toUpperCase()
+  const dateLine = (
+    fmtDate(card.date) + (edition?.place ? ` · ${edition.place}` : card.maxEle != null ? ` · alt. ${fmtInt(card.maxEle)} m` : "")
+  ).toUpperCase()
   spaced(ctx, dateLine, x + pad, cy + 4.4 * u, 0.38 * u)
 
   // Bottom block, measured from the card's foot like the live layout
@@ -374,11 +380,19 @@ export async function drawCardFront(
   // Stats
   ctx.fillStyle = t.line
   ctx.fillRect(x + pad, statsTop, artW, Math.max(1, 0.2 * u))
+  const effort = effortKm(card.distanceKm, card.gain)
   const stats: [string, string][] = [
     ["DIST.", card.distanceKm != null ? `${fmtKm(card.distanceKm)} km` : "— km"],
     ["D+", card.gain != null ? `${fmtInt(card.gain)} m` : "— m"],
-    ["CHRONO", fmtDuration(card.timeSec).replace(" h ", "h")],
-    ["CLASS.", fmtRank(card.rank)],
+    ...((edition
+      ? [
+          ["ALT. MAX", card.maxEle != null ? `${fmtInt(card.maxEle)} m` : "—"],
+          ["KM-EFFORT", effort ? String(Math.round(effort)) : "—"],
+        ]
+      : [
+          ["CHRONO", fmtDuration(card.timeSec).replace(" h ", "h")],
+          ["CLASS.", fmtRank(card.rank)],
+        ]) as [string, string][]),
   ]
   const colW = (artW - 3 * 2 * u) / 4
   stats.forEach(([k, v], i) => {
@@ -396,10 +410,11 @@ export async function drawCardFront(
   // Footer
   ctx.fillStyle = t.ink
   ctx.font = `600 ${3.6 * u}px ${SANS}`
-  ctx.fillText(card.runner || "", x + pad, footY)
+  ctx.fillText(edition ? edition.label : card.runner || "", x + pad, footY)
   ctx.fillStyle = t.sub
   ctx.font = `500 ${2.3 * u}px ${MONO}`
-  spaced(ctx, `NO. ${String(card.number).padStart(3, "0")}`, x + w - pad, footY, 0.32 * u, "right")
+  const footRight = edition ? (edition.copies ? `${fmtInt(edition.copies)} EX.` : "") : `NO. ${String(card.number).padStart(3, "0")}`
+  spaced(ctx, footRight, x + w - pad, footY, 0.32 * u, "right")
 
   if (print) {
     // The printer lays the real foil from the vector layer; nothing to fake.
@@ -493,9 +508,10 @@ export async function drawCardBack(
   ctx.fillStyle = t.ink
   ctx.font = `700 ${2.8 * u}px ${SANS}`
   spaced(ctx, "TRAILDEX", x + pad + 4 * u, headY, 0.6 * u)
+  const edition = card.edition
   ctx.fillStyle = t.sub
   ctx.font = `500 ${2.3 * u}px ${MONO}`
-  spaced(ctx, `NO. ${String(card.number).padStart(3, "0")}`, x + w - pad, headY, 0.32 * u, "right")
+  spaced(ctx, edition ? edition.label.toUpperCase() : `NO. ${String(card.number).padStart(3, "0")}`, x + w - pad, headY, 0.32 * u, "right")
 
   // Km-effort and photo
   const effort = effortKm(card.distanceKm, card.gain)
@@ -538,14 +554,23 @@ export async function drawCardBack(
   const rank = parseRank(card.rank)
   const speed = card.timeSec && card.distanceKm ? (card.distanceKm / (card.timeSec / 3600)).toFixed(1).replace(".", ",") : null
   const dPerKm = card.gain && card.distanceKm ? Math.round(card.gain / card.distanceKm) : null
-  const rows: [string, string][] = [
+  const rows: [string, string][] = edition
+    ? [
+        ["DISTANCE", card.distanceKm != null ? `${fmtKm(card.distanceKm)} km` : "—"],
+        ["DÉNIVELÉ POSITIF", card.gain != null ? `${fmtInt(card.gain)} m` : "—"],
+        ["D+ PAR KM", dPerKm ? `${dPerKm} m` : "—"],
+        ["POINT CULMINANT", card.maxEle != null ? `${fmtInt(card.maxEle)} m` : "—"],
+        ...(edition.place ? [["LIEU", edition.place] as [string, string]] : []),
+        ...(edition.copies ? [["FINISHERS", fmtInt(edition.copies)] as [string, string]] : []),
+      ]
+    : [
     ["COUREUR", card.runner || "—"],
     ["ALLURE MOYENNE", fmtPace(card.timeSec, card.distanceKm)],
     ["VITESSE", speed ? `${speed} km/h` : "—"],
     ["D+ PAR KM", dPerKm ? `${dPerKm} m` : "—"],
     ["POINT CULMINANT", card.maxEle != null ? `${fmtInt(card.maxEle)} m` : "—"],
     ["CLASSEMENT", rank ? `${fmtRank(card.rank)}${rank.total ? ` / ${fmtInt(rank.total)}` : ""}` : "—"],
-  ]
+      ]
   let ry = blockBottom + (card.photo ? 4 : 5) * u
   const rowH = 1.6 * u * 2 + 4.2 * u
   for (const [k, v] of rows) {
@@ -563,8 +588,14 @@ export async function drawCardBack(
     ctx.fillRect(x + pad, ry, w - 2 * pad, Math.max(1, 0.2 * u))
   }
 
-  // Foot: rarity and authenticity seal
   const footY = y + h - pad
+  if (edition) {
+    await drawEditionFoot(ctx, edition, t, x, w, pad, footY, u, opts.reference)
+    ctx.restore()
+    return { u, logo, seal: null }
+  }
+
+  // Foot: rarity and authenticity seal
   ctx.fillStyle = t.sub
   ctx.font = `500 ${2.2 * u}px ${MONO}`
   spaced(ctx, "RARETÉ", x + pad, footY - 5.2 * u, 0.35 * u)
@@ -595,6 +626,103 @@ export async function drawCardBack(
   }
   ctx.restore()
   return { u, logo, seal }
+}
+
+/** A logo fitted ("contain") in a rounded white tile, so any logo stays legible. */
+async function drawLogoTile(ctx: CanvasRenderingContext2D, src: string | undefined, name: string | undefined, bx: number, by: number, bw: number, bh: number, u: number) {
+  roundRect(ctx, bx, by, bw, bh, 1.6 * u)
+  ctx.fillStyle = "#ffffff"
+  ctx.fill()
+  const inset = 1.2 * u
+  if (src) {
+    try {
+      const img = await loadImage(src)
+      const iw = img.naturalWidth || img.width || 1
+      const ih = img.naturalHeight || img.height || 1
+      const s = Math.min((bw - 2 * inset) / iw, (bh - 2 * inset) / ih)
+      ctx.drawImage(img, bx + (bw - iw * s) / 2, by + (bh - ih * s) / 2, iw * s, ih * s)
+      return
+    } catch {
+      /* unreadable logo: fall back to the name */
+    }
+  }
+  if (name) {
+    ctx.fillStyle = "#1d1d1f"
+    ctx.font = `700 ${2.6 * u}px ${SANS}`
+    const lines = wrap(ctx, name, bw - 2 * inset, 2)
+    lines.forEach((l, i) => {
+      ctx.textAlign = "center"
+      ctx.fillText(l, bx + bw / 2, by + bh / 2 + (i - (lines.length - 1) / 2) * 3.2 * u + 0.9 * u)
+    })
+    ctx.textAlign = "left"
+  }
+}
+
+/** QR code as vector modules on a white tile (quiet zone of two modules). */
+function drawQr(ctx: CanvasRenderingContext2D, text: string, qx: number, qy: number, size: number, u: number) {
+  const qr = QRCode.create(text, { errorCorrectionLevel: "M" })
+  const n = qr.modules.size
+  const cell = size / (n + 4)
+  roundRect(ctx, qx, qy, size, size, 1.2 * u)
+  ctx.fillStyle = "#ffffff"
+  ctx.fill()
+  ctx.fillStyle = "#111111"
+  for (let r = 0; r < n; r++) {
+    // Runs of dark modules become one rectangle each.
+    let c = 0
+    while (c < n) {
+      if (!qr.modules.get(r, c)) {
+        c++
+        continue
+      }
+      const start = c
+      while (c < n && qr.modules.get(r, c)) c++
+      ctx.fillRect(qx + (start + 2) * cell, qy + (r + 2) * cell, (c - start) * cell, cell)
+    }
+  }
+}
+
+/** Foot of an organiser edition's back: organiser and sponsor logos, QR code to the race page. */
+async function drawEditionFoot(
+  ctx: CanvasRenderingContext2D,
+  edition: NonNullable<CardData["edition"]>,
+  t: (typeof THEMES)[Rarity],
+  x: number,
+  w: number,
+  pad: number,
+  footY: number,
+  u: number,
+  reference?: string,
+) {
+  // About 12 mm on a 55 mm card: comfortable for a phone at arm's length.
+  const q = 22 * u
+  const qx = x + w - pad - q
+  const qy = footY - q + 0.6 * u
+  if (edition.qrUrl) {
+    drawQr(ctx, edition.qrUrl, qx, qy, q, u)
+    ctx.fillStyle = t.sub
+    ctx.font = `500 ${1.9 * u}px ${MONO}`
+    spaced(ctx, "TA CARTE", qx + q, qy - 4.4 * u, 0.28 * u, "right")
+    spaced(ctx, "PERSONNALISÉE", qx + q, qy - 1.6 * u, 0.28 * u, "right")
+  }
+  const tiles: [string, string | undefined, string | undefined][] = []
+  if (edition.organizerLogo) tiles.push(["ORGANISATION", edition.organizerLogo, undefined])
+  if (edition.sponsorLogo || edition.sponsorName) tiles.push(["PARTENAIRE", edition.sponsorLogo, edition.sponsorName])
+  const tw = 24 * u
+  const th = 12 * u
+  let tx = x + pad
+  for (const [label, src, name] of tiles) {
+    ctx.fillStyle = t.sub
+    ctx.font = `500 ${2 * u}px ${MONO}`
+    spaced(ctx, label, tx, footY - th - 1.6 * u + 0.6 * u, 0.3 * u)
+    await drawLogoTile(ctx, src, name, tx, footY - th + 0.6 * u, tw, th, u)
+    tx += tw + 3 * u
+  }
+  if (reference) {
+    ctx.fillStyle = t.sub
+    ctx.font = `500 ${1.8 * u}px ${MONO}`
+    spaced(ctx, reference, qx - 2.5 * u, footY, 0.2 * u, "right")
+  }
 }
 
 /** Waits for the card typefaces, so canvas text never falls back. */
