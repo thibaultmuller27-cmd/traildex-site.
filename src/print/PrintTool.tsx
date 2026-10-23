@@ -232,18 +232,18 @@ export function AdvancedTool() {
   )
 }
 
+// The card maker is all Thibault needs for now; the older tools (Airtable
+// orders, batches, invoices) only show with ?avance in the address.
+const ADVANCED = new URLSearchParams(location.search).has("avance")
+
 export function PrintTool() {
+  if (ADVANCED) return <AdvancedTool />
   return (
-    <div className="min-h-screen bg-mist print:bg-white">
-      <div className="mx-auto max-w-3xl px-5 py-8 print:hidden">
-        <h1 className="text-[28px] font-semibold tracking-tight">Créer une carte TrailDex</h1>
-        <p className="mt-1 mb-5 text-[15px] text-muted">Le GPX, le nom de la course, et c'est prêt.</p>
+    <div className="min-h-screen bg-mist">
+      <div className="mx-auto max-w-xl px-5 py-8">
+        <h1 className="mb-5 text-[28px] font-semibold tracking-tight">Créer une carte TrailDex</h1>
         <SimpleTool />
       </div>
-      <details className="mx-auto max-w-3xl px-5 pb-10 print:block">
-        <summary className="cursor-pointer text-[14px] text-muted print:hidden">Outils avancés (commandes Airtable, lots Exaprint, factures)</summary>
-        <AdvancedTool />
-      </details>
     </div>
   )
 }

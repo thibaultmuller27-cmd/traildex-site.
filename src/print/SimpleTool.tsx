@@ -1,7 +1,6 @@
 /**
  * The simple card maker: a GPX and a race name in, a print PDF or a social
- * image out. Everything else (orders, batches, invoices) is under
- * "Outils avancés".
+ * image out. The older tools (orders, batches, invoices) open with ?avance.
  */
 import * as React from "react"
 import type { Finish } from "@/lib/card"
@@ -125,20 +124,16 @@ export function SimpleTool() {
             <span className={step}>3</span>
             <div className="flex flex-1 flex-wrap gap-2">
               <button onClick={downloadPdf} disabled={!!busy} className="rounded-full bg-[#0071e3] px-5 py-3 text-[15px] font-medium text-white disabled:opacity-40">
-                Télécharger le PDF pour l'imprimer
+                PDF à imprimer
               </button>
               <button onClick={() => downloadImage("story")} disabled={!!busy} className="rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-white disabled:opacity-40">
-                Image Story (Instagram)
+                Image Story
               </button>
               <button onClick={() => downloadImage("post")} disabled={!!busy} className="rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-white disabled:opacity-40">
-                Image Post (Instagram, Strava)
+                Image Post
               </button>
             </div>
           </div>
-          <p className="mt-3 text-[13px] text-muted">
-            Le PDF est prêt pour Exaprint (55 × 85 mm, fond perdu 3 mm). Il est accompagné d'un second fichier « dorure » qui indique à l'imprimeur où poser l'or ou
-            l'holographique.
-          </p>
         </>
       )}
       {busy && <p className="mt-3 text-[14px] text-muted">{busy}</p>}
