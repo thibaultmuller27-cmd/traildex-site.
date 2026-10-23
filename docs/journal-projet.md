@@ -48,6 +48,11 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Étude des 4 agents : `docs/etude-modeles/` (00-synthese + marché, finances, commercial, opérations). Page Notion « Étude business model — B2C, B2B ou hybride » sous Direction.
 - **Recommandation : démarrer en B2B (éditions de cartes vendues aux organisateurs, 2,50–3 € HT/carte, forfait min. 200 €, acompte 30 %) avec un QR code vers la carte personnalisée, sans remise.** B2C ouvert seulement via QR/communauté, pas de pub. Plan 90 jours jusqu'au 20/01/2027, critère d'arrêt : < 2 bons de commande sur ≈ 25 contacts chauds fin février. **Validé par Thibault le 22/10 : on commence par les cartes finisher pour les organisateurs, le personnalisé viendra ensuite.**
 
+### Marketing (23/10)
+- Nom de marque : étude de l'agent marketing. Recommandé **Peaksake**, alternatives **Isolyne** et **Vestigia** (Kairn et Arête risqués). Rien réservé ; INPI/EUIPO (classes 16, 28, 41), WHOIS et @ Instagram à vérifier par Thibault. **À trancher avant de créer le compte Instagram.**
+- Instagram : pas d'automatisation (interdit par Instagram, risque de suppression du compte). Plan de démarrage manuel `docs/marketing/instagram-demarrage.md` + page Notion « Démarrage Instagram » sous Direction : 47 comptes, hashtags, 12 posts avec légendes (26/10 → 22/11), routine de 15 min, bio. Règle : aucun nom ni logo de course sur une carte sans accord de l'organisateur.
+- Avis donné : pas de vente du fichier numérique « à quelques centimes » (frais de paiement, dorure impossible à reproduire chez soi, fichier piratable) ; Shopify possible plus tard pour le B2C, le PDF d'impression restant privé.
+
 ### Juridique
 - Étude `docs/juridique/etude-statut-frontalier.md` : micro-entreprise française recommandée, cotisations à la CCSS Luxembourg (dispense possible sous ≈ 11 085 €/an), télétravail salarié à garder < 25 %, pas de société au Luxembourg, Legalstart non nécessaire (INPI gratuit). **À valider avec un expert-comptable frontaliers.**
 
