@@ -9,7 +9,7 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Composants 21st.dev adaptés : « Holo Card » (@kedhareswer) et « Phone Scroll Hero » (@ruixen.ui).
 - Design de carte validé par Thibault : **recto = tracé en grand + effet holographique**, **verso = photo en petit + fiche de course**.
 - Partage gratuit Instagram/Strava : image Story 9:16 ou post 4:5 générée dans le navigateur.
-- Précommande → fonction Cloudflare `functions/api/preorder.ts` → Airtable. **Pas encore déployé** (Cloudflare Pages + secret `AIRTABLE_TOKEN` à configurer par Thibault).
+- Précommande → fonction Cloudflare `functions/api/preorder.ts` → Airtable. **Déployé le 23/10 sur Cloudflare Pages : https://traildex-site.pages.dev** (projet `traildex-site`, relié au dépôt GitHub, branche `claude/practical-cray-da49sb`, build `npm run build` → `dist`, `NODE_VERSION=22`, secret `AIRTABLE_TOKEN` en écriture seule sur la base TrailDex). Testé : précommande test TD-L2ME6F2V arrivée dans Airtable (à supprimer par Thibault). Adresse à ne pas diffuser avant mentions légales/CGV/prix définitifs ; domaine personnalisé à brancher après le choix du nom. Chaque push sur la branche redéploie automatiquement.
 - **Deux finitions seulement depuis le 22/10** : Holo (Rare, ou Épique dès 60 km-effort) et Or (Légendaire). Standard et rareté « Commune » retirées (coût d'impression quasi identique sur le produit dorure, marge la plus faible, Sets plus faciles à remplir). L'image de partage gratuite sert d'entrée de gamme.
 - Prix **provisoires** : Holo 14,90 €, Or 24,90 € (`src/lib/config.ts`).
 - Aperçu en ligne (privé) : https://claude.ai/artifact/L6g2axqytsZ13j8B78hwgA
@@ -62,5 +62,5 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 1. Réponse d'Exaprint sur le format avec dorure + gabarit.
 2. Ajouter connexions et dépôt à la tâche « Point CEO TrailDex ».
 3. Expert-comptable frontaliers, contrat de travail, télétravail.
-4. Déployer sur Cloudflare Pages + secret Airtable, nom de domaine.
+4. Nom de domaine (après le choix du nom) ; mentions légales et CGV avant de diffuser le site.
 5. Fixer les prix définitifs.
