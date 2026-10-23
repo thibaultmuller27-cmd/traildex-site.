@@ -47,6 +47,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 ### Juridique
 - Étude `docs/juridique/etude-statut-frontalier.md` : micro-entreprise française recommandée, cotisations à la CCSS Luxembourg (dispense possible sous ≈ 11 085 €/an), télétravail salarié à garder < 25 %, pas de société au Luxembourg, Legalstart non nécessaire (INPI gratuit). **À valider avec un expert-comptable frontaliers.**
 
+- **22/10 au soir : Thibault a envoyé la demande à Exaprint via leur formulaire** (vérification des fichiers + 2 exemplaires test or et holo), avec les PDF d'avant le passage au 100 % vectoriel. À la réponse : renvoyer les fichiers vectoriels comme version définitive.
+
 ## Prochaines étapes (côté Thibault)
 1. Réponse d'Exaprint sur le format avec dorure + gabarit.
 2. Ajouter connexions et dépôt à la tâche « Point CEO TrailDex ».
