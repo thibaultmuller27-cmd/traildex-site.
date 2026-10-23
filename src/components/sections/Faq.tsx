@@ -4,7 +4,7 @@ import { FadeIn } from "@/components/FadeIn"
 const QA = [
   {
     q: "Mon fichier GPX est-il envoyé quelque part ?",
-    a: "Non. Le fichier est lu et analysé directement dans ton navigateur : distance, dénivelé, profil et tracé sont calculés sur ton appareil. Rien n'est envoyé sur un serveur.",
+    a: "Pas tant que tu ne commandes pas. Le fichier est lu et analysé directement dans ton navigateur : distance, dénivelé, profil et tracé sont calculés sur ton appareil. Quand tu commandes, seules les données de ta carte (tracé, chiffres, photo) nous sont transmises, pour l'imprimer.",
   },
   {
     q: "Où trouver le fichier GPX de ma course ?",
@@ -23,8 +23,12 @@ const QA = [
     a: "Une mesure de la difficulté d'un trail : 1 km-effort par kilomètre parcouru, plus 1 par tranche de 100 m de dénivelé positif. Les Crêtes Vosgiennes (53 km, 2 023 m D+) font environ 73 km-effort.",
   },
   {
-    q: "Quand vais-je payer ?",
-    a: "Pas maintenant. Le bouton « Commander » enregistre une précommande. On te recontacte par e-mail pour valider l'impression et le paiement.",
+    q: "Comment se passe le paiement ?",
+    a: "Au moment de la commande, par carte bancaire (ou Apple Pay / Google Pay) sur la page sécurisée de Stripe. Nous n'avons jamais accès à tes numéros de carte. Tu reçois un reçu par e-mail.",
+  },
+  {
+    q: "Puis-je annuler ou retourner ma carte ?",
+    a: "Chaque carte est fabriquée pour toi, avec ton tracé et tes infos : comme tout produit personnalisé, elle n'ouvre pas de droit de rétractation. Vérifie bien ton aperçu avant de payer. Si ta carte arrive abîmée, mal imprimée ou différente de l'aperçu, on la réimprime ou on te rembourse.",
   },
   {
     q: "Quels sont les délais de livraison ?",

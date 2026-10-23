@@ -65,5 +65,13 @@ export const COMPANY = {
   address: "", // ADRESSE À COMPLÉTER
   siret: "", // SIRET À COMPLÉTER après l'immatriculation
   email: "", // E-MAIL À COMPLÉTER
+  phone: "", // TÉLÉPHONE À COMPLÉTER (obligatoire dans les mentions légales)
   vatMention: "TVA non applicable, art. 293 B du CGI",
+  /** Consumer mediator (mandatory before selling to consumers): name and website. */
+  mediator: { name: "", url: "" }, // MÉDIATEUR À CHOISIR (adhésion payante)
+  /** Countries delivered, as written in the CGV. */
+  delivery: "France métropolitaine", // ZONE DE LIVRAISON À CONFIRMER
 }
+
+/** Version of the CGV the runner accepts at checkout, stored with the order. */
+export const CGV_VERSION = "2026-10-23"

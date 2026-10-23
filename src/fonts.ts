@@ -1,0 +1,16 @@
+// Fonts served by the site itself (no request to Google Fonts, so visitors'
+// addresses are not passed to a third party). Latin and Latin Extended only.
+import "@fontsource/inter/latin-400.css"
+import "@fontsource/inter/latin-500.css"
+import "@fontsource/inter/latin-600.css"
+import "@fontsource/inter/latin-700.css"
+import "@fontsource/inter/latin-800.css"
+import "@fontsource/inter/latin-ext-400.css"
+import "@fontsource/inter/latin-ext-500.css"
+import "@fontsource/inter/latin-ext-600.css"
+import "@fontsource/inter/latin-ext-700.css"
+import "@fontsource/inter/latin-ext-800.css"
+import "@fontsource/jetbrains-mono/latin-500.css"
+import "@fontsource/jetbrains-mono/latin-600.css"
+import "@fontsource/jetbrains-mono/latin-ext-500.css"
+import "@fontsource/jetbrains-mono/latin-ext-600.css"

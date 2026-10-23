@@ -3,7 +3,7 @@
  * function (which validates it and writes it to Airtable).
  */
 import type { CardData, Finish } from "./card"
-import { FINISHES, RARITIES } from "./config"
+import { CGV_VERSION, FINISHES, RARITIES } from "./config"
 
 export type PreorderPayload = {
   name: string
@@ -16,6 +16,8 @@ export type PreorderPayload = {
   /** The card; its `photo` is a small copy for the print files. */
   card: CardData
   photo?: string
+  /** Version of the CGV the runner accepted (with the waiver of withdrawal). */
+  cgv?: string
   /** Honeypot, must stay empty. */
   website?: string
 }
@@ -31,6 +33,7 @@ export function validatePreorder(p: PreorderPayload): string[] {
   if (!Number.isInteger(p.qty) || p.qty < 1 || p.qty > 10) errors.push("Quantité invalide.")
   if (!FINISHES.some((f) => f.id === p.finish)) errors.push("Finition invalide.")
   if (!p.card || !str(p.card.race, 80) || !str(p.card.runner, 40)) errors.push("Carte incomplète.")
+  if (p.cgv !== CGV_VERSION) errors.push("Merci d'accepter les conditions générales de vente.")
   return errors
 }
 
@@ -59,6 +62,7 @@ export function buildRecord(p: PreorderPayload, reference: string) {
     fldD6lMsCuyeVPCZF: RARITIES[c.rarity]?.label,
     fldTFShF8TH62DVyK: num(c.number),
     fld3PaJa365DVv4SK: p.qty,
+    fldDTY9Yu7IgLXtRE: `${p.cgv} (${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC)`,
     // Price is taken from the server-side table, never from the browser.
     fldS8C6HkZ5ZqoK5B: finish.price,
     // Airtable long text holds 100 000 characters: drop the photo copy if it would not fit.

@@ -4,13 +4,14 @@ const COLS = [
   { title: "Créer", links: [["Créateur de carte", "#createur"], ["Comment ça marche", "#comment"], ["Finitions et prix", "#createur"]] },
   { title: "Collection", links: [["Ma collection", "#collection"]] },
   { title: "Aide", links: [["Questions fréquentes", "#faq"], ["Contact", "mailto:contact@traildex.fr"]] },
+  { title: "Légal", links: [["CGV", "/cgv"], ["Mentions légales", "/mentions-legales"], ["Confidentialité", "/confidentialite"]] },
 ]
 
 export function Footer() {
   return (
     <footer className="bg-mist px-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-16 text-[13px] text-muted">
       <div className="mx-auto max-w-6xl">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div>
             <Logo className="text-ink" />
             <p className="mt-3 max-w-xs leading-relaxed">Des cartes de collection pour les traileurs. Ta course, ton tracé, ton chrono — en holo.</p>
@@ -21,7 +22,7 @@ export function Footer() {
               <ul className="mt-3 space-y-2">
                 {c.links.map(([label, href]) => (
                   <li key={label}>
-                    <a href={href} className="hover:text-ink hover:underline">
+                    <a href={href.startsWith("#") ? `/${href}` : href} className="hover:text-ink hover:underline">
                       {label}
                     </a>
                   </li>

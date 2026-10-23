@@ -19,6 +19,11 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - **Activé en mode test le 23/10** (compte Stripe « TrailDex », webhook vers `/api/stripe-webhook` avec 4 événements, secrets `STRIPE_SECRET_KEY` sk_test + `STRIPE_WEBHOOK_SECRET` dans Cloudflare ; jeton Airtable régénéré et passé en Secret). **Test réussi de bout en bout** : commande TD-L581LBDQ (Or, 24,90 €) payée avec la carte 4242 → Airtable Payée + pi_… + date + montant. Commandes de test à supprimer : TD-L2ME6F2V, TD-L5296NVT, TD-L581LBDQ. `GET /api/preorder` indique oui/non pour chaque réglage.
 - Reste avant le réel : Mode réel après SIREN + IBAN + CGV/mentions légales. Pas à pas : `docs/paiement-stripe.md`.
 
+### CGV, mentions légales, confidentialité (23/10)
+- Pages `/cgv`, `/mentions-legales`, `/confidentialite` (`src/pages/Legal.tsx`), liées dans le pied de page. Projet rédigé par Claude, **à relire par Thibault (idéalement avocat/expert-comptable)**. Points clés : pas de droit de rétractation (produit personnalisé, art. L221-28 3°) avec case à cocher obligatoire avant paiement (version CGV enregistrée dans le champ Airtable `CGV acceptées`), encadré garanties légales, livraison 30 jours max, noms/logos de courses = titulaires (aucune affiliation), données : Cloudflare, Airtable, Stripe, Google, imprimeur, transporteur ; photo gardée 6 mois après expédition (à appliquer).
+- **À compléter dans `COMPANY` (`src/lib/config.ts`)** : adresse, SIRET, e-mail, téléphone, médiateur de la consommation (adhésion obligatoire et payante, à choisir), zone de livraison (par défaut France métropolitaine). Tant que vide : surligné « à compléter » sur les pages.
+- Polices désormais hébergées par le site (`@fontsource`), plus aucun appel à Google Fonts. FAQ mise à jour (paiement Stripe, pas de rétractation, GPX transmis seulement à la commande).
+
 ### Impression
 - Imprimeur visé : **Exaprint**, produit « Carte de visite dorure à chaud », option **Sets** (≤ 20 variantes, même quantité).
 - Contrainte découverte : avec dorure, format personnalisé limité à **40–55 mm × 55–95 mm** → 63 × 88 mm impossible en dorure. Question posée à trancher : demander le 63 × 88 avec dorure à Exaprint, sinon 55 × 77 mm, ou un autre imprimeur (MakePlayingCards) pour Or/Holo.

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Field, Input } from "@/components/ui/input"
 import { THEMES } from "@/components/TrailCard"
 import { useCollection } from "@/lib/collection"
-import { FINISHES, RARITIES, formatPrice } from "@/lib/config"
+import { CGV_VERSION, FINISHES, RARITIES, formatPrice } from "@/lib/config"
 import { fmtInt, fmtKm, type CardData, type Finish } from "@/lib/card"
 import type { PreorderPayload } from "@/lib/preorder"
 import { shrinkPhoto } from "@/lib/photo"
@@ -47,6 +47,7 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
     if (!data.address?.trim()) errs.address = "Indique ton adresse."
     if (!/^\d{4,5}$/.test((data.zip ?? "").trim())) errs.zip = "Code postal invalide."
     if (!data.city?.trim()) errs.city = "Indique ta ville."
+    if (data.cgv !== "on") errs.cgv = "Coche la case pour accepter les conditions de vente."
     setErrors(errs)
     setSendError(null)
     if (Object.keys(errs).length) return
@@ -64,6 +65,7 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
       website: data.website,
       qty,
       finish,
+      cgv: CGV_VERSION,
       card: { ...card, photo: thumb },
       photo,
     }
@@ -186,6 +188,18 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
                 <p className="text-[26px] font-semibold tabular-nums tracking-tight">{formatPrice(f.price * qty)}</p>
               </div>
             </div>
+            <label className="mt-5 flex items-start gap-3 text-[13px] leading-snug text-muted">
+              <input type="checkbox" name="cgv" className="mt-0.5 h-4 w-4 shrink-0 accent-ink" />
+              <span>
+                J'accepte les{" "}
+                <a href="/cgv" target="_blank" rel="noopener" className="text-ink underline">
+                  conditions générales de vente
+                </a>
+                . Je sais que ma carte est fabriquée sur mesure et que, comme tout produit personnalisé, elle ne donne pas droit à rétractation (art. L221-28 du Code
+                de la consommation) ; mes garanties légales restent entières.
+              </span>
+            </label>
+            {errors.cgv && <span className="mt-1 block text-[13px] text-[#e30000]">{errors.cgv}</span>}
             {/* Honeypot for bots, hidden from people and screen readers */}
             <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
             {sendError && (
