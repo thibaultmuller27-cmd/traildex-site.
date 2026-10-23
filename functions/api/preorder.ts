@@ -18,6 +18,7 @@ type Env = {
   AIRTABLE_BASE_ID?: string
   AIRTABLE_TABLE_ID?: string
   STRIPE_SECRET_KEY?: string
+  STRIPE_WEBHOOK_SECRET?: string
 }
 
 const BASE_ID = "appFtEAvDkYtjLleM"
@@ -27,8 +28,19 @@ const PHOTO_FIELD_ID = "fldgc96Od5PWvGInP"
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8" } })
 
-/** Tells the site whether orders are paid online. */
-export const onRequestGet = ({ env }: { env: Env }) => json({ paiement: Boolean(env.STRIPE_SECRET_KEY) })
+/**
+ * Tells the site whether orders are paid online, and which settings are in
+ * place (yes/no only, never the values), to check the setup from outside.
+ */
+export const onRequestGet = ({ env }: { env: Env }) =>
+  json({
+    paiement: Boolean(env.STRIPE_SECRET_KEY),
+    reglages: {
+      airtable: Boolean(env.AIRTABLE_TOKEN),
+      stripe: env.STRIPE_SECRET_KEY ? (env.STRIPE_SECRET_KEY.startsWith("sk_live_") ? "réel" : "test") : false,
+      webhook: Boolean(env.STRIPE_WEBHOOK_SECRET),
+    },
+  })
 
 export const onRequestPost = async ({ request, env }: { request: Request; env: Env }) => {
   if (!env.AIRTABLE_TOKEN) return json({ error: "Le serveur n'est pas configuré." }, 500)
