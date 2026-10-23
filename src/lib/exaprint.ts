@@ -70,6 +70,9 @@ const FONT_URLS: Record<string, string> = {
 function loadFontBytes() {
   fontBytes ??= Promise.all(
     Object.entries(FONT_URLS).map(async ([n, url]) => {
+      // In the single-file tool the fonts are data: URLs; decode them here,
+      // since sandboxed pages (claude.ai) block fetch() on data: URLs.
+      if (url.startsWith("data:")) return [n, Uint8Array.from(atob(url.slice(url.indexOf(",") + 1)), (c) => c.charCodeAt(0)).buffer] as const
       const res = await fetch(url)
       if (!res.ok) throw new Error(`police ${n} introuvable`)
       return [n, await res.arrayBuffer()] as const

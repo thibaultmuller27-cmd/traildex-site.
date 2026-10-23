@@ -56,7 +56,12 @@ export function SimpleTool() {
       // The viewer declining the download is not an error.
       if ((e as { code?: string })?.code !== "declined") {
         console.error(e)
-        setError("Le fichier n'a pas pu être créé.")
+        const code = (e as { code?: string })?.code
+        setError(
+          code === "rate_limited"
+            ? "Une fenêtre de téléchargement est déjà ouverte : valide-la, puis réessaie."
+            : `Le fichier n'a pas pu être créé${code ? ` (${code})` : ""}.`,
+        )
       }
     } finally {
       setBusy(null)
