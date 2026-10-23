@@ -14,6 +14,10 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Prix **provisoires** : Holo 14,90 €, Or 24,90 € (`src/lib/config.ts`).
 - Aperçu en ligne (privé) : https://claude.ai/artifact/L6g2axqytsZ13j8B78hwgA
 
+### Paiement en ligne (23/10)
+- Stripe Checkout branché, **pas encore activé** : `functions/api/preorder.ts` ouvre le paiement si `STRIPE_SECRET_KEY` existe, `functions/api/stripe-webhook.ts` passe la commande **Payée** (+ champs Airtable créés : `Paiement Stripe`, `Payé le`, `Montant payé`) ou **Annulée** si la session expire. Écran « Merci pour ta commande » au retour. 15 tests (signature, prix serveur, statuts, pause) OK en local.
+- À faire par Thibault : compte Stripe (mode test), webhook, 2 secrets dans Cloudflare. Mode réel après SIREN + IBAN + CGV/mentions légales. Pas à pas : `docs/paiement-stripe.md`.
+
 ### Impression
 - Imprimeur visé : **Exaprint**, produit « Carte de visite dorure à chaud », option **Sets** (≤ 20 variantes, même quantité).
 - Contrainte découverte : avec dorure, format personnalisé limité à **40–55 mm × 55–95 mm** → 63 × 88 mm impossible en dorure. Question posée à trancher : demander le 63 × 88 avec dorure à Exaprint, sinon 55 × 77 mm, ou un autre imprimeur (MakePlayingCards) pour Or/Holo.

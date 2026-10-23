@@ -10,7 +10,7 @@ Mis en place le 22 octobre 2026. Base Airtable TrailDex (`appFtEAvDkYtjLleM`).
 |---|---|---|
 | 1. Précommande reçue (statut « Nouvelle ») | Site → table **Commandes** | automatique |
 | 2. Confirmation au client, demande de paiement | Gmail (brouillon) | Thibault envoie |
-| 3. Paiement reçu → statut **« Payée »** | table Commandes | Thibault |
+| 3. Paiement reçu → statut **« Payée »** | table Commandes | automatique si payé en ligne par Stripe (`docs/paiement-stripe.md`), sinon Thibault |
 | 4. Facture créée (numéro, client, désignation, prix copiés) | table **Factures** | automatisation Airtable |
 | 5. Compléter « Mode de paiement » (et la date si ce n'est pas aujourd'hui) | table Factures | Thibault |
 | 6. Générer les PDF + livre des recettes | `/print.html` → section **Factures** (CSV de la table Factures) | Thibault |

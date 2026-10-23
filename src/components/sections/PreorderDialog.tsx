@@ -20,6 +20,8 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
   const [sending, setSending] = React.useState(false)
   const [sendError, setSendError] = React.useState<string | null>(null)
   const [errors, setErrors] = React.useState<Record<string, string>>({})
+  // Online payment is on once Stripe is configured on the server.
+  const [paiement, setPaiement] = React.useState(false)
   const f = FINISHES.find((x) => x.id === finish)!
   const theme = THEMES[card.rarity]
 
@@ -28,6 +30,10 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
       setDone(null)
       setErrors({})
       setSendError(null)
+      fetch("/api/preorder")
+        .then((r) => (r.ok ? r.json() : {}))
+        .then((b: { paiement?: boolean }) => setPaiement(Boolean(b.paiement)))
+        .catch(() => setPaiement(false))
     }
   }, [open])
 
@@ -71,6 +77,11 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
       const body = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(body.error || "La précommande n'a pas pu être envoyée.")
       add({ ...card, id: `c-${Date.now().toString(36)}` })
+      if (body.checkoutUrl) {
+        // Off to Stripe's payment page; it brings the runner back to /?commande=…
+        window.location.href = body.checkoutUrl
+        return
+      }
       setDone(body.reference ?? "")
     } catch (err) {
       setSendError(
@@ -116,8 +127,10 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
           </div>
         ) : (
           <form onSubmit={submit} noValidate>
-            <DialogTitle className="pr-10 text-[28px] font-semibold tracking-tight">Précommander ma carte</DialogTitle>
-            <DialogDescription className="mt-1 text-[15px] text-muted">Aucun paiement maintenant. On te confirme tout par e-mail.</DialogDescription>
+            <DialogTitle className="pr-10 text-[28px] font-semibold tracking-tight">{paiement ? "Commander ma carte" : "Précommander ma carte"}</DialogTitle>
+            <DialogDescription className="mt-1 text-[15px] text-muted">
+              {paiement ? "Paiement sécurisé par carte bancaire avec Stripe. Livraison offerte." : "Aucun paiement maintenant. On te confirme tout par e-mail."}
+            </DialogDescription>
 
             <div className="mt-6 flex items-center gap-4 rounded-2xl bg-mist p-4">
               <div className="h-[70px] w-[50px] shrink-0 rounded-md shadow ring-1 ring-black/10" style={{ background: theme.bg }} />
@@ -183,8 +196,10 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
             <Button type="submit" size="lg" className="mt-6 w-full" disabled={sending}>
               {sending ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" /> Envoi…
+                  <Loader2 className="h-4 w-4 animate-spin" /> {paiement ? "Ouverture du paiement…" : "Envoi…"}
                 </>
+              ) : paiement ? (
+                `Payer ${formatPrice(f.price * qty)}`
               ) : (
                 "Valider ma précommande"
               )}

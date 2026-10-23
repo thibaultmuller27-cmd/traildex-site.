@@ -39,6 +39,8 @@ La clé Airtable n'est jamais dans le code du site : elle est stockée comme sec
    - dossier de sortie : `dist`.
 3. Dans le projet Cloudflare → Settings → Variables and Secrets, ajoute le secret `AIRTABLE_TOKEN` avec le jeton, puis redéploie.
 
+Paiement en ligne : Stripe Checkout, activé dès que `STRIPE_SECRET_KEY` et `STRIPE_WEBHOOK_SECRET` sont dans Cloudflare ; sinon précommande sans paiement. Mise en route : `docs/paiement-stripe.md`.
+
 Le site est en pause (page « Bientôt disponible », précommandes refusées) tant que la variable `SITE_OUVERT` ne vaut pas `oui` dans Cloudflare (Settings → Variables and secrets, puis redéployer) : voir `functions/_middleware.ts`.
 
 Les identifiants de la base et de la table sont dans `functions/api/preorder.ts`, ceux des champs dans `src/lib/preorder.ts` (renommer une colonne dans Airtable ne casse rien ; la supprimer, si).

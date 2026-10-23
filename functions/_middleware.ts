@@ -28,7 +28,8 @@ const PAGE = `<!doctype html>
 </html>`
 
 export const onRequest = async ({ request, env, next }: { request: Request; env: Env; next: () => Promise<Response> }) => {
-  if (env.SITE_OUVERT === "oui") return next()
+  // Stripe must still reach the webhook, or paid orders would not be recorded.
+  if (env.SITE_OUVERT === "oui" || new URL(request.url).pathname === "/api/stripe-webhook") return next()
   const headers = { "X-Robots-Tag": "noindex", "Cache-Control": "no-store" }
   if (new URL(request.url).pathname.startsWith("/api/")) {
     return new Response(JSON.stringify({ error: "Les précommandes ne sont pas encore ouvertes." }), {
