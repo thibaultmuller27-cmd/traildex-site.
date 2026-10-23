@@ -5,6 +5,7 @@
 import * as React from "react"
 import type { CardData } from "@/lib/card"
 import { RARITIES } from "@/lib/config"
+import { saveFile } from "@/lib/saveFile"
 
 type Settings = import("@/lib/exaprint").PrintSettings
 type BatchOrder = import("@/lib/exaprint").BatchOrder
@@ -74,14 +75,6 @@ function toOrders(rows: Record<string, string>[]): { orders: BatchOrder[]; skipp
   return { orders, skipped }
 }
 
-function download(data: Uint8Array | Blob, name: string, type: string) {
-  const blob = data instanceof Blob ? data : new Blob([data], { type })
-  const a = document.createElement("a")
-  a.href = URL.createObjectURL(blob)
-  a.download = name
-  a.click()
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000)
-}
 
 export function ExaprintPanel({ card }: { card: CardData | null }) {
   const [settings, setSettings] = React.useState<Settings>(() => {
@@ -138,8 +131,8 @@ export function ExaprintPanel({ card }: { card: CardData | null }) {
       const { buildCardFiles } = await import("@/lib/exaprint")
       const files = await buildCardFiles(card, settings, undefined, cmyk ?? undefined)
       setMaxInk(files.maxInk ?? null)
-      download(files.print, `traildex-${card.id}-impression.pdf`, "application/pdf")
-      if (files.foil) download(files.foil, `traildex-${card.id}-dorure.pdf`, "application/pdf")
+      await saveFile(files.print, `traildex-${card.id}-impression.pdf`, "application/pdf")
+      if (files.foil) await saveFile(files.foil, `traildex-${card.id}-dorure.pdf`, "application/pdf")
     } catch (e) {
       console.error(e)
       setError("Le PDF n'a pas pu être généré.")
@@ -183,7 +176,7 @@ export function ExaprintPanel({ card }: { card: CardData | null }) {
       zip.file("LISEZ-MOI.txt", ex.readme(sets, settings, cmyk?.name))
       setMaxInk(cmyk ? worst : null)
       const blob = await zip.generateAsync({ type: "blob" })
-      download(blob, `traildex-lot-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip")
+      await saveFile(blob, `traildex-lot-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip")
     } catch (e) {
       console.error(e)
       setError("Le lot n'a pas pu être généré.")

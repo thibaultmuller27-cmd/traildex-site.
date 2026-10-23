@@ -17,6 +17,10 @@ import { PDFDocument, PDFName, PDFString, StandardFonts, rgb, type PDFPage, type
 import type { CmykProfile } from "./cmyk"
 import { drawCardBack, drawCardFront, type BackGeometry, type FrontGeometry } from "./cardCanvas"
 import { embedCardFonts, PdfCanvas } from "./pdfCanvas"
+import interBold from "@/assets/fonts/Inter-Bold.ttf?url"
+import interMedium from "@/assets/fonts/Inter-Medium.ttf?url"
+import interSemiBold from "@/assets/fonts/Inter-SemiBold.ttf?url"
+import monoMedium from "@/assets/fonts/JetBrainsMono-Medium.ttf?url"
 import type { CardData } from "./card"
 
 export type FoilMode = "separate" | "layer"
@@ -55,11 +59,18 @@ export function foilSpot(card: CardData, s: PrintSettings) {
 
 let fontBytes: Promise<Record<string, ArrayBuffer>> | null = null
 
-/** The card typefaces as TTF (public/fonts, SIL Open Font License). */
+/** The card typefaces as TTF (src/assets/fonts, SIL Open Font License), bundled with the tool. */
+const FONT_URLS: Record<string, string> = {
+  "Inter-Medium": interMedium,
+  "Inter-SemiBold": interSemiBold,
+  "Inter-Bold": interBold,
+  "JetBrainsMono-Medium": monoMedium,
+}
+
 function loadFontBytes() {
   fontBytes ??= Promise.all(
-    ["Inter-Medium", "Inter-SemiBold", "Inter-Bold", "JetBrainsMono-Medium"].map(async (n) => {
-      const res = await fetch(`/fonts/${n}.ttf`)
+    Object.entries(FONT_URLS).map(async ([n, url]) => {
+      const res = await fetch(url)
       if (!res.ok) throw new Error(`police ${n} introuvable`)
       return [n, await res.arrayBuffer()] as const
     }),

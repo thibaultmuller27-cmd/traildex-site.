@@ -3,17 +3,11 @@
  * with one PDF per invoice and the receipts book.
  */
 import * as React from "react"
+import { saveFile } from "@/lib/saveFile"
 import { parseCsv } from "./ExaprintPanel"
 
 type Invoice = import("@/lib/invoice").Invoice
 
-function download(data: Blob, name: string) {
-  const a = document.createElement("a")
-  a.href = URL.createObjectURL(data)
-  a.download = name
-  a.click()
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000)
-}
 
 export function InvoicePanel() {
   const [invoices, setInvoices] = React.useState<Invoice[] | null>(null)
@@ -45,7 +39,7 @@ export function InvoicePanel() {
         zip.file(`${i.number}.pdf`, await inv.buildInvoicePdf(i))
       }
       zip.file("livre-des-recettes.csv", inv.receiptsBookCsv(invoices))
-      download(await zip.generateAsync({ type: "blob" }), `traildex-factures-${new Date().toISOString().slice(0, 10)}.zip`)
+      await saveFile(await zip.generateAsync({ type: "blob" }), `traildex-factures-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip")
     } catch (e) {
       console.error(e)
       setError("Les factures n'ont pas pu être générées.")
