@@ -46,7 +46,7 @@ export function buildEditionCard(stats: TrackStats, race: string, date: string, 
   }
 }
 
-function Preview({ card }: { card: CardData }) {
+export function Preview({ card }: { card: CardData }) {
   const front = React.useRef<HTMLCanvasElement>(null)
   const back = React.useRef<HTMLCanvasElement>(null)
   React.useEffect(() => {

@@ -16,6 +16,7 @@ import { RARITIES } from "@/lib/config"
 import { EditionPanel } from "./EditionPanel"
 import { ExaprintPanel } from "./ExaprintPanel"
 import { InvoicePanel } from "./InvoicePanel"
+import { SimpleTool } from "./SimpleTool"
 
 const STORAGE_KEY = "traildex.print"
 type Layout = "bleed" | "a4"
@@ -102,7 +103,7 @@ function CropMarks() {
   )
 }
 
-export function PrintTool() {
+export function AdvancedTool() {
   const [card, setCard] = React.useState<CardData | null>(loadCard)
   const [layout, setLayout] = React.useState<Layout>(() =>
     new URLSearchParams(location.search).get("layout") === "a4" ? "a4" : "bleed",
@@ -227,6 +228,22 @@ export function PrintTool() {
             </div>
           </div>
         ))}
+    </div>
+  )
+}
+
+export function PrintTool() {
+  return (
+    <div className="min-h-screen bg-mist print:bg-white">
+      <div className="mx-auto max-w-3xl px-5 py-8 print:hidden">
+        <h1 className="text-[28px] font-semibold tracking-tight">Créer une carte TrailDex</h1>
+        <p className="mt-1 mb-5 text-[15px] text-muted">Le GPX, le nom de la course, et c'est prêt.</p>
+        <SimpleTool />
+      </div>
+      <details className="mx-auto max-w-3xl px-5 pb-10 print:block">
+        <summary className="cursor-pointer text-[14px] text-muted print:hidden">Outils avancés (commandes Airtable, lots Exaprint, factures)</summary>
+        <AdvancedTool />
+      </details>
     </div>
   )
 }
