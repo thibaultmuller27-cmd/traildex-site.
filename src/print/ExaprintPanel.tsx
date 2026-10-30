@@ -78,7 +78,7 @@ function toOrders(rows: Record<string, string>[]): { orders: BatchOrder[]; skipp
 
 export function ExaprintPanel({ card }: { card: CardData | null }) {
   const [settings, setSettings] = React.useState<Settings>(() => {
-    const defaults = { widthMm: 63, heightMm: 88, bleedMm: 3, spotGold: "Dorure Or", spotHolo: "Dorure Holographique", dpi: 600, foilMode: "separate" as const }
+    const defaults = { widthMm: 55, heightMm: 85, bleedMm: 2, spotGold: "Dorure Or", spotHolo: "Dorure Holographique", dpi: 600, foilMode: "separate" as const }
     try {
       return { ...defaults, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") }
     } catch {

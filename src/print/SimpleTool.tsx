@@ -16,8 +16,8 @@ const slug = (s: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
 
-// Exaprint's hot-foil cards: 55 × 85 mm, 3 mm bleed.
-const PRINT = { widthMm: 55, heightMm: 85, bleedMm: 3 }
+// Exaprint's hot-foil cards: 55 × 85 mm, 2 mm bleed (59 × 89 mm document).
+const PRINT = { widthMm: 55, heightMm: 85, bleedMm: 2 }
 
 export function SimpleTool() {
   const [stats, setStats] = React.useState<TrackStats | null>(null)

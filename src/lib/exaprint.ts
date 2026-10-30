@@ -38,10 +38,11 @@ export type PrintSettings = {
   foilMode: FoilMode
 }
 
+// Exaprint hot-foil business card: 55 × 85 mm, 2 mm bleed (their reply of 30/10/2026).
 export const DEFAULT_SETTINGS: PrintSettings = {
-  widthMm: 63,
-  heightMm: 88,
-  bleedMm: 3,
+  widthMm: 55,
+  heightMm: 85,
+  bleedMm: 2,
   spotGold: "Dorure Or",
   spotHolo: "Dorure Holographique",
   dpi: 600,
@@ -107,6 +108,10 @@ class Ops {
     const Y = this.pageH - (y / this.pxPerMm) * PT_PER_MM
     return `${X.toFixed(3)} ${Y.toFixed(3)}`
   }
+  /** A foil line width in canvas pixels, never under 0.3 mm (hot foil cannot hold finer lines). */
+  foilWidth(v: number) {
+    return this.px(Math.max(v, 0.3 * this.pxPerMm))
+  }
   /** A length in canvas pixels, as PDF points. */
   px(v: number) {
     return ((v / this.pxPerMm) * PT_PER_MM).toFixed(3)
@@ -150,7 +155,7 @@ class Ops {
 /** The vector shapes that receive foil on the front. */
 function frontFoil(o: Ops, g: FrontGeometry, card: CardData) {
   const u = g.u
-  const stroke = (widthPx: number) => o.parts.push(`${o.px(widthPx)} w S`)
+  const stroke = (widthPx: number) => o.parts.push(`${o.foilWidth(widthPx)} w S`)
   o.parts.push("1 J 1 j")
   // Mountain mark
   o.polyline(g.logo)
@@ -191,7 +196,7 @@ function frontFoil(o: Ops, g: FrontGeometry, card: CardData) {
 function backFoil(o: Ops, g: BackGeometry) {
   o.parts.push("1 J 1 j")
   o.polyline(g.logo)
-  o.parts.push(`${o.px(0.55 * g.u)} w S`)
+  o.parts.push(`${o.foilWidth(0.55 * g.u)} w S`)
   // Authenticity seal ring: outer circle minus inner circle (even-odd fill)
   if (!g.seal) return
   o.circle(g.seal.cx, g.seal.cy, g.seal.outer)
@@ -245,7 +250,8 @@ export async function buildCardFiles(card: CardData, s: PrintSettings, reference
   const doc = await newDoc(card, reference)
   if (cmyk) addOutputIntent(doc, cmyk)
   doc.registerFontkit(fontkit)
-  const fonts = await embedCardFonts(doc, await loadFontBytes())
+  // Exaprint asks for text converted to outlines (no fonts in the file).
+  const fonts = await embedCardFonts(doc, await loadFontBytes(), fontkit as never)
   const spot = foilSpot(card, s)
   const foilDoc = spot && s.foilMode === "separate" ? await newDoc(card, reference) : null
   let ocg: PDFRef | null = null

@@ -16,11 +16,20 @@
 import { PDFDict, PDFDocument, PDFName, type PDFFont, type PDFPage, type PDFRef } from "pdf-lib"
 import type { CmykProfile } from "./cmyk"
 
+/** The parts of a fontkit font used to draw text as outlines. */
+type GlyphCommand = { command: string; args: number[] }
+export type OutlineFont = {
+  unitsPerEm: number
+  layout: (text: string) => { glyphs: { path: { commands: GlyphCommand[] } }[]; positions: { xAdvance: number; xOffset: number; yOffset: number }[] }
+}
+
 export type PdfFonts = {
   /** The embedded font for a canvas font weight and family. */
   pick: (weight: number, mono: boolean) => PDFFont
   /** Swaps characters the font cannot draw (e.g. narrow no-break space in Mono). */
   clean: (font: PDFFont, text: string) => string
+  /** When set, text is drawn as filled outlines with this font, not as PDF text. */
+  outline?: (font: PDFFont) => OutlineFont
 }
 
 type RGBA = [number, number, number, number]
@@ -508,6 +517,46 @@ export class PdfCanvas {
     const align = this.st.textAlign
     const dx = align === "right" || align === "end" ? -width : align === "center" ? -width / 2 : 0
     const c = parseColor(style)
+    const outline = this.fonts.outline?.(font)
+    if (outline) {
+      // Printers ask for text converted to outlines: each glyph becomes a path.
+      const saved = this.path
+      const savedPoint = this.currentUser
+      this.beginPath()
+      const k = size / outline.unitsPerEm
+      const run = outline.layout(t)
+      let pen = x + dx
+      let last: [number, number] = [0, 0]
+      run.glyphs.forEach((g, i) => {
+        const pos = run.positions[i]
+        const ox = pen + pos.xOffset * k
+        const oy = y - pos.yOffset * k
+        const P = (gx: number, gy: number): [number, number] => [ox + gx * k, oy - gy * k]
+        for (const { command, args } of g.path.commands) {
+          if (command === "moveTo") this.moveTo(...(last = P(args[0], args[1])))
+          else if (command === "lineTo") this.lineTo(...(last = P(args[0], args[1])))
+          else if (command === "quadraticCurveTo") {
+            // Quadratic (TrueType) to cubic Bézier.
+            const q = P(args[0], args[1])
+            const e = P(args[2], args[3])
+            const c1: [number, number] = [last[0] + (2 / 3) * (q[0] - last[0]), last[1] + (2 / 3) * (q[1] - last[1])]
+            const c2: [number, number] = [e[0] + (2 / 3) * (q[0] - e[0]), e[1] + (2 / 3) * (q[1] - e[1])]
+            this.bezierCurveTo(c1[0], c1[1], c2[0], c2[1], e[0], e[1])
+            last = e
+          } else if (command === "bezierCurveTo") {
+            const a = P(args[0], args[1])
+            const b = P(args[2], args[3])
+            last = P(args[4], args[5])
+            this.bezierCurveTo(a[0], a[1], b[0], b[1], last[0], last[1])
+          } else if (command === "closePath") this.closePath()
+        }
+        pen += pos.xAdvance * k
+      })
+      this.fill()
+      this.path = saved
+      this.currentUser = savedPoint
+      return
+    }
     const enc = font.encodeText(t).toString()
     // The cm flips y; the text matrix flips it back so glyphs stand upright.
     this.parts.push(
@@ -555,11 +604,25 @@ export class PdfCanvas {
   }
 }
 
-/** Embeds the card typefaces in a document and picks them by weight. */
-export async function embedCardFonts(doc: PDFDocument, bytes: Record<string, ArrayBuffer>): Promise<PdfFonts> {
-  const [medium, semibold, bold, mono] = await Promise.all(
-    ["Inter-Medium", "Inter-SemiBold", "Inter-Bold", "JetBrainsMono-Medium"].map((n) => doc.embedFont(bytes[n], { subset: true })),
-  )
+/**
+ * Embeds the card typefaces in a document and picks them by weight. With
+ * `outline`, the fonts are only used for metrics (embedded in a scratch
+ * document that is never saved) and text is drawn as outlines.
+ */
+export async function embedCardFonts(
+  doc: PDFDocument,
+  bytes: Record<string, ArrayBuffer>,
+  outline?: { create: (data: Uint8Array) => OutlineFont },
+): Promise<PdfFonts> {
+  const names = ["Inter-Medium", "Inter-SemiBold", "Inter-Bold", "JetBrainsMono-Medium"]
+  let target = doc
+  if (outline) {
+    target = await PDFDocument.create()
+    target.registerFontkit(outline as never)
+  }
+  const fonts = await Promise.all(names.map((n) => target.embedFont(bytes[n], { subset: true })))
+  const [medium, semibold, bold, mono] = fonts
+  const outlines = outline ? new Map(fonts.map((pf, i) => [pf, outline.create(new Uint8Array(bytes[names[i]]))])) : null
   const charsets = new Map<PDFFont, Set<number>>()
   const has = (font: PDFFont, c: string) => {
     if (!charsets.has(font)) charsets.set(font, new Set(font.getCharacterSet()))
@@ -567,6 +630,7 @@ export async function embedCardFonts(doc: PDFDocument, bytes: Record<string, Arr
   }
   return {
     pick: (weight, isMono) => (isMono ? mono : weight >= 700 ? bold : weight >= 600 ? semibold : medium),
+    outline: outlines ? (font) => outlines.get(font)! : undefined,
     clean: (font, text) => [...text].map((c) => (has(font, c) ? c : /\s/.test(c) ? (has(font, " ") ? " " : " ") : "?")).join(""),
   }
 }
