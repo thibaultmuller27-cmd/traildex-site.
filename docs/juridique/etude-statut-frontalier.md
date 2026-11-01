@@ -250,3 +250,17 @@ Question pour un **avocat en droit du travail luxembourgeois** (si le contrat co
 - Legalstart — Auto-entrepreneur à l'étranger : https://www.legalstart.fr/fiches-pratiques/auto-entrepreneur/auto-entrepreneur-etranger/
 
 **Chiffres non vérifiés sur une source officielle aujourd'hui** : abattement micro-BIC 71 % ; taux d'IS français 15 %/25 % ; taux de TVA luxembourgeois 17 % ; impôt sur la fortune minimum luxembourgeois ; coûts de comptabilité ; coût d'une SARL luxembourgeoise ; règles CFE ; prélèvement forfaitaire unique 2026.
+
+---
+
+## Mise à jour du 01/11/2026 : vérifications CCSS (Claude)
+
+Sources relues directement : [CCSS — S'affilier (MAJ 17/06/2026)](https://ccss.public.lu/fr/independants/commencer-arreter-activite/affilier.html), [CCSS — instructions indépendants (PDF)](https://ccss.public.lu/dam-assets/formulaires/fr/ccss-instructions-independant-entree-FR.pdf), [CCSS — demande de dispense (PDF)](https://ccss.public.lu/dam-assets/formulaires/fr/ccss-formulaire-independant-dispense-FR.pdf), [Guichet.lu — affiliation de l'indépendant (MAJ 20/10/2020)](https://guichet.public.lu/fr/entreprises/creation-developpement/obligations-fiscales-sociales/securite-sociale/affiliation-independant.html), [Frontaliers Grand Est (MAJ 28/08/2026)](https://frontaliers-grandest.eu/accueil/salaries/france-luxembourg/salarie-au-luxembourg-et-auto-entrepreneur-en-france/).
+
+- ✅ **Activité accessoire** (en plus d'un emploi salarié) : cotisations sur le revenu réel « au moins sur base du tiers du salaire social minimum » (CCSS) — et non sur 1 SSM comme pour un indépendant à titre principal. Corrige l'inquiétude du § 2.1 sur des « cotisations minimales lourdes ».
+- ✅ **Dispense** si revenu ≤ 1/3 SSM/an (≈ 11 085 € en 2026, SSM 2 771,33 €/mois depuis le 01/06/2026) ; personne dispensée = « couverte contre aucun risque » sur cette activité (sa couverture salariée reste). Si le revenu définitif dépasse le seuil : affiliation **rétroactive**.
+- ✅ **Délai** : déclaration d'entrée à la CCSS « au plus tard 8 jours après le début de son activité ».
+- ✅ Ordre (Frontaliers Grand Est) : contrat de travail (clauses) → INPI → signaler la pluriactivité à l'URSSAF (lance la détermination de législation) → CCSS (déclaration d'entrée ou dispense) → A1 reçu du Luxembourg, à conserver.
+- 🔎 Ordre de grandeur si affilié (revenu > seuil) : taux 2026 ≈ 25 % (pension 17 + maladie 6,1 + dépendance 1,4 + accident ≈ 0,65) du revenu net, soit au moins ≈ 2 800 €/an au plancher de 1/3 SSM. Calcul Claude, à confirmer.
+- ⚠️ Nouveaux points d'attention (Frontaliers Grand Est) : **télétravail** — créer une activité indépendante fait sortir de l'accord-cadre des 49,9 % (retour à la règle des 25 %) ; **fiscalité** — seuil de 13 000 € de revenus étrangers pour l'assimilation fiscale au Luxembourg.
+- ❓ Toujours sans réponse écrite : revenu retenu par la CCSS pour une micro-entreprise française (CA après abattement 71 % ou bénéfice réel ?), justificatif accepté (avis d'impôt français ?), et date de début à indiquer sur la dispense. → questions à poser à la CCSS (tél. +352 40141-1, formulaire www.ccss.lu/contact) et à Frontaliers Grand Est (+33 3 87 20 40 91).

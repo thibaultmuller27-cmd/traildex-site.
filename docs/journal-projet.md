@@ -69,6 +69,7 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Avis donné : pas de vente du fichier numérique « à quelques centimes » (frais de paiement, dorure impossible à reproduire chez soi, fichier piratable) ; Shopify possible plus tard pour le B2C, le PDF d'impression restant privé.
 
 ### Juridique
+- 01/11 : vérifications CCSS ajoutées à `docs/juridique/etude-statut-frontalier.md` : activité **accessoire** = cotisations sur au moins **1/3 SSM** (pas 1 SSM) ; dispense ≤ ≈ 11 085 €/an ; déclaration CCSS sous 8 jours ; attention télétravail (sortie de l'accord 49,9 %) et seuil fiscal de 13 000 €. Questions à poser par Thibault à la CCSS.
 - Étude `docs/juridique/etude-statut-frontalier.md` : micro-entreprise française recommandée, cotisations à la CCSS Luxembourg (dispense possible sous ≈ 11 085 €/an), télétravail salarié à garder < 25 %, pas de société au Luxembourg, Legalstart non nécessaire (INPI gratuit). **À valider avec un expert-comptable frontaliers.**
 
 - **22/10 au soir : Thibault a envoyé la demande à Exaprint via leur formulaire** (vérification des fichiers + 2 exemplaires test or et holo), avec les PDF d'avant le passage au 100 % vectoriel. À la réponse : renvoyer les fichiers vectoriels comme version définitive.
