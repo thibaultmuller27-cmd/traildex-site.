@@ -36,6 +36,8 @@ export type PrintSettings = {
   spotHolo: string
   dpi: number
   foilMode: FoilMode
+  /** Foil on the back too. Exaprint's hot-foil cards take foil on the front only (02/11/2026). */
+  foilBack?: boolean
 }
 
 // Exaprint hot-foil business card: 55 × 85 mm, 2 mm bleed (their reply of 30/10/2026).
@@ -280,7 +282,12 @@ export async function buildCardFiles(card: CardData, s: PrintSettings, reference
     if (!spot) continue
     const o = new Ops(pxPerMm, page.getSize().height)
     if (front) frontFoil(o, front, card)
-    if (back) backFoil(o, back)
+    if (back) {
+      // Front-only foil: the back keeps its printed logo and seal, and the
+      // foil file has a single page.
+      if (!s.foilBack) continue
+      backFoil(o, back)
+    }
     const ops = o.parts.join("\n")
     if (ocg) addFoilLayer(doc, page, ops, spot, ocg)
     if (foilDoc) {
@@ -370,7 +377,9 @@ export function readme(sets: PrintSet[], s: PrintSettings, cmykName?: string) {
   const foil =
     s.foilMode === "separate"
       ? [
-          "Dorure : fichier separe *_dorure.pdf (recto, verso), elements vectoriels en noir 100 % K, meme format et memes reperes que *_impression.pdf.",
+          s.foilBack
+          ? "Dorure : fichier separe *_dorure.pdf (recto, verso), elements vectoriels en noir 100 % K, meme format et memes reperes que *_impression.pdf."
+          : "Dorure au recto uniquement : fichier separe *_dorure.pdf (1 page), elements vectoriels en noir 100 % K, meme format et memes reperes que la page 1 de *_impression.pdf.",
         ]
       : [`Dorure : calque "Acabado", couleur directe "${s.spotGold}" (Or) ou "${s.spotHolo}" (Holo), surimpression activee.`]
   const lines = [
