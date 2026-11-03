@@ -264,3 +264,9 @@ Sources relues directement : [CCSS — S'affilier (MAJ 17/06/2026)](https://ccss
 - 🔎 Ordre de grandeur si affilié (revenu > seuil) : taux 2026 ≈ 25 % (pension 17 + maladie 6,1 + dépendance 1,4 + accident ≈ 0,65) du revenu net, soit au moins ≈ 2 800 €/an au plancher de 1/3 SSM. Calcul Claude, à confirmer.
 - ⚠️ Nouveaux points d'attention (Frontaliers Grand Est) : **télétravail** — créer une activité indépendante fait sortir de l'accord-cadre des 49,9 % (retour à la règle des 25 %) ; **fiscalité** — seuil de 13 000 € de revenus étrangers pour l'assimilation fiscale au Luxembourg.
 - ❓ Toujours sans réponse écrite : revenu retenu par la CCSS pour une micro-entreprise française (CA après abattement 71 % ou bénéfice réel ?), justificatif accepté (avis d'impôt français ?), et date de début à indiquer sur la dispense. → questions à poser à la CCSS (tél. +352 40141-1, formulaire www.ccss.lu/contact) et à Frontaliers Grand Est (+33 3 87 20 40 91).
+
+### Réponse écrite de la CCSS (03/11/2026)
+
+> « Lorsque votre revenu (chiffre d'affaires après l'abattement) est inférieur au tiers du salaire social minimum, vous avez la possibilité de demander une dispense d'affiliation à titre indépendant pour cause de revenu insignifiant. Si votre revenu est supérieur au tiers du salaire social minimum, les cotisations sociales sont calculées sur base de votre revenu réel mais au moins sur base d'un tiers du salaire social minimum. »
+
+→ ✅ **Revenu retenu = chiffre d'affaires après l'abattement micro (71 % pour la vente), soit CA × 29 %.** Seuil de dispense ≈ 11 085 € de revenu ⇒ **≈ 38 200 € de CA par an (≈ 3 185 €/mois)**. Au-delà, cotisations ≈ 25 % × (CA × 29 %) ≈ **7 % du CA** (calcul Claude, taux 2026).
