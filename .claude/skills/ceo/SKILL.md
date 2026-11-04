@@ -21,7 +21,9 @@ Ces règles sont aussi verrouillées dans `.claude/settings.json` (outils d'envo
 ## Références
 
 - Notion, page « TrailDex — Direction » : `40114359-4ba1-8171-ad9e-c73a04228b57`
+- Notion, dossier « Stratégie & pilotage » (rapports CEO, base Décisions, étude business model) : `40e14359-4ba1-811f-a0f9-cf9879f27764`
 - Notion, base « Décisions » (data source) : `collection://1e75d4b1-c30d-487e-856c-9af209014239`
+- Notion, base « Tâches » (Kanban, data source) : `collection://13a8b3dd-b6a5-42f4-b9b6-5cc684183a55` — propriétés Statut (À faire / En attente / En cours / Fait), Thème, Responsable, Priorité, Échéance, Notes. Tiens-la à jour : passe en « Fait » ce qui est terminé, ajoute les nouvelles tâches avec leur thème. Les dossiers par thème (Impression, Site, Paiement & finances, Juridique, Marketing, Stratégie) sont sous la page Direction.
   Propriétés : Décision (titre), Statut (À valider / Validée / Refusée / Faite), Type (Contact externe / Interne / Dépense / Site / code / Marketing), Agent (CEO / Opérations / Produit & site / Marketing / Finance & fournisseurs), Détail, Brouillon / lien, Semaine (date), Réf (DEC-n).
 - Airtable, base TrailDex `appFtEAvDkYtjLleM`, table Commandes `tbl4QdVEf4WWnoE4P` (statuts : Nouvelle, Confirmée, Payée, À imprimer, Imprimée, Expédiée, Annulée).
 - GitHub : `thibaultmuller27-cmd/traildex-site.`, branche de travail principale `claude/practical-cray-da49sb`.
@@ -29,7 +31,7 @@ Ces règles sont aussi verrouillées dans `.claude/settings.json` (outils d'envo
 ## Déroulé
 
 ### 1. Reprendre le fil
-- Lis la page Direction et le dernier « Rapport CEO » (sous-page la plus récente).
+- Lis la page Direction, la base Tâches et le dernier « Rapport CEO » (dans le dossier Stratégie & pilotage).
 - Interroge la base Décisions. Classe :
   - **Validée** depuis le dernier rapport → à exécuter cette semaine si c'est interne ; si c'est un « Contact externe », rappelle à Thibault que le brouillon l'attend (ne l'envoie pas).
   - **Refusée** → abandonne, ne la repropose pas sans élément nouveau.
@@ -52,7 +54,7 @@ Chaque agent te répond avec : constats, chiffres, actions faites (internes), pr
 - Fusionne les doublons entre agents.
 
 ### 4. Publier dans Notion
-Crée une sous-page de « TrailDex — Direction » intitulée `Rapport CEO — semaine du <date du jour, ex. 22 octobre 2026>`, lisible sur téléphone :
+Crée une sous-page du dossier « Stratégie & pilotage » intitulée `Rapport CEO — semaine du <date du jour, ex. 22 octobre 2026>`, lisible sur téléphone :
 
 1. **En bref** (3 lignes max)
 2. **Chiffres** : commandes de la semaine, total depuis le début, chiffre d'affaires (précommandes), cartes à imprimer, cartes en retard

@@ -23,6 +23,9 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Outil mis à jour : fond perdu 2 mm par défaut (55 × 85), texte converti en tracés (plus aucune police dans les PDF), traits de dorure ≥ 0,3 mm. Nouveaux PDF test générés.
 - Alternative trouvée : **Printeurope** (Mundolsheim, 67) jeux de cartes 63 × 89 mm, dès 1 jeu, cartes toutes différentes au même prix : 1 jeu de 54 cartes couché 350 g + pelliculage brillant = 46 € HT (≈ 1 €/carte) ; 25 jeux = 280 € HT livraison comprise (≈ 0,25 €/carte). Dorure / holographique sur cartes différentes : à leur demander.
 
+### Notion réorganisé (04/11)
+- Page « TrailDex — Direction » refaite en tableau de bord coloré : 6 dossiers (Impression & fournisseurs, Site & produit, Paiement & finances, Juridique & administratif, Marketing & marque, Stratégie & pilotage), 3 priorités, et une base **Tâches** (Kanban) : vues Kanban (par statut), Par thème, Par responsable ; chaque dossier a son Kanban filtré. 27 tâches créées depuis l'état du projet. Base Décisions, rapports CEO et étude business model rangés dans Stratégie & pilotage ; plan Instagram dans Marketing. Skill `ceo` mis à jour (rapports dans Stratégie, Kanban à tenir à jour).
+
 ### « Revivre ma course » (04/11)
 - Idée de Thibault : sur la carte du créateur, le tracé se dessine du départ à l'arrivée (5 s), un point suit le parcours et le profil d'altitude. Se lance tout seul après l'import du GPX et via le bouton « Revivre ma course ». Désactivé si « réduire les animations » est activé. `src/lib/replay.ts`, `src/components/TrailCard.tsx`. Vibrations abandonnées le 04/11 (pas sur iPhone).
 
