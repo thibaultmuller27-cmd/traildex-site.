@@ -8,6 +8,8 @@ export type Finish = "holo" | "or"
 export type Edition = {
   /** e.g. "Édition 2027" */
   label: string
+  /** Front badge, "FINISHER" by default (e.g. "MEMBRE" for a club card) */
+  badge?: string
   /** Town or area, shown on the back */
   place?: string
   /** Copies printed, shown as "300 EX." */

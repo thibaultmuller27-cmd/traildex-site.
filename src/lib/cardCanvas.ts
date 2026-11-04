@@ -230,7 +230,7 @@ export async function drawCardFront(
   const edition = card.edition
   ctx.font = `600 ${2.3 * u}px ${SANS}`
   // Organiser editions say FINISHER; the rarity gems belong to personal cards.
-  const label = (edition ? "FINISHER" : rarity.label).toUpperCase()
+  const label = (edition ? edition.badge || "FINISHER" : rarity.label).toUpperCase()
   const labelW = [...label].reduce((s, c) => s + ctx.measureText(c).width + 0.32 * u, 0)
   const pillW = labelW + 4.4 * u + (edition ? 0 : 4 * 2.8 * u)
   const pillH = 4.4 * u
@@ -274,9 +274,10 @@ export async function drawCardFront(
   cy -= 7.6 * u
   ctx.fillStyle = t.sub
   ctx.font = `500 ${2.4 * u}px ${MONO}`
-  const dateLine = (
-    fmtDate(card.date) + (edition?.place ? ` · ${edition.place}` : card.maxEle != null ? ` · alt. ${fmtInt(card.maxEle)} m` : "")
-  ).toUpperCase()
+  const dateLine = [fmtDate(card.date), edition?.place ? edition.place : card.maxEle != null ? `alt. ${fmtInt(card.maxEle)} m` : ""]
+    .filter(Boolean)
+    .join(" · ")
+    .toUpperCase()
   spaced(ctx, dateLine, x + pad, cy + 4.4 * u, 0.38 * u)
 
   // Bottom block, measured from the card's foot like the live layout
