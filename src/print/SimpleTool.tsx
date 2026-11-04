@@ -68,8 +68,10 @@ export function SimpleTool() {
     }
   }
 
-  const downloadPdf = () =>
-    run("Création du PDF…", async () => {
+  // One download per click: browsers (and the claude.ai viewer) often block a
+  // second file saved right after the first.
+  const downloadPdf = (part: "print" | "foil") =>
+    run(part === "foil" ? "Création du fichier dorure…" : "Création du PDF…", async () => {
       if (!card) return
       const ex = await import("@/lib/exaprint")
       const { loadSavedProfileBytes, loadCmykProfile } = await import("@/lib/cmyk")
@@ -77,8 +79,8 @@ export function SimpleTool() {
       const cmyk = icc ? await loadCmykProfile(icc).catch(() => undefined) : undefined
       const files = await ex.buildCardFiles(card, { ...ex.DEFAULT_SETTINGS, ...PRINT }, undefined, cmyk)
       const name = `traildex-${slug(race)}`
-      await saveFile(files.print, `${name}.pdf`, "application/pdf")
-      if (files.foil) await saveFile(files.foil, `${name}-dorure.pdf`, "application/pdf")
+      if (part === "print") await saveFile(files.print, `${name}_impression.pdf`, "application/pdf")
+      else if (files.foil) await saveFile(files.foil, `${name}_dorure.pdf`, "application/pdf")
     })
 
   const downloadImage = (format: "story" | "post") =>
@@ -128,8 +130,11 @@ export function SimpleTool() {
           <div className="mt-6 flex items-start gap-3">
             <span className={step}>3</span>
             <div className="flex flex-1 flex-wrap gap-2">
-              <button onClick={downloadPdf} disabled={!!busy} className="rounded-full bg-[#0071e3] px-5 py-3 text-[15px] font-medium text-white disabled:opacity-40">
-                PDF à imprimer
+              <button onClick={() => downloadPdf("print")} disabled={!!busy} className="rounded-full bg-[#0071e3] px-5 py-3 text-[15px] font-medium text-white disabled:opacity-40">
+                PDF à imprimer (couleur)
+              </button>
+              <button onClick={() => downloadPdf("foil")} disabled={!!busy} className="rounded-full border-2 border-ink bg-white px-5 py-3 text-[15px] font-medium text-ink disabled:opacity-40">
+                Fichier dorure (noir et blanc)
               </button>
               <button onClick={() => downloadImage("story")} disabled={!!busy} className="rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-white disabled:opacity-40">
                 Image Story
