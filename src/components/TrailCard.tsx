@@ -13,6 +13,7 @@ import {
   type Rarity,
 } from "@/lib/card"
 import { RARITIES } from "@/lib/config"
+import { finishBuzz, prefersReducedMotion, profilePoints, profileY, REPLAY_MS, strideTap } from "@/lib/replay"
 import { cn, seeded } from "@/lib/utils"
 
 type Theme = {
@@ -137,9 +138,11 @@ export type TrailCardProps = {
   className?: string
   /** Placeholder mode for the creator before a GPX is loaded. */
   placeholder?: boolean
+  /** Change to a new non-zero value to replay the race on the card. */
+  replay?: number
 }
 
-export function TrailCard({ card, width, spin, idle = true, webgl = false, flippable = true, className, placeholder }: TrailCardProps) {
+export function TrailCard({ card, width, spin, idle = true, webgl = false, flippable = true, className, placeholder, replay }: TrailCardProps) {
   const theme = THEMES[card.rarity]
   return (
     <HoloCard
@@ -152,7 +155,7 @@ export function TrailCard({ card, width, spin, idle = true, webgl = false, flipp
       finish={theme.foil}
       foilOpacity={theme.foilOpacity}
       label={`Carte ${card.race || "TrailDex"} de ${card.runner || "coureur"}`}
-      front={<CardFront card={card} theme={theme} placeholder={placeholder} />}
+      front={<CardFront card={card} theme={theme} placeholder={placeholder} replay={replay} />}
       back={<CardBack card={card} theme={theme} />}
     />
   )
@@ -182,9 +185,79 @@ function Wordmark({ color }: { color: string }) {
   )
 }
 
-export function CardFront({ card, theme, placeholder, transparent }: { card: CardData; theme: Theme; placeholder?: boolean; transparent?: boolean }) {
+/**
+ * Replays the race on the card: the route draws itself from start to finish,
+ * a dot runs along it and along the profile, and the phone taps each stride.
+ * Starts whenever `replay` changes to a new non-zero value.
+ */
+function useReplay(card: CardData, replay: number | undefined, measure: React.RefObject<SVGPathElement>) {
+  const [p, setP] = React.useState<number | null>(null)
+  const [dot, setDot] = React.useState<[number, number] | null>(null)
+  React.useEffect(() => {
+    if (!replay || !card.routePath || prefersReducedMotion()) return
+    const pts = profilePoints(card.profileLine)
+    const path = measure.current
+    const total = path?.getTotalLength() ?? 0
+    let raf = 0
+    let start = 0
+    let lastStride = 0
+    let lastY = profileY(pts, 0)
+    const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2)
+    const frame = (now: number) => {
+      if (!start) start = now
+      const t = Math.min(1, (now - start) / REPLAY_MS)
+      const prog = ease(t)
+      setP(prog)
+      if (path && total) {
+        const pt = path.getPointAtLength(prog * total)
+        setDot([pt.x, pt.y])
+      }
+      if (now - lastStride > 150) {
+        const y = profileY(pts, prog * 100)
+        strideTap(lastY - y) // the profile's y shrinks as the runner climbs
+        lastY = y
+        lastStride = now
+      }
+      if (t < 1) raf = requestAnimationFrame(frame)
+      else {
+        finishBuzz()
+        setTimeout(() => {
+          setP(null)
+          setDot(null)
+        }, 900)
+      }
+    }
+    raf = requestAnimationFrame(frame)
+    return () => {
+      cancelAnimationFrame(raf)
+      setP(null)
+      setDot(null)
+    }
+  }, [replay, card.routePath, card.profileLine, measure])
+  return { p, dot, pts: React.useMemo(() => profilePoints(card.profileLine), [card.profileLine]) }
+}
+
+export function CardFront({
+  card,
+  theme,
+  placeholder,
+  transparent,
+  replay,
+}: {
+  card: CardData
+  theme: Theme
+  placeholder?: boolean
+  transparent?: boolean
+  /** Change to a new non-zero value to replay the race on the card. */
+  replay?: number
+}) {
   const seed = hashSeed(card.race + card.id)
   const gid = React.useId().replace(/:/g, "")
+  const measure = React.useRef<SVGPathElement>(null)
+  const { p, dot, pts } = useReplay(card, placeholder ? 0 : replay, measure)
+  const drawing = p !== null
+  // While replaying, both route strokes are revealed from the start.
+  const reveal = drawing ? { pathLength: 1, strokeDasharray: "1 1", strokeDashoffset: 1 - p } : {}
   const rarity = RARITIES[card.rarity]
   const rank = parseRank(card.rank)
   const podium = rank && rank.pos <= 3
@@ -242,8 +315,11 @@ export function CardFront({ card, theme, placeholder, transparent }: { card: Car
                 <feGaussianBlur stdDeviation="1.6" />
               </filter>
             </defs>
+            {/* Faint full route under the replay; also used to measure positions. */}
+            <path ref={measure} d={card.routePath} fill="none" stroke={theme.route} strokeWidth={1.25} strokeLinecap="round" opacity={drawing ? 0.18 : 0} />
             <path
               d={card.routePath}
+              {...reveal}
               fill="none"
               stroke={theme.routeGlow}
               strokeWidth={3.2}
@@ -260,12 +336,14 @@ export function CardFront({ card, theme, placeholder, transparent }: { card: Car
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeDasharray={placeholder ? "2 2.5" : undefined}
+              {...reveal}
               opacity={placeholder ? 0.45 : 1}
             />
             {!placeholder && card.start && (
               <circle cx={card.start[0]} cy={card.start[1]} r={2} fill={theme.ink} stroke={theme.route} strokeWidth={0.8} />
             )}
-            {!placeholder && card.end && (
+            {dot && <circle cx={dot[0]} cy={dot[1]} r={2.2} fill={theme.ink} stroke={theme.route} strokeWidth={1} />}
+            {!placeholder && card.end && (!drawing || p >= 1) && (
               <rect x={card.end[0] - 1.8} y={card.end[1] - 1.8} width={3.6} height={3.6} fill={theme.route} transform={`rotate(45 ${card.end[0]} ${card.end[1]})`} />
             )}
           </svg>
@@ -306,6 +384,12 @@ export function CardFront({ card, theme, placeholder, transparent }: { card: Car
             </defs>
             <path d={card.profileArea} fill={`url(#pf-${gid})`} opacity={placeholder ? 0.4 : 1} />
             <path d={card.profileLine} fill="none" stroke={theme.profile} strokeWidth={1.2} vectorEffect="non-scaling-stroke" opacity={placeholder ? 0.4 : 1} />
+            {drawing && (
+              <>
+                <line x1={p * 100} x2={p * 100} y1={0} y2={30} stroke={theme.ink} strokeWidth={0.6} vectorEffect="non-scaling-stroke" opacity={0.5} />
+                <circle cx={p * 100} cy={profileY(pts, p * 100)} r={1.4} fill={theme.ink} />
+              </>
+            )}
           </svg>
         ) : (
           <div className="absolute inset-x-0 bottom-0 h-px" style={{ background: theme.line }} />
