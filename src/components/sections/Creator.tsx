@@ -103,7 +103,6 @@ export function Creator() {
 
   const applyStats = (s: TrackStats, name: string) => {
     setStats(s)
-    // The file pick is a user gesture, so the phone may vibrate during the replay.
     setReplay((r) => r + 1)
     setFileName(name)
     setError(null)

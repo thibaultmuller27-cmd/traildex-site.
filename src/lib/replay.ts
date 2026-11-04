@@ -1,10 +1,4 @@
-/**
- * "Relive the race": the route draws itself from start to finish while the
- * phone gives a light tap per stride, harder on the climbs.
- *
- * Haptics use the Vibration API (Android browsers). iPhones do not expose
- * it to websites, so there the replay is visual only.
- */
+/** "Relive the race": the route draws itself on the card from start to finish. */
 
 export const REPLAY_MS = 5000
 
@@ -31,22 +25,5 @@ export function profileY(pts: [number, number][], x: number) {
   return pts[pts.length - 1][1]
 }
 
-export const canVibrate = () => typeof navigator !== "undefined" && typeof navigator.vibrate === "function"
-
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
-
-/**
- * One stride tap: 6 ms on the flat or downhill, up to 28 ms on a steep climb.
- * `climb` is how much the profile rises over the last stride (profile units).
- */
-export function strideTap(climb: number) {
-  if (!canVibrate()) return
-  const steep = Math.max(0, Math.min(1, climb / 0.9))
-  navigator.vibrate(Math.round(6 + 22 * steep))
-}
-
-/** Finish line: a short celebratory pattern. */
-export function finishBuzz() {
-  if (canVibrate()) navigator.vibrate([40, 60, 40, 60, 120])
-}

@@ -13,7 +13,7 @@ import {
   type Rarity,
 } from "@/lib/card"
 import { RARITIES } from "@/lib/config"
-import { finishBuzz, prefersReducedMotion, profilePoints, profileY, REPLAY_MS, strideTap } from "@/lib/replay"
+import { prefersReducedMotion, profilePoints, profileY, REPLAY_MS } from "@/lib/replay"
 import { cn, seeded } from "@/lib/utils"
 
 type Theme = {
@@ -187,7 +187,7 @@ function Wordmark({ color }: { color: string }) {
 
 /**
  * Replays the race on the card: the route draws itself from start to finish,
- * a dot runs along it and along the profile, and the phone taps each stride.
+ * and a dot runs along it and along the profile.
  * Starts whenever `replay` changes to a new non-zero value.
  */
 function useReplay(card: CardData, replay: number | undefined, measure: React.RefObject<SVGPathElement>) {
@@ -195,13 +195,10 @@ function useReplay(card: CardData, replay: number | undefined, measure: React.Re
   const [dot, setDot] = React.useState<[number, number] | null>(null)
   React.useEffect(() => {
     if (!replay || !card.routePath || prefersReducedMotion()) return
-    const pts = profilePoints(card.profileLine)
     const path = measure.current
     const total = path?.getTotalLength() ?? 0
     let raf = 0
     let start = 0
-    let lastStride = 0
-    let lastY = profileY(pts, 0)
     const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2)
     const frame = (now: number) => {
       if (!start) start = now
@@ -212,15 +209,8 @@ function useReplay(card: CardData, replay: number | undefined, measure: React.Re
         const pt = path.getPointAtLength(prog * total)
         setDot([pt.x, pt.y])
       }
-      if (now - lastStride > 150) {
-        const y = profileY(pts, prog * 100)
-        strideTap(lastY - y) // the profile's y shrinks as the runner climbs
-        lastY = y
-        lastStride = now
-      }
       if (t < 1) raf = requestAnimationFrame(frame)
       else {
-        finishBuzz()
         setTimeout(() => {
           setP(null)
           setDot(null)
