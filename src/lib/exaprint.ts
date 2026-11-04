@@ -70,7 +70,7 @@ const FONT_URLS: Record<string, string> = {
   "JetBrainsMono-Medium": monoMedium,
 }
 
-function loadFontBytes() {
+export function loadFontBytes() {
   fontBytes ??= Promise.all(
     Object.entries(FONT_URLS).map(async ([n, url]) => {
       // In the single-file tool the fonts are data: URLs; decode them here,
@@ -85,7 +85,7 @@ function loadFontBytes() {
 }
 
 /** PDF/X-style output intent: tells the printer which press condition the CMYK targets. */
-function addOutputIntent(doc: PDFDocument, cmyk: CmykProfile) {
+export function addOutputIntent(doc: PDFDocument, cmyk: CmykProfile) {
   const ctx = doc.context
   const icc = ctx.register(ctx.flateStream(cmyk.icc, { N: 4 }))
   const intent = ctx.obj({
@@ -99,7 +99,7 @@ function addOutputIntent(doc: PDFDocument, cmyk: CmykProfile) {
 }
 
 /** Builds PDF path operators from canvas-pixel points. */
-class Ops {
+export class Ops {
   parts: string[] = []
   constructor(
     private pxPerMm: number,
@@ -230,14 +230,14 @@ export type CardFiles = {
   maxInk?: number
 }
 
-async function newDoc(card: CardData, reference?: string) {
+export async function newDoc(card: CardData, reference?: string) {
   const doc = await PDFDocument.create()
   doc.setTitle(`TrailDex ${reference ?? ""} ${card.race}`.trim())
   doc.setCreator("TrailDex")
   return doc
 }
 
-function addTrimmedPage(doc: PDFDocument, s: PrintSettings) {
+export function addTrimmedPage(doc: PDFDocument, s: PrintSettings) {
   const wPt = (s.widthMm + 2 * s.bleedMm) * PT_PER_MM
   const hPt = (s.heightMm + 2 * s.bleedMm) * PT_PER_MM
   const b = s.bleedMm * PT_PER_MM

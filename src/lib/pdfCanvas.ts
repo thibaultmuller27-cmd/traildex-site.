@@ -577,10 +577,18 @@ export class PdfCanvas {
     canvas.width = cw
     canvas.height = ch
     const c2 = canvas.getContext("2d")!
-    c2.fillStyle = "#fff"
-    c2.fillRect(0, 0, cw, ch)
     c2.drawImage(src, 0, 0, cw, ch)
     const px = c2.getImageData(0, 0, cw, ch).data
+    // Transparent images (logos) keep their transparency through a soft mask;
+    // opaque ones (photos) are written as they are.
+    let alpha: Uint8Array | null = null
+    for (let i = 3; i < px.length; i += 4) {
+      if (px[i] < 255) {
+        alpha = new Uint8Array(cw * ch)
+        for (let j = 0; j < alpha.length; j++) alpha[j] = px[j * 4 + 3]
+        break
+      }
+    }
     let data: Uint8Array
     if (this.cmyk) data = this.cmyk.convert(px).cmyk
     else {
@@ -588,8 +596,19 @@ export class PdfCanvas {
       for (let i = 0, j = 0; i < px.length; i += 4, j += 3) data.set([px[i], px[i + 1], px[i + 2]], j)
     }
     const ctx = this.doc.context
+    const smask = alpha
+      ? ctx.register(ctx.flateStream(alpha, { Type: "XObject", Subtype: "Image", Width: cw, Height: ch, ColorSpace: "DeviceGray", BitsPerComponent: 8 } as never))
+      : undefined
     const ref = ctx.register(
-      ctx.flateStream(data, { Type: "XObject", Subtype: "Image", Width: cw, Height: ch, ColorSpace: this.space, BitsPerComponent: 8 } as never),
+      ctx.flateStream(data, {
+        Type: "XObject",
+        Subtype: "Image",
+        Width: cw,
+        Height: ch,
+        ColorSpace: this.space,
+        BitsPerComponent: 8,
+        ...(smask ? { SMask: smask } : {}),
+      } as never),
     )
     const name = this.page.node.newXObject("Im", ref).asString()
     this.parts.push(`q ${this.gs(this.st.globalAlpha)} ${this.cm()} ${f(dw)} 0 0 ${f(-dh)} ${f(dx)} ${f(dy + dh)} cm ${name} Do Q`)
