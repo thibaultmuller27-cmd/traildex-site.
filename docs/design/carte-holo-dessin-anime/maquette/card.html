@@ -1,0 +1,318 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Patrick+Hand&family=Inter:wght@500;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>body{margin:0;background:#111;display:flex;gap:28px;padding:28px}figure{margin:0;color:#ddd;font:600 15px Inter,sans-serif;text-align:center}canvas{width:320px;height:505px;border-radius:14px;display:block;margin-bottom:10px}</style>
+<canvas id="out" width="1843" height="2882" style="width:184px;height:288px"></canvas>
+<script src="tracks.js"></script>
+<script>
+const W = 760, H = 1200
+const HOLO = { bg0: "#07130f", bg1: "#150a2a", a: "#3dffa2", b: "#a45bff", c: "#62f0ff", txt: "#f2fff9", mute: "rgba(220,255,240,.62)" }
+const OR = { bg0: "#120d04", bg1: "#24190a", a: "#ffd36b", b: "#ff9f2e", c: "#fff1c2", txt: "#fff8e6", mute: "rgba(255,240,205,.62)" }
+function rng(s) { return () => (s = (s * 16807) % 2147483647) / 2147483647 }
+// smooth value noise
+function makeNoise(seed) { const R = rng(seed), P = []; for (let i = 0; i < 512; i++) P.push(R())
+  const f = t => t * t * (3 - 2 * t), h = (x, y) => P[((x * 73856093) ^ (y * 19349663)) & 511]
+  return (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), xf = f(x - xi), yf = f(y - yi)
+    const a = h(xi, yi), b = h(xi + 1, yi), c = h(xi, yi + 1), d = h(xi + 1, yi + 1); return a + (b - a) * xf + (c - a) * yf + (a - b - c + d) * xf * yf } }
+const N = makeNoise(9), fbm = (x, y) => N(x, y) * .6 + N(x * 2.1, y * 2.1) * .3 + N(x * 4.3, y * 4.3) * .1
+
+function route(P) { // GPX → card coordinates inside the art box
+  const t = TRACKS["d-mercantour"].pts, lat0 = t.reduce((a, p) => a + p[0], 0) / t.length, k = Math.cos(lat0 * Math.PI / 180)
+  const xy = t.map(p => [p[1] * k, -p[0]]), xs = xy.map(p => p[0]), ys = xy.map(p => p[1])
+  const bx = 150, by = 308, bw = 460, bh = 460, sc = Math.min(bw / (Math.max(...xs) - Math.min(...xs)), bh / (Math.max(...ys) - Math.min(...ys))) * .88
+  const cx = (Math.max(...xs) + Math.min(...xs)) / 2, cy = (Math.max(...ys) + Math.min(...ys)) / 2
+  return { pts: xy.map(p => [bx + bw / 2 + (p[0] - cx) * sc, by + bh / 2 + (p[1] - cy) * sc]), ele: t.map(p => p[2]) }
+}
+function base(ctx, C) { const g = ctx.createLinearGradient(0, 0, W * .4, H); g.addColorStop(0, C.bg1); g.addColorStop(1, C.bg0); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H) }
+function grad(ctx, C, x0 = 0, y0 = 0, x1 = W, y1 = H) { const g = ctx.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, C.b); g.addColorStop(.5, C.c); g.addColorStop(1, C.a); return g }
+
+function bgRidge(ctx, C) {
+  base(ctx, C)
+  for (let row = 0; row < 40; row++) {
+    const y0 = 230 + row * 23, pts = []
+    for (let x = -10; x <= W + 10; x += 8) { const mid = 1 - Math.abs(x - W / 2) / (W / 2); const amp = 30 + 95 * mid * mid; pts.push([x, y0 - fbm(x / 120, row / 3.2) * amp]) }
+    ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.lineTo(W + 10, H); ctx.lineTo(-10, H); ctx.closePath()
+    ctx.fillStyle = C.bg0; ctx.globalAlpha = .92; ctx.fill(); ctx.globalAlpha = 1
+    ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))
+    ctx.strokeStyle = grad(ctx, C, 0, 200, W, 1100); ctx.globalAlpha = .25 + .45 * (row / 40); ctx.lineWidth = 1.6; ctx.shadowColor = C.a; ctx.shadowBlur = 6; ctx.stroke(); ctx.shadowBlur = 0; ctx.globalAlpha = 1
+  }
+}
+function bgAurora(ctx, C) {
+  base(ctx, C); const R = rng(3)
+  for (let i = 0; i < 160; i++) { ctx.fillStyle = "rgba(255,255,255," + (.15 + R() * .6) + ")"; ctx.beginPath(); ctx.arc(R() * W, R() * H * .7, R() * 1.6 + .3, 0, 7); ctx.fill() }
+  ctx.save(); ctx.filter = "blur(26px)"; ctx.globalCompositeOperation = "lighter"
+  const bands = [[C.a, 380, .55], [C.b, 520, .5], [C.c, 640, .35], [C.a, 860, .4], [C.b, 1000, .45]]
+  for (const [col, yc, al] of bands) { ctx.beginPath(); for (let x = -40; x <= W + 40; x += 10) { const y = yc + Math.sin(x / 130 + yc) * 60 + fbm(x / 160, yc / 90) * 90 - 45; x < -30 ? ctx.moveTo(x, y) : ctx.lineTo(x, y) }
+    ctx.strokeStyle = col; ctx.globalAlpha = al; ctx.lineWidth = 70; ctx.stroke() }
+  ctx.restore()
+  ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = .14
+  for (let x = 0; x < W; x += 3) { const y = 300 + fbm(x / 90, 1) * 520; const g = ctx.createLinearGradient(0, y - 220, 0, y); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, x % 2 ? C.a : C.b); ctx.fillStyle = g; ctx.fillRect(x, y - 220, 1.2, 220) }
+  ctx.restore()
+}
+function bgFlow(ctx, C, rt) {
+  base(ctx, C); const R = rng(5)
+  // angle field = noise, pulled along the route direction near the trace
+  const near = (x, y) => { let best = 1e9, ang = 0; for (let i = 0; i < rt.pts.length - 6; i += 6) { const [px, py] = rt.pts[i], d = (px - x) ** 2 + (py - y) ** 2; if (d < best) { best = d; const q = rt.pts[i + 6]; ang = Math.atan2(q[1] - py, q[0] - px) } } return [Math.sqrt(best), ang] }
+  ctx.lineWidth = 1.3; ctx.globalCompositeOperation = "lighter"
+  for (let n = 0; n < 900; n++) { let x = R() * W, y = R() * H; ctx.beginPath(); ctx.moveTo(x, y)
+    const col = [C.a, C.b, C.c][n % 3]; ctx.strokeStyle = col; ctx.globalAlpha = .18
+    for (let s = 0; s < 70; s++) { const [d, ra] = near(x, y), na = fbm(x / 170, y / 170) * Math.PI * 4, w = Math.exp(-d / 70); const a = na * (1 - w) + ra * w
+      x += Math.cos(a) * 5; y += Math.sin(a) * 5; ctx.lineTo(x, y) }
+    ctx.stroke() }
+  ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1
+}
+
+const SKY = {
+  holo: { top: "#1b0b3d", mid: "#5a2bb8", low: "#1fd6a0", sun: "#d8fff0", far: ["#8f74e8", "#6a4fd0"], mid2: ["#4b3cc0", "#2f2690"], near: ["#1fae86", "#0d6e5c"], snow: ["#f4fff9", "#bfe8ff"], cloud: ["#ffffff", "#c9b8ff", "#8b6fe0"], forest: "#062a24", pine: "#13916a", accent: "#ffe14d", ray: "rgba(180,255,225,.10)" },
+  or: { top: "#2a1206", mid: "#c2541e", low: "#ffd36b", sun: "#fff6d6", far: ["#e8956a", "#c66a4a"], mid2: ["#a44a3a", "#7a2f2a"], near: ["#6b3a1e", "#3f2010"], snow: ["#fff8ec", "#ffd9a8"], cloud: ["#fff7e0", "#ffc98a", "#e0844a"], forest: "#1e0f06", pine: "#8a4a1c", accent: "#fff1a8", ray: "rgba(255,230,160,.12)" },
+}
+function bgAnime(ctx, C, rt, kind) {
+  const K = SKY[kind], R = rng(kind === "holo" ? 21 : 44)
+  let g = ctx.createLinearGradient(0, 0, 0, H * .75); g.addColorStop(0, K.top); g.addColorStop(.55, K.mid); g.addColorStop(1, K.low); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+  for (let i = 0; i < 120; i++) { ctx.fillStyle = "rgba(255,255,255," + (R() * .8) + ")"; ctx.beginPath(); ctx.arc(R() * W, R() * 420, R() * 1.8 + .3, 0, 7); ctx.fill() }
+  // sun glow
+  const sx = W * .68, sy = 560; g = ctx.createRadialGradient(sx, sy, 10, sx, sy, 360); g.addColorStop(0, K.sun); g.addColorStop(.12, K.sun); g.addColorStop(.13, "rgba(255,255,255,.55)"); g.addColorStop(1, "rgba(255,255,255,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+  // god rays
+  ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = K.ray
+  for (let i = 0; i < 9; i++) { const a = -2.4 + i * .32; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + Math.cos(a) * 1400, sy + Math.sin(a) * 1400); ctx.lineTo(sx + Math.cos(a + .1) * 1400, sy + Math.sin(a + .1) * 1400); ctx.fill() }
+  ctx.restore()
+  // cel-shaded clouds
+  const cloud = (cx, cy, s) => { const blobs = [[0, 0, 60], [55, -25, 50], [110, 0, 55], [-50, 10, 42], [160, 15, 38], [30, 20, 55], [90, 25, 50]]
+    ctx.beginPath(); blobs.forEach(([x, y, r]) => { ctx.moveTo(cx + x * s + r * s, cy + y * s + 10); ctx.arc(cx + x * s, cy + y * s + 10, r * s, 0, 7) }); ctx.lineWidth = 10; ctx.strokeStyle = INK; ctx.stroke()
+    for (const [tone, dy] of [[2, 10], [1, 4], [0, 0]]) { ctx.fillStyle = K.cloud[tone]; ctx.beginPath(); blobs.forEach(([x, y, r]) => { const rr = r * s * (tone === 0 ? .82 : 1); ctx.moveTo(cx + x * s + rr, cy + y * s + dy - (tone === 0 ? r * s * .2 : 0)); ctx.arc(cx + x * s, cy + y * s + dy - (tone === 0 ? r * s * .2 : 0), rr, 0, 7) }); ctx.fill() } }
+  cloud(-40, 420, .75); cloud(600, 330, .55); cloud(470, 520, .4)
+  // mountains: two-tone cel shading, light on the sun side
+  const range = (baseY, peaks, cols, snow) => {
+    for (const [px, py, w] of peaks) {
+      const lf = [px - w, baseY], rf = [px + w * 1.1, baseY], mid = [px + (R() - .5) * 20, baseY]
+      const jag = (a, b, n) => { const out = []; for (let i = 1; i < n; i++) { const t = i / n; out.push([a[0] + (b[0] - a[0]) * t + (R() - .5) * 14, a[1] + (b[1] - a[1]) * t]) } return out }
+      const ridgeL = jag([px, py], lf, 5), ridgeR = jag([px, py], rf, 5), crease = jag([px, py], mid, 6)
+      ctx.fillStyle = cols[1]; ctx.beginPath(); ctx.moveTo(px, py); [...ridgeL, lf, mid, ...crease.slice().reverse()].forEach(p => ctx.lineTo(...p)); ctx.closePath(); ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke()
+      ctx.fillStyle = cols[0]; ctx.beginPath(); ctx.moveTo(px, py); [...crease, mid, rf, ...ridgeR.slice().reverse()].forEach(p => ctx.lineTo(...p)); ctx.closePath(); ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke()
+      if (snow) { const h = (baseY - py) * .22; ctx.fillStyle = K.snow[0]; ctx.beginPath(); ctx.moveTo(px, py)
+        const l = [px - w * h / (baseY - py), py + h], r = [px + w * 1.1 * h / (baseY - py), py + h]
+        ctx.lineTo(r[0], r[1]); for (let i = 1; i < 6; i++) { const x = r[0] + (l[0] - r[0]) * i / 6; ctx.lineTo(x, py + h + (i % 2 ? -h * .35 : h * .1)) } ctx.lineTo(l[0], l[1]); ctx.closePath(); ctx.fill(); ctx.lineWidth = 3.5; ctx.strokeStyle = INK; ctx.stroke()
+        ctx.fillStyle = K.snow[1]; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(l[0], l[1]); ctx.lineTo(px - 4, py + h * .9); ctx.closePath(); ctx.fill() }
+    }
+    ctx.fillStyle = cols[1]; ctx.fillRect(0, baseY - 1, W, H - baseY + 1)
+  }
+  range(760, [[90, 470, 170], [300, 420, 200], [520, 480, 170], [720, 440, 190]], K.far, true)
+  range(860, [[0, 600, 200], [220, 560, 190], [470, 620, 220], [690, 570, 200]], K.mid2, true)
+  range(980, [[120, 720, 230], [420, 690, 260], [700, 740, 220]], K.near, false)
+  // atmospheric haze between layers
+  g = ctx.createLinearGradient(0, 700, 0, 900); g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(1, "rgba(255,255,255,.08)"); ctx.fillStyle = g; ctx.fillRect(0, 700, W, 200)
+  // pine forest silhouette with rim light
+  const pine = (x, y, s) => { ctx.beginPath(); ctx.moveTo(x, y - 90 * s); for (let k = 0; k < 4; k++) { const yy = y - 90 * s + (k + 1) * 22 * s; ctx.lineTo(x + (10 + k * 7) * s, yy); ctx.lineTo(x + 4 * s, yy - 4 * s) } ctx.lineTo(x + 3 * s, y); ctx.lineTo(x - 3 * s, y); for (let k = 3; k >= 0; k--) { const yy = y - 90 * s + (k + 1) * 22 * s; ctx.lineTo(x - 4 * s, yy - 4 * s); ctx.lineTo(x - (10 + k * 7) * s, yy) } ctx.closePath(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke(); ctx.fill() }
+  ctx.fillStyle = K.pine; for (let i = 0; i < 26; i++) { const x = i * 31 + R() * 14 - 10, y = 1000 + Math.sin(i) * 18 + R() * 20; pine(x, y, .9 + R() * .7) }
+  ctx.fillStyle = K.forest; ctx.fillRect(0, 990, W, H); doodles(ctx, K, rt)
+  // fireflies / sparkles
+  ctx.save(); ctx.globalCompositeOperation = "lighter"
+  for (let i = 0; i < 18; i++) { const x = R() * W, y = 300 + R() * 750, r = 1 + R() * 1.6; const gg = ctx.createRadialGradient(x, y, 0, x, y, r * 5); gg.addColorStop(0, "rgba(255,255,255,.9)"); gg.addColorStop(1, "rgba(255,255,255,0)"); ctx.fillStyle = gg; ctx.fillRect(x - r * 5, y - r * 5, r * 10, r * 10) }
+  ctx.restore()
+}
+
+const INK = "#160a2e"
+function dtext(ctx, t, x, y, size, fill, rot = 0, font = '"Luckiest Guy"', ow) { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.font = size + "px " + font; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round"; ctx.lineWidth = ow ?? size * .2; ctx.strokeStyle = INK; ctx.strokeText(t, 0, 0); ctx.fillStyle = fill; ctx.fillText(t, 0, 0); ctx.restore() }
+function poly(ctx, pts, fill, lw = 4.5) { ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.lineWidth = lw; ctx.strokeStyle = INK; ctx.lineJoin = "round"; ctx.stroke() }
+function dstar(ctx, x, y, r, fill) { const p = []; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; p.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr]) } poly(ctx, p, fill, 3.5) }
+function dbubble(ctx, x, y, w, h, t, size, rot, tailRight) { ctx.save(); ctx.translate(x, y); ctx.rotate(rot)
+  poly(ctx, [[0, 0], [w, 0], [w, h], tailRight ? [w * .8, h] : [w * .4, h], tailRight ? [w * .95, h + 24] : [w * .15, h + 24], tailRight ? [w * .6, h] : [w * .22, h], [0, h]], "#fff")
+  ctx.font = size + 'px "Luckiest Guy"'; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = INK; ctx.fillText(t, w / 2, h / 2 + 2); ctx.restore() }
+function doodles(ctx, K, rt) {
+  // bunting between header and art
+  ctx.beginPath(); ctx.moveTo(-10, 272); ctx.quadraticCurveTo(W * .3, 300, W * .55, 280); ctx.quadraticCurveTo(W * .8, 262, W + 10, 286); ctx.lineWidth = 3.5; ctx.strokeStyle = INK; ctx.stroke()
+  for (let i = 0; i < 12; i++) { const x = 6 + i * 64, y = 276 + Math.sin(i * .9) * 8 + (i < 6 ? i * 3 : (11 - i) * 3); poly(ctx, [[x, y], [x + 40, y + 2], [x + 19, y + 40]], [K.accent, "#a45bff", "#3dffa2"][i % 3], 3.5) }
+  // DÉPART bubble + ARRIVÉE flag on the route
+  const [sx, sy] = rt.pts[0], [ex, ey] = rt.pts[rt.pts.length - 1]
+  // signpost on the right
+  ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(58, 620); ctx.lineTo(58, 930); ctx.stroke()
+  const signs = [["RAVITO", K.accent, 640, 1], ["SOMMET", "#a45bff", 700, -1], ["ARRIVÉE", "#3dffa2", 760, 1]]
+  for (const [t, c, y, d] of signs) { const x0 = 8; poly(ctx, d > 0 ? [[x0, y], [x0 + 92, y], [x0 + 106, y + 22], [x0 + 92, y + 44], [x0, y + 44]] : [[x0 - 14, y + 22], [x0 + 2, y], [x0 + 98, y], [x0 + 98, y + 44], [x0 + 2, y + 44]], c, 4)
+    ctx.font = '16px "Luckiest Guy"'; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = INK; ctx.fillText(t, x0 + 48 + (d > 0 ? 0 : 2), y + 24) }
+  // ALLEZ bubble left
+  dbubble(ctx, 646, 360, 104, 56, "ALLEZ!", 23, .1, false); dbubble(ctx, 648, 690, 100, 52, "GO GO!", 21, -.08, false)
+  // ravito tent bottom-left
+  poly(ctx, [[70, 985], [130, 930], [190, 985]], "#fff", 4.5); for (let i = 0; i < 3; i++) poly(ctx, [[90 + i * 34, 985], [105 + i * 34, 966], [120 + i * 34, 985]], i % 2 ? K.accent : "#a45bff", 3)
+  // stars & sparkles
+  dstar(ctx, 60, 360, 20, K.accent); dstar(ctx, 40, 540, 14, "#fff"); dstar(ctx, 700, 520, 16, K.accent); dstar(ctx, 690, 600, 10, "#fff"); dstar(ctx, 380, 880, 13, K.accent)
+  // little motion lines near the finish
+}
+
+let PANEL = "relief", TRACE = "A"
+function panelBg(ctx, C, PX, PY, PS, rt) {
+  const R = rng(13), dark0 = "#120830", dark1 = "#03211b"
+  let g
+  if (PANEL === "relief") { // shaded relief: terrain lit from the top-left, cel-banded
+    const step = 4, sh = (x, y) => fbm(x / 110, y / 110) * 1.0 + fbm(x / 40, y / 40) * .25
+    for (let y = PY; y < PY + PS; y += step) for (let x = PX; x < PX + PS; x += step) {
+      const h = sh(x, y), dx = sh(x + 3, y) - h, dy = sh(x, y + 3) - h, l = Math.max(0, Math.min(1, .5 - (dx + dy) * 9))
+      const band = Math.round(l * 4) / 4, hb = Math.round(h * 6) / 6
+      ctx.fillStyle = `hsl(${265 - hb * 110}, ${55 + band * 20}%, ${8 + band * 22 + hb * 10}%)`; ctx.fillRect(x, y, step, step) }
+  } else if (PANEL === "rpg") { // video-game world map, top-down cartoon
+    ctx.fillStyle = "#1b6fb8"; ctx.fillRect(PX, PY, PS, PS)
+    const lv = (x, y) => fbm(x / 130, y / 130)
+    for (let y = PY; y < PY + PS; y += 4) for (let x = PX; x < PX + PS; x += 4) { const h = lv(x, y)
+      ctx.fillStyle = h < .36 ? "#2a8fd8" : h < .4 ? "#f3e2a0" : h < .55 ? "#4cc46a" : h < .66 ? "#2e9a52" : h < .74 ? "#8b6b4a" : "#f2f6ff"; ctx.fillRect(x, y, 4, 4) }
+    for (let i = 0; i < 70; i++) { const x = PX + R() * PS, y = PY + R() * PS, h = lv(x, y); if (h > .55 && h < .66) { ctx.fillStyle = "#14532d"; ctx.beginPath(); ctx.moveTo(x, y - 12); ctx.lineTo(x + 7, y + 4); ctx.lineTo(x - 7, y + 4); ctx.closePath(); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke() } }
+    ctx.fillStyle = "rgba(10,0,40,.35)"; ctx.fillRect(PX, PY, PS, PS)
+  } else if (PANEL === "cosmos") { // night sky: nebula + stars, the route as a constellation
+    g = ctx.createRadialGradient(PX + PS * .4, PY + PS * .4, 20, PX + PS / 2, PY + PS / 2, PS * .8); g.addColorStop(0, "#3b1a7a"); g.addColorStop(.6, "#120830"); g.addColorStop(1, "#04020f"); ctx.fillStyle = g; ctx.fillRect(PX, PY, PS, PS)
+    ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(30px)"
+    for (const [c, x, y, r] of [["rgba(61,255,162,.35)", .3, .65, 160], ["rgba(164,91,255,.45)", .7, .35, 180], ["rgba(98,240,255,.25)", .55, .75, 120]]) { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(PX + PS * x, PY + PS * y, r, 0, 7); ctx.fill() }
+    ctx.restore()
+    for (let i = 0; i < 260; i++) { ctx.fillStyle = "rgba(255,255,255," + (.2 + R() * .8) + ")"; ctx.beginPath(); ctx.arc(PX + R() * PS, PY + R() * PS, R() * 1.5 + .2, 0, 7); ctx.fill() }
+  } else if (PANEL === "quest") { // hand-drawn adventure map on parchment
+    const gold = C === OR
+    let pg = ctx.createRadialGradient(PX + PS / 2, PY + PS / 2, 60, PX + PS / 2, PY + PS / 2, PS * .75); pg.addColorStop(0, gold ? "#f7e6b5" : "#efe3c0"); pg.addColorStop(1, gold ? "#c9a056" : "#b9a77a"); ctx.fillStyle = pg; ctx.fillRect(PX, PY, PS, PS)
+    for (let i = 0; i < 60; i++) { ctx.fillStyle = "rgba(120,80,30," + (R() * .06) + ")"; ctx.beginPath(); ctx.arc(PX + R() * PS, PY + R() * PS, 10 + R() * 50, 0, 7); ctx.fill() }
+    const lv = (x, y) => fbm(x / 120 + 3, y / 120 + 7)
+    // water: a lake/sea where the land is low, with ripple lines
+    for (let y = PY; y < PY + PS; y += 3) for (let x = PX; x < PX + PS; x += 3) { const h = lv(x, y); if (h < .3) { ctx.fillStyle = h < .25 ? "#5fb3d1" : "#86cde0"; ctx.fillRect(x, y, 3, 3) } }
+    ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = 2; for (let i = 0; i < 40; i++) { const x = PX + R() * PS, y = PY + R() * PS; if (lv(x, y) < .27) { ctx.beginPath(); ctx.arc(x, y, 7, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke() } }
+    // coast ink line
+    ctx.fillStyle = INK; for (let y = PY; y < PY + PS; y += 3) for (let x = PX; x < PX + PS; x += 3) { const h = lv(x, y); if (h >= .3 && h < .313) ctx.fillRect(x, y, 3, 3) }
+    // river
+    ctx.lineCap = "round"; const riv = () => { ctx.beginPath(); ctx.moveTo(PX + PS * .15, PY); ctx.bezierCurveTo(PX + PS * .35, PY + PS * .3, PX + PS * .05, PY + PS * .55, PX + PS * .3, PY + PS * .95) }
+    riv(); ctx.lineWidth = 14; ctx.strokeStyle = INK; ctx.stroke(); riv(); ctx.lineWidth = 9; ctx.strokeStyle = "#6cc0dc"; ctx.stroke()
+    // forests (round cartoon trees) and mountains (two-tone peaks) by height
+    const trees = [], mts = []
+    for (let i = 0; i < 900; i++) { const x = PX + 14 + R() * (PS - 28), y = PY + 14 + R() * (PS - 28), h = lv(x, y); if (h > .4 && h < .54 && R() < .45) trees.push([x, y]); else if (h > .56 && R() < .35) mts.push([x, y]) }
+    trees.sort((a, b) => a[1] - b[1]).forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x, y, 9, 0, 7); ctx.fillStyle = gold ? "#7a8f3a" : "#3e9a4a"; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke(); ctx.beginPath(); ctx.arc(x - 3, y - 3, 3.5, 0, 7); ctx.fillStyle = gold ? "#b9c56a" : "#7fd47a"; ctx.fill() })
+    mts.sort((a, b) => a[1] - b[1]).forEach(([x, y]) => { const s = 16 + R() * 10
+      ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x - s * .9, y + s * .5); ctx.lineTo(x, y + s * .5); ctx.closePath(); ctx.fillStyle = gold ? "#e0b86a" : "#c9b48a"; ctx.fill()
+      ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x + s * .9, y + s * .5); ctx.lineTo(x, y + s * .5); ctx.closePath(); ctx.fillStyle = gold ? "#a87a32" : "#8c7656"; ctx.fill()
+      ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x - s * .9, y + s * .5); ctx.lineTo(x + s * .9, y + s * .5); ctx.closePath(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x - s * .3, y - s * .55); ctx.lineTo(x, y - s * .65); ctx.lineTo(x + s * .3, y - s * .55); ctx.closePath(); ctx.fillStyle = "#fff"; ctx.fill(); ctx.stroke() })
+    // villages
+    for (const [fx, fy] of [[.72, .2], [.2, .7], [.82, .78]]) { const x = PX + PS * fx, y = PY + PS * fy; for (let k = 0; k < 3; k++) { const hx = x + k * 16 - 16, hy = y + (k % 2) * 8
+      ctx.fillStyle = "#f4ead2"; ctx.fillRect(hx - 6, hy - 4, 12, 10); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.strokeRect(hx - 6, hy - 4, 12, 10)
+      ctx.beginPath(); ctx.moveTo(hx - 8, hy - 4); ctx.lineTo(hx, hy - 12); ctx.lineTo(hx + 8, hy - 4); ctx.closePath(); ctx.fillStyle = "#d4553a"; ctx.fill(); ctx.stroke() } }
+    // compass rose
+    const cx = PX + PS - 62, cy = PY + PS - 62; ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.beginPath(); ctx.arc(cx, cy, 34, 0, 7); ctx.fillStyle = "rgba(255,250,235,.8)"; ctx.fill(); ctx.stroke()
+    for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 - Math.PI / 2; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * 42, cy + Math.sin(a) * 42); ctx.lineTo(cx + Math.cos(a + .5) * 10, cy + Math.sin(a + .5) * 10); ctx.lineTo(cx + Math.cos(a - .5) * 10, cy + Math.sin(a - .5) * 10); ctx.closePath(); ctx.fillStyle = k === 0 ? "#d4553a" : "#3a2a1a"; ctx.fill(); ctx.stroke() }
+    ctx.font = '16px "Luckiest Guy"'; ctx.textAlign = "center"; ctx.fillStyle = INK; ctx.fillText("N", cx, cy - 48); ctx.textAlign = "left"
+    // vignette + burnt edge
+    pg = ctx.createRadialGradient(PX + PS / 2, PY + PS / 2, PS * .35, PX + PS / 2, PY + PS / 2, PS * .75); pg.addColorStop(0, "rgba(80,40,10,0)"); pg.addColorStop(1, "rgba(80,40,10,.45)"); ctx.fillStyle = pg; ctx.fillRect(PX, PY, PS, PS)
+  } else if (PANEL === "toon") { // cartoon relief seen from above: flat colour bands, ink outlines, doodles
+    const gold = C === OR
+    const bands = gold ? ["#2a1606", "#5a2e10", "#8f4f1c", "#c9842e", "#efb94e", "#ffe7a3", "#fff8e6"] : ["#170a3c", "#2e1a78", "#5a2bb8", "#1f8f8a", "#1fd6a0", "#9dffd2", "#f4fff9"]
+    const lv = (x, y) => fbm(x / 140 + 11, y / 140 + 5) * .8 + fbm(x / 50, y / 50) * .2
+    const idx = h => Math.max(0, Math.min(bands.length - 1, Math.floor((h - .22) / .085)))
+    const st = 2, cols = Math.ceil(PS / st), grid = new Int8Array(cols * cols)
+    for (let j = 0; j < cols; j++) for (let i = 0; i < cols; i++) grid[j * cols + i] = idx(lv(PX + i * st, PY + j * st))
+    for (let j = 0; j < cols; j++) for (let i = 0; i < cols; i++) { const b = grid[j * cols + i]
+      const edge = (i + 1 < cols && grid[j * cols + i + 1] !== b) || (j + 1 < cols && grid[(j + 1) * cols + i] !== b)
+      // cel highlight: a lighter rim on the upper-left side of each band
+      const rim = !edge && ((i > 2 && grid[j * cols + i - 3] < b) || (j > 2 && grid[(j - 3) * cols + i] < b))
+      ctx.fillStyle = edge ? INK : rim ? "rgba(255,255,255,.22)" : bands[b]
+      if (rim) { ctx.fillStyle = bands[b]; ctx.fillRect(PX + i * st, PY + j * st, st, st); ctx.fillStyle = "rgba(255,255,255,.25)" }
+      ctx.fillRect(PX + i * st, PY + j * st, st + .3, st + .3) }
+    // doodle pines on the middle bands, stars in the low ones
+    for (let k = 0; k < 140; k++) { const x = PX + 16 + R() * (PS - 32), y = PY + 16 + R() * (PS - 32), b = idx(lv(x, y))
+      if (b === 3 || b === 4) { if (R() < .45) { ctx.beginPath(); ctx.moveTo(x, y - 11); ctx.lineTo(x + 7, y + 4); ctx.lineTo(x - 7, y + 4); ctx.closePath(); ctx.fillStyle = gold ? "#6b3a12" : "#0f6b50"; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke() } }
+      else if (b <= 1 && R() < .25) dstar(ctx, x, y, 5 + R() * 4, gold ? "#ffd36b" : "#ffe14d") }
+    ctx.fillStyle = gold ? "rgba(30,12,0,.38)" : "rgba(12,4,36,.42)"; ctx.fillRect(PX, PY, PS, PS)
+  } else if (PANEL === "synth") { // retro-futuristic horizon: sun, mountains, perspective grid
+    g = ctx.createLinearGradient(0, PY, 0, PY + PS); g.addColorStop(0, "#14063a"); g.addColorStop(.55, "#5b1d9e"); g.addColorStop(.56, "#0a1a2e"); g.addColorStop(1, "#04120f"); ctx.fillStyle = g; ctx.fillRect(PX, PY, PS, PS)
+    const hz = PY + PS * .56
+    g = ctx.createLinearGradient(0, hz - 170, 0, hz); g.addColorStop(0, "#fff36b"); g.addColorStop(1, "#ff3dbd"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(PX + PS / 2, hz, 130, Math.PI, 0); ctx.fill()
+    ctx.fillStyle = "#14063a"; for (let i = 0; i < 6; i++) ctx.fillRect(PX, hz - 20 - i * 18, PS, 3 + i)
+    ctx.fillStyle = "#1e0b4a"; ctx.beginPath(); ctx.moveTo(PX, hz); for (let x = 0; x <= PS; x += 20) ctx.lineTo(PX + x, hz - 30 - fbm(x / 60, 2) * 90); ctx.lineTo(PX + PS, hz); ctx.closePath(); ctx.fill(); ctx.strokeStyle = C.a; ctx.lineWidth = 2; ctx.stroke()
+    ctx.strokeStyle = "rgba(61,255,162,.55)"; ctx.lineWidth = 1.5
+    for (let i = 1; i < 14; i++) { const y = hz + Math.pow(i / 13, 2) * (PS * .44); ctx.beginPath(); ctx.moveTo(PX, y); ctx.lineTo(PX + PS, y); ctx.stroke() }
+    for (let i = -12; i <= 12; i++) { ctx.beginPath(); ctx.moveTo(PX + PS / 2 + i * 8, hz); ctx.lineTo(PX + PS / 2 + i * 70, PY + PS); ctx.stroke() }
+  }
+  ctx.globalAlpha = 1
+}
+function foreground(ctx, C, rt, label) {
+  ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"
+  // vignette for legibility
+  let g = ctx.createLinearGradient(0, 0, 0, 240); g.addColorStop(0, "rgba(0,0,0,.55)"); g.addColorStop(1, "rgba(0,0,0,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, 240)
+  g = ctx.createLinearGradient(0, 900, 0, H); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.7)"); ctx.fillStyle = g; ctx.fillRect(0, 900, W, 300)
+  ctx.fillStyle = C.txt; ctx.font = "800 26px Inter"; ctx.letterSpacing = "6px"; ctx.fillText("▲ TRAILDEX", 42, 58); ctx.letterSpacing = "0px"
+  ctx.font = "600 20px 'JetBrains Mono'"; ctx.textAlign = "right"; ctx.fillStyle = C.a; ctx.fillText("◆◆◆◆ " + label, W - 42, 58); ctx.textAlign = "left"
+  dtext(ctx, "GRAND RAID", W / 2, 140, 66, C.txt, -.025); dtext(ctx, "DU MERCANTOUR", W / 2, 206, 50, C.a, -.025)
+  ctx.font = "500 20px 'JetBrains Mono'"; ctx.textAlign = "center"; ctx.fillStyle = C.txt; ctx.letterSpacing = "3px"; ctx.fillText("12 SEPT. 2026 · ALT. 3 195 M", W / 2, 250); ctx.letterSpacing = "0px"; ctx.textAlign = "left"
+  // route glow
+  // square map panel: own background (night holo map), thick ink frame
+  const PX = 120, PY = 318, PS = 520
+  ctx.save(); ctx.beginPath(); ctx.roundRect(PX, PY, PS, PS, 28); ctx.clip()
+  panelBg(ctx, C, PX, PY, PS, rt)
+  const path = () => { ctx.beginPath(); rt.pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y + 40) : ctx.moveTo(x, y + 40)) }
+  ctx.lineJoin = ctx.lineCap = "round"
+  // calmer map under the route: dim + desaturate the panel for B and C
+  if (TRACE !== "A") { ctx.save(); ctx.globalCompositeOperation = "saturation"; ctx.fillStyle = "rgba(128,128,128," + (TRACE === "B" ? .75 : .45) + ")"; ctx.fillRect(PX, PY, PS, PS); ctx.restore(); ctx.fillStyle = "rgba(8,4,24,.35)"; ctx.fillRect(PX, PY, PS, PS) }
+  const hot = TRACE === "B" ? "#ffe14d" : C.a
+  if (TRACE === "A" || TRACE === "C") { // sticker: drop shadow + white outline + ink outline
+    ctx.save(); ctx.translate(5, 7); path(); ctx.strokeStyle = "rgba(0,0,0,.55)"; ctx.lineWidth = 24; ctx.stroke(); ctx.restore()
+    path(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 22; ctx.stroke()
+    path(); ctx.strokeStyle = INK; ctx.lineWidth = 15; ctx.stroke()
+  } else { path(); ctx.strokeStyle = INK; ctx.lineWidth = 16; ctx.stroke() }
+  path(); ctx.strokeStyle = hot; ctx.lineWidth = 24; ctx.globalAlpha = .25; ctx.shadowColor = hot; ctx.shadowBlur = 36; ctx.stroke()
+  path(); ctx.globalAlpha = 1; ctx.lineWidth = 9; ctx.strokeStyle = TRACE === "B" ? hot : grad(ctx, C, 100, 300, 660, 860); ctx.shadowBlur = 14; ctx.stroke()
+  path(); ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.95)"; ctx.shadowBlur = 0; ctx.stroke()
+  const [sx, sy] = rt.pts[0], [ex, ey] = rt.pts[rt.pts.length - 1]
+  if (TRACE === "C") { // direction chevrons + km markers along the route
+    let acc = 0, next = 70, km = 0, nextKm = 0, total = 0
+    for (let k = 1; k < rt.pts.length; k++) total += Math.hypot(rt.pts[k][0] - rt.pts[k - 1][0], rt.pts[k][1] - rt.pts[k - 1][1])
+    const kmEvery = total / 4
+    nextKm = kmEvery
+    for (let k = 1; k < rt.pts.length; k++) { const [x0, y0] = rt.pts[k - 1], [x1, y1] = rt.pts[k]; acc += Math.hypot(x1 - x0, y1 - y0); const a = Math.atan2(y1 - y0, x1 - x0)
+      if (acc > next) { next += 70; ctx.save(); ctx.translate(x1, y1 + 40); ctx.rotate(a); ctx.beginPath(); ctx.moveTo(-4, -5); ctx.lineTo(3, 0); ctx.lineTo(-4, 5); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke(); ctx.restore() }
+      if (acc > nextKm && km < 3) { km++; nextKm += kmEvery; ctx.save(); ctx.translate(x1, y1 + 40); ctx.beginPath(); ctx.roundRect(-20, -13, 40, 26, 8); ctx.fillStyle = "#fff"; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke(); ctx.font = '15px "Luckiest Guy"'; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = INK; ctx.fillText(Math.round(112 * km / 4), 0, 1); ctx.restore() } }
+    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"
+  }
+  ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(sx, sy + 40, 11, 0, 7); ctx.fill(); ctx.strokeStyle = C.a; ctx.lineWidth = 4; ctx.stroke(); dstar(ctx, ex, ey + 40, 18, TRACE === "B" ? "#ffe14d" : C.a)
+  ctx.restore(); ctx.beginPath(); ctx.roundRect(PX, PY, PS, PS, 28); ctx.lineWidth = 9; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 2.5; ctx.strokeStyle = C.a; ctx.beginPath(); ctx.roundRect(PX + 9, PY + 9, PS - 18, PS - 18, 21); ctx.stroke()
+  dtext(ctx, "112 KM DE BONHEUR", PX + PS / 2, PY + PS + 2, 22, "#fff", -.02, undefined, 5)
+  // profile
+  const e = rt.ele, mn = Math.min(...e), mx = Math.max(...e), px = 42, pw = W - 84, py = 1010, ph = 70
+  ctx.beginPath(); ctx.moveTo(px, py); e.forEach((v, i) => ctx.lineTo(px + i / (e.length - 1) * pw, py - (v - mn) / (mx - mn) * ph)); ctx.lineTo(px + pw, py); ctx.closePath()
+  g = ctx.createLinearGradient(0, py - ph, 0, py); g.addColorStop(0, C.a + "aa"); g.addColorStop(1, C.a + "00"); ctx.fillStyle = g; ctx.fill()
+  ctx.beginPath(); e.forEach((v, i) => i ? ctx.lineTo(px + i / (e.length - 1) * pw, py - (v - mn) / (mx - mn) * ph) : ctx.moveTo(px, py - (v - mn) / (mx - mn) * ph)); ctx.strokeStyle = C.txt; ctx.lineWidth = 2.5; ctx.stroke()
+  // stats
+  const st = [["DIST.", "112 km"], ["D+", "6 800 m"], ["CHRONO", "22h40"], ["CLASS.", "3e"]]
+  st.forEach(([l, v], i) => { const x = 42 + i * 172; ctx.font = "500 16px 'JetBrains Mono'"; ctx.fillStyle = C.mute; ctx.letterSpacing = "3px"; ctx.fillText(l, x, 1060); ctx.letterSpacing = "0px"; ctx.save(); ctx.textAlign = "left"; ctx.font = '36px "Luckiest Guy"'; ctx.lineWidth = 7; ctx.lineJoin = "round"; ctx.strokeStyle = INK; ctx.strokeText(v, x, 1106); ctx.fillStyle = i % 2 ? C.a : C.txt; ctx.fillText(v, x, 1106); ctx.restore() })
+  ctx.save(); ctx.translate(120, 1152); ctx.rotate(-.03); poly(ctx, [[-82, -26], [82, -26], [82, 26], [-82, 26]], C.a, 4.5); ctx.restore(); dtext(ctx, "SARAH", 120, 1154, 34, "#fff", -.03); ctx.font = "500 18px 'JetBrains Mono'"; ctx.textAlign = "right"; ctx.fillStyle = C.mute; ctx.fillText("NO. 001", W - 42, 1158); ctx.textAlign = "left"
+}
+function finish(ctx, C, gold) {
+  ctx.save(); ctx.globalCompositeOperation = "overlay"
+  const g = ctx.createLinearGradient(0, 0, W, H)
+  const cols = gold ? ["#fff3c4", "#c98a12", "#fffbe6", "#b07408", "#ffe39a"] : ["#ff5cf0", "#5cf3ff", "#7dff6a", "#fff35c", "#a85cff", "#5cffb0"]
+  cols.forEach((c, i) => g.addColorStop(i / (cols.length - 1), c)); ctx.globalAlpha = gold ? .4 : .32; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+  ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = .22
+  const s = ctx.createLinearGradient(0, 0, W, H); s.addColorStop(.36, "rgba(255,255,255,0)"); s.addColorStop(.44, "rgba(255,255,255,1)"); s.addColorStop(.52, "rgba(255,255,255,0)"); ctx.fillStyle = s; ctx.fillRect(0, 0, W, H)
+  ctx.restore()
+  ctx.lineWidth = 3; ctx.strokeStyle = gold ? "rgba(255,220,140,.7)" : "rgba(170,255,220,.55)"; ctx.beginPath(); ctx.roundRect(14, 14, W - 28, H - 28, 26); ctx.stroke()
+}
+function card(id, C, bg, label, gold) {
+  const ctx = document.getElementById(id).getContext("2d"); ctx.setTransform(2, 0, 0, 2, 0, 0)
+  ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, W, H, 34); ctx.clip()
+  const rt = route(C); bg(ctx, C, { pts: rt.pts.map(([x, y]) => [x, y + 40]) }); foreground(ctx, C, rt, label); finish(ctx, C, gold); ctx.restore()
+}
+Promise.all([document.fonts.load("800 40px Inter"), document.fonts.load('40px "Luckiest Guy"'), document.fonts.load("500 20px 'JetBrains Mono'")]).then(() => {
+  PANEL = "toon"; TRACE = "B"
+  const DPI = 600, PXMM = DPI / 25.4, SC = PXMM / 10, BL = PXMM // 1 mm bleed, card 76 x 120 mm drawn in 760 x 1200 units
+  const OW = Math.round(78 * PXMM), OH = Math.round(122 * PXMM)
+  const mk = () => { const c = document.createElement("canvas"); c.width = OW; c.height = OH; return c }
+  const rt = route(HOLO), off = { pts: rt.pts.map(([x, y]) => [x, y + 40]) }
+  const maskShapes = (ctx) => { ctx.save(); ctx.setTransform(SC, 0, 0, SC, BL, BL); ctx.lineJoin = ctx.lineCap = "round"; ctx.fillStyle = ctx.strokeStyle = "#000"
+    ctx.beginPath(); off.pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.lineWidth = 12; ctx.stroke()
+    const [sx, sy] = off.pts[0], [ex, ey] = off.pts[off.pts.length - 1]
+    ctx.beginPath(); ctx.arc(sx, sy, 9, 0, 7); ctx.fill()
+    ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 7 : 16; ctx.lineTo(ex + Math.cos(a) * r, ey + Math.sin(a) * r) } ctx.closePath(); ctx.fill(); ctx.restore() }
+  // 1. colour layer: full card, no simulated holo, trace area left empty (no ink)
+  const col = mk(), cx = col.getContext("2d"); cx.fillStyle = INK; cx.fillRect(0, 0, OW, OH)
+  cx.setTransform(SC, 0, 0, SC, BL, BL); bgAnime(cx, HOLO, off, "holo"); foreground(cx, HOLO, rt, "HOLO")
+  cx.setTransform(1, 0, 0, 1, 0, 0); cx.globalCompositeOperation = "destination-out"; maskShapes(cx); cx.globalCompositeOperation = "source-over"
+  // 2. white underlayer: everywhere except the trace (black = white ink)
+  const wh = mk(), wx = wh.getContext("2d"); wx.fillStyle = "#000"; wx.fillRect(0, 0, OW, OH); wx.globalCompositeOperation = "destination-out"; maskShapes(wx)
+  // 3. gloss varnish: the trace only (black = varnish)
+  const va = mk(), vx = va.getContext("2d"); maskShapes(vx)
+  // 4. preview of the printed result on a holo blank
+  const pv = mk(), px = pv.getContext("2d"); const hg = px.createLinearGradient(0, 0, OW, OH)
+  ;["#ff5cf0", "#5cf3ff", "#7dff6a", "#fff35c", "#a85cff", "#5cffb0", "#ff9d5c"].forEach((c, i, a) => hg.addColorStop(i / (a.length - 1), c)); px.fillStyle = hg; px.fillRect(0, 0, OW, OH)
+  px.globalCompositeOperation = "soft-light"; px.fillStyle = "#c0c0c0"; px.fillRect(0, 0, OW, OH); px.globalCompositeOperation = "source-over"; px.drawImage(col, 0, 0)
+  window.OUT = { couleur: col.toDataURL("image/png"), blanc: wh.toDataURL("image/png"), vernis: va.toDataURL("image/png"), apercu: pv.toDataURL("image/png") }
+  document.title = "done"
+  })
+</script>

@@ -89,6 +89,13 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - **22/10 au soir : Thibault a envoyé la demande à Exaprint via leur formulaire** (vérification des fichiers + 2 exemplaires test or et holo), avec les PDF d'avant le passage au 100 % vectoriel. À la réponse : renvoyer les fichiers vectoriels comme version définitive.
 
+### Machines et carte « Holo dessin animé » (04–06/11)
+- Matériel étudié (rien acheté) : Canon PIXMA PRO-200 + film holo + emporte-pièce 63 × 88 (≈ 1 000–1 300 €), Evolis Primacy 2 + lamination (≈ 3 200–3 600 €, format carte bancaire seulement), xTool M2 (bords roussis, pas de holo), X1 (trop cher). **Piste retenue : xTool O1 (UV)** sur **cartes holo xTool 76 × 120 mm** (16 € les 20, dégressif jusqu'à 11,20 €) : holo sélectif via la couche de blanc + vernis. Contact pris par Thibault avec une influenceuse qui a la machine (prix, code promo, échantillon, multi-cartes, recto-verso).
+- Prix : idée d'un **prix unique 14,90 € livraison offerte** (≈ 10 € net par carte sous le seuil CCSS ; ≈ 5,20 € à 9,90 €). Seuil CCSS ≈ 38 200 € de CA/an ≈ 214 cartes/mois à 14,90 €. Non appliqué sur le site.
+- **Design validé le 06/11 : carte Holo « dessin animé » + touches doodle, tracé dans un carré, tracé holographique à l'impression, police Luckiest Guy.** Tout est dans `docs/design/carte-holo-dessin-anime/` (PDF, maquette, gabarit xTool 12 cartes, gabarit illustratrice).
+- Illustratrice **PAQAP** (doodle, événements sportifs) : demande de devis envoyée par Thibault le 06/11 ; complément avec le nouveau gabarit en brouillon Gmail.
+- Abandonnés : cristal gravé 3D, cadre doodle sur fond clair, carte parchemin.
+
 ## Prochaines étapes (côté Thibault)
 1. Réponse d'Exaprint sur le format avec dorure + gabarit.
 2. Ajouter connexions et dépôt à la tâche « Point CEO TrailDex ».
