@@ -330,7 +330,7 @@ function foreground(ctx, C, rt, label) {
   ctx.beginPath(); e.forEach((v, i) => i ? ctx.lineTo(px + i / (e.length - 1) * pw, py - (v - mn) / (mx - mn) * ph) : ctx.moveTo(px, py - (v - mn) / (mx - mn) * ph)); ctx.strokeStyle = C.txt; ctx.lineWidth = 2.5; ctx.stroke()
   // stats
   const st = CFG[DISC].st
-  st.forEach(([l, v], i) => { const x = 42 + i * 168; ctx.font = "500 16px 'JetBrains Mono'"; ctx.fillStyle = C.mute; ctx.letterSpacing = "3px"; ctx.fillText(l, x, 1060); ctx.letterSpacing = "0px"; ctx.save(); ctx.textAlign = "left"; ctx.font = '36px "Luckiest Guy"'; ctx.lineWidth = 7; ctx.lineJoin = "round"; ctx.strokeStyle = INK; ctx.strokeText(v, x, 1106); ctx.fillStyle = i % 2 ? C.a : C.txt; ctx.fillText(v, x, 1106); ctx.restore() })
+  st.forEach(([l, v], i) => { const x = 42 + i * (st.length === 3 ? 240 : 168); ctx.font = "500 16px 'JetBrains Mono'"; ctx.fillStyle = C.mute; ctx.letterSpacing = "3px"; ctx.fillText(l, x, 1060); ctx.letterSpacing = "0px"; ctx.save(); ctx.textAlign = "left"; ctx.font = '36px "Luckiest Guy"'; ctx.lineWidth = 7; ctx.lineJoin = "round"; ctx.strokeStyle = INK; ctx.strokeText(v, x, 1106); ctx.fillStyle = i % 2 ? C.a : C.txt; ctx.fillText(v, x, 1106); ctx.restore() })
   ctx.save(); ctx.translate(120, 1152); ctx.rotate(-.03); poly(ctx, [[-96, -26], [96, -26], [96, 26], [-96, 26]], C.a, 4.5); ctx.restore(); dtext(ctx, CUR.runner, 120, 1154, CUR.runner.length > 9 ? 26 : 32, "#fff", -.03); ctx.font = "500 18px 'JetBrains Mono'"; ctx.textAlign = "right"; ctx.fillStyle = C.mute; ctx.fillText("NO. " + CUR.number, W - 42, 1158); ctx.textAlign = "left"
 }
 function finish(ctx, C, gold) {

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Bike, Download, Eye, FileUp, Footprints, ImagePlus, Loader2, Lock, Mountain, Route, Share2, Sparkles, Trash2, TrendingUp, Upload } from "lucide-react"
+import { Bike, Download, Eye, FileUp, Footprints, Loader2, Lock, Mountain, Route, Share2, TrendingUp, Upload } from "lucide-react"
 import { DnfCard } from "@/components/DnfCard"
 import { Button } from "@/components/ui/button"
 import { Field, Input } from "@/components/ui/input"
@@ -11,7 +11,6 @@ import { computeStats, readGpxFile, toGpx, GpxError, type TrackStats } from "@/l
 import { CRETES_SPEC, HERO_CARD, makeTrack } from "@/lib/demo"
 import {
   durationToInput,
-  effortKm,
   fmtInt,
   fmtKm,
   parseDuration,
@@ -26,29 +25,6 @@ import { cn } from "@/lib/utils"
 type Form = { runner: string; race: string; date: string; time: string; rank: string; photo?: string }
 
 const EMPTY: Form = { runner: "", race: "", date: "", time: "", rank: "" }
-
-/** Downscale a photo in the browser so it stays light (and private). */
-function loadPhoto(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file)
-    const img = new Image()
-    img.onload = () => {
-      const max = 900
-      const s = Math.min(1, max / Math.max(img.width, img.height))
-      const c = document.createElement("canvas")
-      c.width = Math.round(img.width * s)
-      c.height = Math.round(img.height * s)
-      c.getContext("2d")?.drawImage(img, 0, 0, c.width, c.height)
-      URL.revokeObjectURL(url)
-      resolve(c.toDataURL("image/jpeg", 0.82))
-    }
-    img.onerror = () => {
-      URL.revokeObjectURL(url)
-      reject(new Error("image"))
-    }
-    img.src = url
-  })
-}
 
 function StatChip({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
@@ -96,7 +72,6 @@ export function Creator() {
   const [shareOpen, setShareOpen] = React.useState(false)
   const [number] = React.useState(() => 100 + Math.floor(Math.random() * 900))
   const fileInput = React.useRef<HTMLInputElement>(null)
-  const photoInput = React.useRef<HTMLInputElement>(null)
   const previewRef = React.useRef<HTMLDivElement>(null)
   const sectionRef = React.useRef<HTMLElement>(null)
   const [showPeek, setShowPeek] = React.useState(false)
@@ -151,15 +126,6 @@ export function Creator() {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000)
   }
 
-  const onPhoto = async (file: File | undefined) => {
-    if (!file) return
-    try {
-      const photo = await loadPhoto(file)
-      setForm((f) => ({ ...f, photo }))
-    } catch {
-      setError("Cette image n'a pas pu être chargée.")
-    }
-  }
 
   // Mobile: offer a shortcut back to the preview when it is off screen.
   React.useEffect(() => {
@@ -196,7 +162,7 @@ export function Creator() {
     race: form.race.trim(),
     date: form.date,
     timeSec,
-    rank: form.rank,
+    rank: "",
     distanceKm: stats?.distanceKm ?? null,
     gain: stats?.gain ?? null,
     maxEle: stats?.maxEle ?? null,
@@ -205,13 +171,11 @@ export function Creator() {
     end: stats?.end,
     profileArea: route.profileArea,
     profileLine: route.profileLine,
-    photo: form.photo,
     rarity,
     number,
   }
   const price = FINISHES.find((f) => f.id === finish)!.price
   const missing = [!stats && "ton fichier GPX", !card.runner && "ton prénom", !card.race && "le nom de la course"].filter(Boolean) as string[]
-  const effort = effortKm(stats?.distanceKm ?? null, stats?.gain ?? null)
 
   return (
     <section id="createur" ref={sectionRef} className="bg-mist px-5 py-24 md:py-36">
@@ -336,11 +300,9 @@ export function Creator() {
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                    <div className="mt-5 grid grid-cols-2 gap-2.5">
                       <StatChip icon={Route} label="Distance" value={`${fmtKm(stats.distanceKm)} km`} />
                       <StatChip icon={TrendingUp} label="Dénivelé +" value={`${fmtInt(stats.gain)} m`} />
-                      <StatChip icon={Mountain} label="Alt. max" value={stats.maxEle != null ? `${fmtInt(stats.maxEle)} m` : "—"} />
-                      <StatChip icon={Sparkles} label="Km-effort" value={fmtInt(effort)} />
                     </div>
                     {stats.profileArea && (
                       <div className="mt-3 rounded-2xl bg-mist p-4">
@@ -348,12 +310,12 @@ export function Creator() {
                         <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="mt-2 h-20 w-full">
                           <defs>
                             <linearGradient id="creator-pf" x1="0" x2="0" y1="0" y2="1">
-                              <stop offset="0" stopColor="#1d1d1f" stopOpacity="0.25" />
-                              <stop offset="1" stopColor="#1d1d1f" stopOpacity="0" />
+                              <stop offset="0" stopColor="#1fd6a0" stopOpacity="0.45" />
+                              <stop offset="1" stopColor="#1fd6a0" stopOpacity="0" />
                             </linearGradient>
                           </defs>
                           <path d={stats.profileArea} fill="url(#creator-pf)" />
-                          <path d={stats.profileLine} fill="none" stroke="#1d1d1f" strokeWidth="1.4" vectorEffect="non-scaling-stroke" />
+                          <path d={stats.profileLine} fill="none" stroke="#c6e536" strokeWidth="1.4" vectorEffect="non-scaling-stroke" />
                         </svg>
                       </div>
                     )}
@@ -373,16 +335,13 @@ export function Creator() {
               )}
             </Panel>
 
-            <Panel step="3" title="Ton nom (ou ton blaze)">
+            <Panel step="3" title="Ton nom (ou ton blaze) et ton chrono">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Prénom ou surnom" hint="(La Fusée, Tonton… on ne juge pas)" htmlFor="f-runner">
                   <Input id="f-runner" value={form.runner} onChange={set("runner")} placeholder="Camille" maxLength={20} autoComplete="given-name" />
                 </Field>
                 <Field label="Nom de la course" htmlFor="f-race">
                   <Input id="f-race" value={form.race} onChange={set("race")} placeholder="Crêtes Vosgiennes" maxLength={40} />
-                </Field>
-                <Field label="Date" htmlFor="f-date">
-                  <Input id="f-date" type="date" value={form.date} onChange={set("date")} />
                 </Field>
                 <Field label="Chrono" hint="(ex. 7h16)" htmlFor="f-time">
                   <Input
@@ -393,32 +352,6 @@ export function Creator() {
                     inputMode="text"
                     className={cn(form.time && timeSec == null && "border-[#e30000] focus:border-[#e30000] focus:ring-[#e30000]/15")}
                   />
-                </Field>
-                <Field label="Classement" hint="(ex. 42/612)" htmlFor="f-rank">
-                  <Input id="f-rank" value={form.rank} onChange={set("rank")} placeholder="42/612" inputMode="numeric" />
-                </Field>
-                <Field label="Photo" hint="(optionnelle, au verso)">
-                  <input ref={photoInput} type="file" accept="image/*" className="hidden" onChange={(e) => onPhoto(e.target.files?.[0])} />
-                  {form.photo ? (
-                    <div className="flex h-12 items-center gap-3 rounded-xl border border-line bg-white px-2">
-                      <img src={form.photo} alt="" className="h-9 w-9 rounded-lg object-cover" />
-                      <span className="flex-1 truncate text-[14px]">Photo ajoutée</span>
-                      <button
-                        onClick={() => setForm((f) => ({ ...f, photo: undefined }))}
-                        className="grid h-9 w-9 place-items-center rounded-lg text-muted hover:bg-mist hover:text-ink"
-                        aria-label="Retirer la photo"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => photoInput.current?.click()}
-                      className="flex h-12 items-center justify-center gap-2 rounded-xl border border-dashed border-line bg-white text-[15px] text-muted transition-colors hover:border-[#a1a1a6] hover:text-ink"
-                    >
-                      <ImagePlus className="h-4 w-4" /> Ajouter une photo
-                    </button>
-                  )}
                 </Field>
               </div>
             </Panel>

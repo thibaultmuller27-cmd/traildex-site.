@@ -51,14 +51,13 @@ export function cardDrawData(card: CardData): DnfDrawData {
       : ["D+", card.gain != null ? `${fmtInt(card.gain)} m` : "—"]
   const first: [string, string] = ["DIST.", km ? `${fmtKm(km)} km` : "—"]
   const third: [string, string] = ["CHRONO", chrono(card.timeSec)]
-  const last: [string, string] = card.rank ? ["CLASS.", card.rank.split("/")[0].trim() + "e"] : ["STATUT", "FINISHER"]
   return {
     discipline: disc,
     title1,
     title2,
     dateLine: [dateTxt, extra].filter(Boolean).join(" · "),
     kmLine: km ? `${fmtKm(km)} KM DE BONHEUR` : "TON PARCOURS ICI",
-    stats: [first, second, third, last],
+    stats: [first, second, third],
     route: pathPoints(card.routePath),
     ele: profilePoints(card.profileLine).map(([, y]) => -y),
     runner: (card.runner || "TON BLAZE").toUpperCase(),
