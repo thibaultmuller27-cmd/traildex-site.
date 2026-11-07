@@ -195,6 +195,7 @@ export function Creator() {
   const card: CardData = {
     id: "draft",
     discipline,
+    geo: stats?.geo,
     runner: form.runner.trim(),
     race: form.race.trim(),
     date: form.date,

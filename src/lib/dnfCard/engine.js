@@ -6,6 +6,7 @@
  */
 let CUR = { route: [], ele: [], runner: "", number: "001", year: "2026" }
 let QR = [[0]]
+let DEM = null
 const W = 760, H = 1200
 const RUNC = { bg0: "#1a0b1f", bg1: "#2b0f3a", a: "#ffb03d", b: "#ff5c8a", c: "#5cc8ff", txt: "#fff6ee", mute: "rgba(255,235,220,.65)" }
 const BIKEC = { bg0: "#0b1a2e", bg1: "#12305a", a: "#ff5a3d", b: "#ffd23d", c: "#ffffff", txt: "#ffffff", mute: "rgba(235,245,255,.7)" }
@@ -536,7 +537,8 @@ export function drawDnfCard(canvas, d, side = "front") {
   CFG[DISC] = { ...CFG[DISC], t1: d.title1, t2: d.title2, date: d.dateLine, km: d.kmLine, st: d.stats }
   CUR = { route: d.route.length > 1 ? d.route : [[40, 60], [60, 40]], ele: d.ele.length > 1 ? d.ele : [0, 1], runner: d.runner, number: d.number, year: d.year }
   if (d.qr) QR = d.qr
-  PANEL = panel; TRACE = "H"
+  DEM = d.dem || null
+  PANEL = DISC === "trail" && DEM ? "dem" : panel; TRACE = "H"
   const ctx = canvas.getContext("2d"), s = canvas.width / W
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.setTransform(s, 0, 0, s, 0, 0)
   if (side === "back") backDNF(ctx)

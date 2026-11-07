@@ -11,5 +11,7 @@ export type DnfDrawData = {
   number: string
   year: string
   qr?: number[][]
+  /** Real relief under the square (trail only), N × N elevations. */
+  dem?: { N: number; grid: number[][] } | null
 }
 export function drawDnfCard(canvas: HTMLCanvasElement, data: DnfDrawData, side?: "front" | "back"): void

@@ -33,6 +33,7 @@ export function validatePreorder(p: PreorderPayload): string[] {
   if (!Number.isInteger(p.qty) || p.qty < 1 || p.qty > 10) errors.push("Quantité invalide.")
   if (!FINISHES.some((f) => f.id === p.finish)) errors.push("Finition invalide.")
   if (!p.card || !str(p.card.race, 80) || !str(p.card.runner, 40)) errors.push("Carte incomplète.")
+  if (p.card?.discipline != null && !["trail", "running", "velo"].includes(p.card.discipline)) errors.push("Discipline invalide.")
   if (p.cgv !== CGV_VERSION) errors.push("Merci d'accepter les conditions générales de vente.")
   return errors
 }
@@ -62,6 +63,8 @@ export function buildRecord(p: PreorderPayload, reference: string) {
     fldD6lMsCuyeVPCZF: RARITIES[c.rarity]?.label,
     fldTFShF8TH62DVyK: num(c.number),
     fld3PaJa365DVv4SK: p.qty,
+    // Discipline (single select: Trail / Running / Vélo)
+    fldV5euE94kHwNLzz: c.discipline === "running" ? "Running" : c.discipline === "velo" ? "Vélo" : "Trail",
     fldDTY9Yu7IgLXtRE: `${p.cgv} (${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC)`,
     // Price is taken from the server-side table, never from the browser.
     fldS8C6HkZ5ZqoK5B: finish.price,

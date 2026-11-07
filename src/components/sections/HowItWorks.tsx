@@ -150,7 +150,7 @@ export function HowItWorks() {
         </div>
         <FadeIn>
           <p className="mt-10 flex items-center justify-center gap-2 text-center text-[14px] text-muted">
-            <Lock className="h-4 w-4" /> Ton GPX est lu directement dans ton navigateur. Rien ne part sur un serveur, même pas tes temps de pause.
+            <Lock className="h-4 w-4" /> Ton GPX est lu directement dans ton navigateur : il ne part sur aucun serveur, même pas tes temps de pause. Seul le relief de la zone est téléchargé (cartes d'altitude publiques).
           </p>
         </FadeIn>
       </div>

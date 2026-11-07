@@ -5,6 +5,7 @@ import { fmtInt, fmtKm } from "@/lib/card"
 import { profilePoints } from "@/lib/replay"
 import { drawDnfCard, type DnfDrawData } from "@/lib/dnfCard/engine"
 import { SITE_QR } from "@/lib/dnfCard/qr"
+import { reliefGrid } from "@/lib/dnfCard/relief"
 import { cn } from "@/lib/utils"
 
 const MONTHS = ["JANV.", "FÉVR.", "MARS", "AVRIL", "MAI", "JUIN", "JUIL.", "AOÛT", "SEPT.", "OCT.", "NOV.", "DÉC."]
@@ -88,8 +89,19 @@ export function DnfCard({ card, width = "clamp(250px, 76vw, 360px)", className, 
   const back = React.useRef<HTMLCanvasElement>(null)
   const [flipped, setFlipped] = React.useState(false)
   const [rot, setRot] = React.useState({ x: 0, y: 0 })
-  const data = React.useMemo(() => cardDrawData(card), [card])
-  const key = JSON.stringify(data)
+  const base = React.useMemo(() => cardDrawData(card), [card])
+  const [dem, setDem] = React.useState<{ N: number; grid: number[][] } | null>(null)
+  const routeKey = card.routePath
+  React.useEffect(() => {
+    let off = false
+    setDem(null)
+    if (!card.geo || card.demo) return
+    reliefGrid(base.route, card.geo).then((g) => !off && setDem(g)).catch(() => undefined)
+    return () => { off = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeKey])
+  const data = React.useMemo(() => ({ ...base, dem }), [base, dem])
+  const key = JSON.stringify(base) + (dem ? "dem" : "")
 
   React.useEffect(() => {
     let cancelled = false

@@ -5,6 +5,9 @@
 
 export type TrackPoint = { lat: number; lon: number; ele: number | null; time: number | null }
 
+/** How the 0–100 route space maps back to latitude / longitude. */
+export type RouteGeo = { cosLat: number; minX: number; minY: number; scale: number; offX: number; offY: number }
+
 export type TrackStats = {
   name: string | null
   /** ISO date (yyyy-mm-dd) taken from the track timestamps, if any. */
@@ -19,6 +22,7 @@ export type TrackStats = {
   pointCount: number
   /** SVG path in a 100×100 box, aspect ratio preserved and centred. */
   routePath: string
+  geo?: RouteGeo
   /** Start / finish markers in the same 100×100 box. */
   start: [number, number]
   end: [number, number]
@@ -189,6 +193,7 @@ export function computeStats(points: TrackPoint[], name: string | null = null): 
     maxEle,
     pointCount: points.length,
     routePath,
+    geo: { cosLat: Math.cos(lat0), minX, minY, scale, offX, offY },
     start: pts[0],
     end: pts[pts.length - 1],
     profileArea,

@@ -49,6 +49,8 @@ export type CardData = {
   edition?: Edition
   /** Sport chosen in the creator (trail by default). */
   discipline?: Discipline
+  /** Lets the preview fetch the real relief around the route. */
+  geo?: import("./gpx").RouteGeo
 }
 
 /** Kilomètre-effort: 1 km + 1 km per 100 m of climbing. */
