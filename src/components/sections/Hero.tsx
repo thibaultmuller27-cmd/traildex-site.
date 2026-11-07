@@ -1,6 +1,6 @@
 import { ChevronRight } from "lucide-react"
 import { CardScrollHero } from "@/components/ui/card-scroll-hero"
-import { TrailCard } from "@/components/TrailCard"
+import { DnfCard } from "@/components/DnfCard"
 import { buttonClass } from "@/components/ui/button"
 import { HERO_CARD } from "@/lib/demo"
 
@@ -29,7 +29,7 @@ export function Hero() {
           </>
         }
       >
-        <TrailCard card={HERO_CARD} spin width="clamp(240px, 70vw, 360px)" />
+        <DnfCard card={{ ...HERO_CARD, discipline: "trail", runner: HERO_CARD.runner || "Camille" }} width="clamp(240px, 70vw, 360px)" />
       </CardScrollHero>
     </div>
   )

@@ -1,7 +1,7 @@
 import * as React from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Bike, Download, Eye, FileUp, Footprints, ImagePlus, Loader2, Lock, Mountain, Play, Route, Share2, Sparkles, Trash2, TrendingUp, Upload } from "lucide-react"
-import { TrailCard } from "@/components/TrailCard"
+import { Bike, Download, Eye, FileUp, Footprints, ImagePlus, Loader2, Lock, Mountain, Route, Share2, Sparkles, Trash2, TrendingUp, Upload } from "lucide-react"
+import { DnfCard } from "@/components/DnfCard"
 import { Button } from "@/components/ui/button"
 import { Field, Input } from "@/components/ui/input"
 import { FadeIn } from "@/components/FadeIn"
@@ -104,14 +104,11 @@ export function Creator() {
   const previewRef = React.useRef<HTMLDivElement>(null)
   const sectionRef = React.useRef<HTMLElement>(null)
   const [showPeek, setShowPeek] = React.useState(false)
-  // Bumped to replay the race on the card (after an import, or on demand).
-  const [replay, setReplay] = React.useState(0)
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
   const applyStats = (s: TrackStats, name: string) => {
     setStats(s)
-    setReplay((r) => r + 1)
     setFileName(name)
     setError(null)
     setForm((f) => ({
@@ -235,7 +232,7 @@ export function Creator() {
           <div className="lg:order-2">
             <div ref={previewRef} className="flex flex-col items-center lg:sticky lg:top-24">
               <div className="py-6">
-                <TrailCard card={card} placeholder={!stats} width="clamp(250px, 76vw, 360px)" replay={replay} />
+                <DnfCard card={card} width="clamp(250px, 76vw, 360px)" />
               </div>
               <p className="mt-6 flex items-center gap-2 text-[13px] text-muted">
                 <span className="relative flex h-2 w-2">
@@ -244,12 +241,7 @@ export function Creator() {
                 </span>
                 Aperçu en direct · clique sur la carte pour la retourner
               </p>
-              {stats && (
-                <Button variant="secondary" className="mt-5" onClick={() => setReplay((r) => r + 1)}>
-                  <Play className="h-4 w-4" /> Revivre ma course
-                </Button>
-              )}
-              <Button variant="secondary" className={stats ? "mt-3" : "mt-5"} disabled={missing.length > 0} onClick={() => setShareOpen(true)}>
+              <Button variant="secondary" className="mt-5" disabled={missing.length > 0} onClick={() => setShareOpen(true)}>
                 <Share2 className="h-4 w-4" /> Partager gratuitement
               </Button>
               {missing.length > 0 && <p className="mt-2 text-[12px] text-muted">Ajoute ton GPX, ton prénom et ta course pour partager.</p>}
