@@ -111,7 +111,7 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
             </motion.div>
             <DialogTitle className="mt-6 text-[28px] font-semibold tracking-tight">Précommande enregistrée</DialogTitle>
             <DialogDescription className="mt-2 max-w-sm text-[16px] text-muted">
-              Merci ! On te recontacte par e-mail pour confirmer l'impression. Ta carte a rejoint ta collection.
+              Merci ! On te recontacte par e-mail pour confirmer l'impression.
               {done && (
                 <span className="mt-3 block text-[14px]">
                   Référence : <strong className="font-mono text-ink">{done}</strong>
@@ -119,9 +119,6 @@ export function PreorderDialog({ open, onOpenChange, card, finish }: Props) {
               )}
             </DialogDescription>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href="#collection" onClick={() => onOpenChange(false)}>
-                <Button size="lg">Voir ma collection</Button>
-              </a>
               <Button size="lg" variant="secondary" onClick={() => onOpenChange(false)}>
                 Créer une autre carte
               </Button>

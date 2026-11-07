@@ -41,7 +41,7 @@ export function PaymentReturn() {
                 </span>
               </>
             ) : (
-              "Aucun montant n'a été débité. Ta carte est toujours dans ta collection : tu peux la commander quand tu veux."
+              "Aucun montant n'a été débité. Ta carte t'attend : tu peux la commander quand tu veux."
             )}
           </DialogDescription>
           <Button size="lg" className="mt-8" onClick={() => setOpen(false)}>
