@@ -100,6 +100,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - 07/11 : nom envisagé **DNF Club** (dnfclub.fr, dnf-club.com, dnfclub.run libres ; « DNF » seul risqué : jeu Dungeon & Fighter). **Devise adorée par Thibault : « Déjà Nostalgique du Finish »** (DNF). Logos proposés (écusson, mascotte « carte qui court » retenue et améliorée en 3 poses). Carte promo BRC v6 redessinée par un agent « dessinateur BD » (caricatures façon couverture BD sportive) + brief pour un vrai caricaturiste.
 
+- 07/11 : **nom retenu : DNF Cards** (devise « Déjà Nostalgique du Finish »). DNF Club écarté (course « The DNF » à Andilly), KOM Club écarté (kom.club existe, terme Strava). Domaines dnfcards.com / .fr libres au 07/11, à réserver. Points de vigilance marque : « DNF » = aussi le jeu Dungeon & Fighter (classe 28) → vérifier INPI/TMview (16, 28, 41). Carte UTDP recto verso refaite en DNF Cards.
+
 ## Prochaines étapes (côté Thibault)
 1. Réponse d'Exaprint sur le format avec dorure + gabarit.
 2. Ajouter connexions et dépôt à la tâche « Point CEO TrailDex ».
