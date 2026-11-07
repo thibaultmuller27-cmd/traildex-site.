@@ -20,7 +20,7 @@ import {
   type Finish,
   type Discipline,
 } from "@/lib/card"
-import { FINISHES, RARITIES, formatPrice } from "@/lib/config"
+import { FINISHES, formatPrice } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
 type Form = { runner: string; race: string; date: string; time: string; rank: string; photo?: string }
@@ -82,11 +82,6 @@ function Panel({ step, title, children, aside }: { step: string; title: string; 
   )
 }
 
-const FINISH_SWATCH: Record<Finish, string> = {
-  holo: "linear-gradient(110deg,#ff8ad8,#ffd36e,#8cff9e,#6ee7ff,#9a8cff,#ff8ad8)",
-  or: "linear-gradient(135deg,#f9e3a3,#c99332 50%,#fff1c4 70%,#a86b1f)",
-}
-
 export function Creator() {
   const [stats, setStats] = React.useState<TrackStats | null>(null)
   const [fileName, setFileName] = React.useState<string | null>(null)
@@ -95,7 +90,8 @@ export function Creator() {
   const [drag, setDrag] = React.useState(false)
   const [form, setForm] = React.useState<Form>(EMPTY)
   const [discipline, setDiscipline] = React.useState<Discipline>("trail")
-  const [finish, setFinish] = React.useState<Finish>("holo")
+  // One finish for now: the holo card (the Or finish is no longer offered).
+  const finish: Finish = "holo"
   const [orderOpen, setOrderOpen] = React.useState(false)
   const [shareOpen, setShareOpen] = React.useState(false)
   const [number] = React.useState(() => 100 + Math.floor(Math.random() * 900))
@@ -224,7 +220,7 @@ export function Creator() {
           <p className="eyebrow text-mint">Créateur de carte</p>
           <h2 className="headline mx-auto mt-3 max-w-3xl text-[40px] sm:text-6xl md:text-7xl">Ta carte prend vie <span className="text-gradient-dnf">pendant que tu tapes.</span></h2>
           <p className="mx-auto mt-5 max-w-xl text-[17px] text-muted md:text-[19px]">
-            Discipline, blaze, GPX, finition. Quatre clics, zéro abandon. Ce que tu vois est ce que tu reçois (en plus brillant).
+            Discipline, GPX, blaze. Trois clics, zéro abandon. Ce que tu vois est ce que tu reçois (en plus brillant).
           </p>
         </FadeIn>
 
@@ -427,52 +423,6 @@ export function Creator() {
               </div>
             </Panel>
 
-            <Panel step="4" title="Ta finition">
-              <div role="radiogroup" aria-label="Finition" className="grid gap-3 sm:grid-cols-2">
-                {FINISHES.map((f) => {
-                  const active = f.id === finish
-                  return (
-                    <button
-                      key={f.id}
-                      role="radio"
-                      aria-checked={active}
-                      onClick={() => setFinish(f.id)}
-                      className={cn(
-                        "relative flex flex-row items-center gap-4 rounded-2xl p-4 text-left transition-all duration-200 sm:flex-col sm:items-start",
-                        active ? "bg-white ring-2 ring-ink" : "bg-mist ring-1 ring-transparent hover:ring-line",
-                      )}
-                    >
-                      <span
-                        className="h-14 w-10 shrink-0 rounded-md shadow-sm ring-1 ring-black/10"
-                        style={{
-                          background: FINISH_SWATCH[f.id],
-                          backgroundSize: f.id === "holo" ? "200% 100%" : undefined,
-                          animation: f.id === "holo" ? "holo-shift 4s linear infinite" : undefined,
-                        }}
-                      />
-                      <span className="flex-1">
-                        <span className="flex items-baseline justify-between gap-2">
-                          <span className="text-[17px] font-semibold">{f.name}</span>
-                          <span className="text-[15px] font-medium tabular-nums">{formatPrice(f.price)}</span>
-                        </span>
-                        <span className="mt-0.5 block text-[13px] font-medium text-ink/70">{f.tagline}</span>
-                        <span className="mt-1 block text-[12px] leading-snug text-muted">{f.details}</span>
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
-              <div className="mt-5 flex items-center gap-3 rounded-2xl bg-mist px-4 py-3 text-[14px]">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ background: RARITIES[rarity].color }} />
-                <span>
-                  Ta carte sera <strong>{RARITIES[rarity].label}</strong>
-                  <span className="text-muted">
-                    {finish === "holo" && stats && (rarity === "epique" ? " — plus de 60 km-effort, bravo." : " — Épique à partir de 60 km-effort.")}
-                    {finish === "holo" && !stats && " ou Épique selon ta course."}
-                  </span>
-                </span>
-              </div>
-            </Panel>
 
             <div className="flex flex-col items-stretch gap-3 rounded-[28px] bg-violet p-6 text-white ring-2 ring-[#160a2e] sm:flex-row sm:items-center sm:justify-between md:p-8">
               <div>

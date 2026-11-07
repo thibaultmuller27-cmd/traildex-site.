@@ -15,8 +15,8 @@ const QA = [
     a: "On lisse légèrement les altitudes de ton fichier et on ignore les micro-variations dues au GPS, pour éviter de gonfler le D+. Le résultat peut différer de quelques pourcents de ta montre. Tu connais le chiffre officiel ? Il fait foi.",
   },
   {
-    q: "Quelle est la différence entre les finitions ?",
-    a: "Deux finitions. Holo : film holographique dont les reflets bougent avec la lumière ; la carte devient Rare, ou Épique à partir de 60 km-effort. Or : dorure à chaud, carte numérotée et étui rigide — c'est la Légendaire.",
+    q: "Trail, running, vélo : ça change quoi ?",
+    a: "Le décor de ta carte. Trail : montagnes et vrai relief autour de ton parcours. Running : la ville au coucher du soleil, avec ton allure. Vélo : cols, champs et petites routes. Dans tous les cas : tracé holographique qui brille, et zéro jugement sur tes pauses.",
   },
   {
     q: "C'est quoi le km-effort ?",

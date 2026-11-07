@@ -54,19 +54,6 @@ function FormVisual() {
           <span className="font-medium">{v}</span>
         </motion.div>
       ))}
-      <div className="mt-1 flex gap-2">
-        {["Holo", "Or"].map((f, i) => (
-          <span
-            key={f}
-            className={
-              "flex-1 rounded-full py-2 text-center text-[12px] font-semibold " +
-              (i === 0 ? "bg-lime text-night" : "bg-white text-ink ring-1 ring-black/5")
-            }
-          >
-            {f}
-          </span>
-        ))}
-      </div>
     </div>
   )
 }
