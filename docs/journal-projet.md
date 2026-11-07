@@ -98,6 +98,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - 07/11 : carte promo BRC « La carte légendaire » validée (`docs/design/carte-holo-dessin-anime/brc-promo/`) et **première carte avec un vrai GPX et le vrai relief** (UTDP by UTMB de Thibault, tracé holographique arc-en-ciel) dans `.../utdp/`. Piste pour l'outil : relief du carré généré depuis les tuiles d'altitude publiques autour du GPX.
 
+- 07/11 : nom envisagé **DNF Club** (dnfclub.fr, dnf-club.com, dnfclub.run libres ; « DNF » seul risqué : jeu Dungeon & Fighter). **Devise adorée par Thibault : « Déjà Nostalgique du Finish »** (DNF). Logos proposés (écusson, mascotte « carte qui court » retenue et améliorée en 3 poses). Carte promo BRC v6 redessinée par un agent « dessinateur BD » (caricatures façon couverture BD sportive) + brief pour un vrai caricaturiste.
+
 ## Prochaines étapes (côté Thibault)
 1. Réponse d'Exaprint sur le format avec dorure + gabarit.
 2. Ajouter connexions et dépôt à la tâche « Point CEO TrailDex ».
