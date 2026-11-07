@@ -22,3 +22,9 @@ Trois couches alignées, 78 × 122 mm, 600 dpi : **couleur** (tracé laissé vid
 ## Reste à faire
 - Intégrer ce style dans l'outil (`src/lib/cardCanvas.ts`, `src/print/`) : relief du carré calculé depuis le GPX, export des 3 couches O1.
 - Version Or définitive, verso dans le même style.
+
+## Carte promo BRC « La carte légendaire » (validée le 07/11)
+`brc-promo/` : carte publicitaire pour présenter TrailDex au Boulay Running Club. Coureurs en dessin animé (course dynamique, grosses têtes expressives, dossards) qui se jettent sur une carte holo « LÉGENDAIRE », nuage de bagarre, 6 bulles, logo BRC en pastille, étapes 1 TON GPX / 2 TON CHRONO / 3 TA CARTE, bandeau « OFFRE CLUB BRC ». Rejetées : version bonshommes ronds, version planche BD à 2 cases. Logo du club : accord à demander.
+
+## Carte réelle de Thibault : UTDP by UTMB (07/11)
+`utdp/` : premier exemple avec un **vrai GPX** (Strava, 15/05/2026 : 112,6 km, ≈ 3 830 m D+ calculé, 22h12) et un **vrai relief** : tuiles d'altitude publiques Terrarium (AWS `elevation-tiles-prod`, zoom 12) → bandes de couleur à surface égale + ombrage façon dessin animé + contours encrés. **Tracé holographique** : arc-en-ciel qui défile le long du parcours, halo blanc, cœur blanc, éclats. Scripts : `gpxparse.py` (stats), `dem.py` (relief) ; D+ à recouper avec Strava.

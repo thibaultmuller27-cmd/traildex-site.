@@ -96,6 +96,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 - Illustratrice **PAQAP** (doodle, événements sportifs) : demande de devis envoyée par Thibault le 06/11 ; complément avec le nouveau gabarit en brouillon Gmail.
 - Abandonnés : cristal gravé 3D, cadre doodle sur fond clair, carte parchemin.
 
+- 07/11 : carte promo BRC « La carte légendaire » validée (`docs/design/carte-holo-dessin-anime/brc-promo/`) et **première carte avec un vrai GPX et le vrai relief** (UTDP by UTMB de Thibault, tracé holographique arc-en-ciel) dans `.../utdp/`. Piste pour l'outil : relief du carré généré depuis les tuiles d'altitude publiques autour du GPX.
+
 ## Prochaines étapes (côté Thibault)
 1. Réponse d'Exaprint sur le format avec dorure + gabarit.
 2. Ajouter connexions et dépôt à la tâche « Point CEO TrailDex ».
