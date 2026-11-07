@@ -1,6 +1,6 @@
 import * as React from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Bike, Download, Eye, FileUp, Footprints, Loader2, Lock, Mountain, Route, Share2, TrendingUp, Upload } from "lucide-react"
+import { Bike, Download, Eye, FileUp, Footprints, Loader2, Lock, Mountain, Route, Share2, Timer, TrendingUp, Upload } from "lucide-react"
 import { DnfCard } from "@/components/DnfCard"
 import { Button } from "@/components/ui/button"
 import { Field, Input } from "@/components/ui/input"
@@ -28,11 +28,11 @@ const EMPTY: Form = { runner: "", race: "", date: "", time: "", rank: "" }
 
 function StatChip({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-mist px-4 py-3">
-      <div className="flex items-center gap-1.5 text-[12px] text-muted">
+    <div className="min-w-0 rounded-2xl bg-mist px-3 py-3 sm:px-4">
+      <div className="flex items-center gap-1.5 whitespace-nowrap text-[12px] text-muted">
         <Icon className="h-3.5 w-3.5" /> {label}
       </div>
-      <div className="mt-0.5 text-[20px] font-semibold tabular-nums tracking-tight">{value}</div>
+      <div className="mt-0.5 whitespace-nowrap text-[17px] font-semibold tabular-nums tracking-tight sm:text-[20px]">{value}</div>
     </div>
   )
 }
@@ -56,6 +56,20 @@ function Panel({ step, title, children, aside }: { step: string; title: string; 
       {children}
     </div>
   )
+}
+
+/** Race name from the GPX: without emoji, ®/™ or a "Finisher" prefix; falls back to the file name. */
+function raceName(gpxName: string | null, fileName: string) {
+  const clean = (t: string) =>
+    t
+      .replace(/\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}\uFE0F\u200D®™©]/gu, "")
+      .replace(/\.gpx$/i, "")
+      .replace(/[_-]+/g, " ")
+      .replace(/^\s*finisher\s*/i, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 40)
+  return clean(gpxName || "") || clean(fileName) || "Ma course"
 }
 
 export function Creator() {
@@ -84,9 +98,9 @@ export function Creator() {
     setError(null)
     setForm((f) => ({
       ...f,
-      race: f.race || s.name || "",
-      date: f.date || s.date || "",
-      time: f.time || durationToInput(s.durationSec),
+      race: raceName(s.name, name),
+      date: s.date || "",
+      time: durationToInput(s.durationSec),
     }))
   }
 
@@ -175,7 +189,7 @@ export function Creator() {
     number,
   }
   const price = FINISHES.find((f) => f.id === finish)!.price
-  const missing = [!stats && "ton fichier GPX", !card.runner && "ton prénom", !card.race && "le nom de la course"].filter(Boolean) as string[]
+  const missing = [!stats && "ton fichier GPX", !card.runner && "ton prénom", !card.race && "un GPX avec un nom de course"].filter(Boolean) as string[]
 
   return (
     <section id="createur" ref={sectionRef} className="bg-mist px-5 py-24 md:py-36">
@@ -300,9 +314,10 @@ export function Creator() {
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="mt-5 grid grid-cols-2 gap-2.5">
+                    <div className="mt-5 grid grid-cols-3 gap-2.5">
                       <StatChip icon={Route} label="Distance" value={`${fmtKm(stats.distanceKm)} km`} />
-                      <StatChip icon={TrendingUp} label="Dénivelé +" value={`${fmtInt(stats.gain)} m`} />
+                      <StatChip icon={TrendingUp} label="D+" value={`${fmtInt(stats.gain)} m`} />
+                      <StatChip icon={Timer} label="Chrono" value={stats.durationSec ? durationToInput(stats.durationSec) : "—"} />
                     </div>
                     {stats.profileArea && (
                       <div className="mt-3 rounded-2xl bg-mist p-4">
@@ -335,25 +350,11 @@ export function Creator() {
               )}
             </Panel>
 
-            <Panel step="3" title="Ton nom (ou ton blaze) et ton chrono">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Prénom ou surnom" hint="(La Fusée, Tonton… on ne juge pas)" htmlFor="f-runner">
-                  <Input id="f-runner" value={form.runner} onChange={set("runner")} placeholder="Camille" maxLength={20} autoComplete="given-name" />
-                </Field>
-                <Field label="Nom de la course" htmlFor="f-race">
-                  <Input id="f-race" value={form.race} onChange={set("race")} placeholder="Crêtes Vosgiennes" maxLength={40} />
-                </Field>
-                <Field label="Chrono" hint="(ex. 7h16)" htmlFor="f-time">
-                  <Input
-                    id="f-time"
-                    value={form.time}
-                    onChange={set("time")}
-                    placeholder="7h16"
-                    inputMode="text"
-                    className={cn(form.time && timeSec == null && "border-[#e30000] focus:border-[#e30000] focus:ring-[#e30000]/15")}
-                  />
-                </Field>
-              </div>
+            <Panel step="3" title="Ton nom (ou ton blaze)">
+              <Field label="Prénom ou surnom" hint="(La Fusée, Tonton… on ne juge pas)" htmlFor="f-runner">
+                <Input id="f-runner" value={form.runner} onChange={set("runner")} placeholder="Camille" maxLength={20} autoComplete="given-name" />
+              </Field>
+              <p className="mt-3 text-[13px] text-muted">Le nom de la course, la date, la distance, le D+ et le chrono viennent de ton GPX. Rien d'autre à taper.</p>
             </Panel>
 
 
