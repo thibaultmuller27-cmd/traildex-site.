@@ -60,7 +60,7 @@ export const formatPrice = (n: number) =>
  */
 export const COMPANY = {
   name: "Thibault Muller",
-  tradeName: "TrailDex",
+  tradeName: "DNF Cards",
   legalForm: "Entrepreneur individuel (EI)",
   address: "", // ADRESSE À COMPLÉTER
   siret: "", // SIRET À COMPLÉTER après l'immatriculation

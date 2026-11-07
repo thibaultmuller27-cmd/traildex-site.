@@ -7,12 +7,18 @@ export default {
       fontFamily: {
         sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Segoe UI", "sans-serif"],
         mono: ["JetBrains Mono", "SF Mono", "ui-monospace", "monospace"],
+        display: ["Luckiest Guy", "Impact", "Arial Black", "sans-serif"],
       },
       colors: {
-        ink: "#1d1d1f",
-        mist: "#f5f5f7",
-        muted: "#6e6e73",
-        line: "#d2d2d7",
+        // DNF Cards: night background, light text, lime / mint / violet accents
+        ink: "#f4f1fb",
+        mist: "#1c1338",
+        muted: "#b4abd6",
+        line: "#3b2f6e",
+        night: "#0f0b1e",
+        lime: "#c6e536",
+        mint: "#1fd6a0",
+        violet: "#7a2cff",
       },
       letterSpacing: { tightest: "-0.045em" },
       keyframes: {

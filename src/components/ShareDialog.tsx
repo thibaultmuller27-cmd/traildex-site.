@@ -50,7 +50,7 @@ export function ShareDialog({ open, onOpenChange, card }: Props) {
   const share = async () => {
     if (!image) return
     try {
-      await navigator.share({ files: [image.file], title: "Ma carte TrailDex" })
+      await navigator.share({ files: [image.file], title: "Ma carte DNF Cards" })
     } catch {
       /* the person closed the share sheet */
     }
@@ -116,7 +116,7 @@ export function ShareDialog({ open, onOpenChange, card }: Props) {
                 download={image.file.name}
                 className={cn(
                   "inline-flex h-14 items-center justify-center gap-2 rounded-full px-8 text-[17px] font-medium transition-all",
-                  canShareFile ? "bg-white text-ink ring-1 ring-inset ring-line hover:bg-mist" : "bg-ink text-white hover:bg-black",
+                  canShareFile ? "bg-white text-ink ring-1 ring-inset ring-line hover:bg-mist" : "bg-lime text-night hover:bg-[#d8ff5c]",
                 )}
               >
                 <Download className="h-4 w-4" /> Enregistrer l'image
@@ -130,7 +130,7 @@ export function ShareDialog({ open, onOpenChange, card }: Props) {
             <div className="mt-2 rounded-2xl bg-mist p-4">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-[13px] font-medium">Légende</p>
-                <button onClick={copy} className="inline-flex items-center gap-1 text-[13px] text-[#0066cc] hover:underline">
+                <button onClick={copy} className="inline-flex items-center gap-1 text-[13px] text-lime hover:underline">
                   {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                   {copied ? "Copiée" : "Copier"}
                 </button>

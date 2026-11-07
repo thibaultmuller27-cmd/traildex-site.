@@ -32,7 +32,7 @@ export function Footer() {
           ))}
         </div>
         <div className="mt-12 flex flex-col gap-2 border-t border-line pt-6 sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} TrailDex. Tous droits réservés.</p>
+          <p>© {new Date().getFullYear()} DNF Cards · Déjà Nostalgique du Finish.</p>
           <p>Fait pour les sentiers, en France.</p>
         </div>
       </div>

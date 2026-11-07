@@ -22,6 +22,8 @@ export type Edition = {
   qrUrl?: string
 }
 
+export type Discipline = "trail" | "running" | "velo"
+
 export type CardData = {
   id: string
   runner: string
@@ -45,6 +47,8 @@ export type CardData = {
   number: number
   demo?: boolean
   edition?: Edition
+  /** Sport chosen in the creator (trail by default). */
+  discipline?: Discipline
 }
 
 /** Kilomètre-effort: 1 km + 1 km per 100 m of climbing. */

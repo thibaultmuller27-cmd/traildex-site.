@@ -1,6 +1,6 @@
 import * as React from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Download, Eye, FileUp, ImagePlus, Loader2, Lock, Mountain, Play, Route, Share2, Sparkles, Trash2, TrendingUp, Upload } from "lucide-react"
+import { Bike, Download, Eye, FileUp, Footprints, ImagePlus, Loader2, Lock, Mountain, Play, Route, Share2, Sparkles, Trash2, TrendingUp, Upload } from "lucide-react"
 import { TrailCard } from "@/components/TrailCard"
 import { Button } from "@/components/ui/button"
 import { Field, Input } from "@/components/ui/input"
@@ -18,6 +18,7 @@ import {
   rarityFor,
   type CardData,
   type Finish,
+  type Discipline,
 } from "@/lib/card"
 import { FINISHES, RARITIES, formatPrice } from "@/lib/config"
 import { cn } from "@/lib/utils"
@@ -60,11 +61,17 @@ function StatChip({ icon: Icon, label, value }: { icon: React.ElementType; label
   )
 }
 
+const DISCIPLINES = [
+  { id: "trail", label: "Trail", icon: Mountain, joke: "Boue, cailloux, et ravito fromage." },
+  { id: "running", label: "Running", icon: Footprints, joke: "Bitume, chrono, et ampoules assorties." },
+  { id: "velo", label: "Vélo", icon: Bike, joke: "Cols, cuissard, et descentes à 70." },
+] as const
+
 function Panel({ step, title, children, aside }: { step: string; title: string; children: React.ReactNode; aside?: React.ReactNode }) {
   return (
-    <div className="rounded-[28px] bg-white p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] md:p-8">
+    <div className="rounded-[28px] bg-white p-6 ring-2 ring-[#160a2e] md:p-8">
       <div className="mb-5 flex items-center justify-between gap-4">
-        <h3 className="text-[21px] font-semibold tracking-tight">
+        <h3 className="font-display text-[22px] tracking-wide text-lime">
           <span className="mr-2 font-mono text-[14px] text-muted">{step}</span>
           {title}
         </h3>
@@ -87,6 +94,7 @@ export function Creator() {
   const [loading, setLoading] = React.useState(false)
   const [drag, setDrag] = React.useState(false)
   const [form, setForm] = React.useState<Form>(EMPTY)
+  const [discipline, setDiscipline] = React.useState<Discipline>("trail")
   const [finish, setFinish] = React.useState<Finish>("holo")
   const [orderOpen, setOrderOpen] = React.useState(false)
   const [shareOpen, setShareOpen] = React.useState(false)
@@ -189,6 +197,7 @@ export function Creator() {
   const route = stats ?? HERO_CARD
   const card: CardData = {
     id: "draft",
+    discipline,
     runner: form.runner.trim(),
     race: form.race.trim(),
     date: form.date,
@@ -214,10 +223,10 @@ export function Creator() {
     <section id="createur" ref={sectionRef} className="bg-mist px-5 py-24 md:py-36">
       <div className="mx-auto max-w-6xl">
         <FadeIn className="text-center">
-          <p className="eyebrow text-[#0071e3]">Créateur de carte</p>
-          <h2 className="headline mx-auto mt-3 max-w-3xl text-[40px] sm:text-6xl md:text-7xl">Ta carte prend vie pendant que tu tapes.</h2>
+          <p className="eyebrow text-mint">Créateur de carte</p>
+          <h2 className="headline mx-auto mt-3 max-w-3xl text-[40px] sm:text-6xl md:text-7xl">Ta carte prend vie <span className="text-gradient-dnf">pendant que tu tapes.</span></h2>
           <p className="mx-auto mt-5 max-w-xl text-[17px] text-muted md:text-[19px]">
-            Importe ton parcours, remplis tes infos, choisis ta finition. Ce que tu vois est ce que tu reçois.
+            Discipline, blaze, GPX, finition. Quatre clics, zéro abandon. Ce que tu vois est ce que tu reçois (en plus brillant).
           </p>
         </FadeIn>
 
@@ -249,9 +258,29 @@ export function Creator() {
 
           {/* Steps */}
           <div className="flex flex-col gap-5 lg:order-1">
+            <Panel step="1" title="Ta discipline">
+              <div role="radiogroup" aria-label="Discipline" className="grid gap-3 sm:grid-cols-3">
+                {DISCIPLINES.map((d) => (
+                  <button
+                    key={d.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={discipline === d.id}
+                    onClick={() => setDiscipline(d.id)}
+                    className={cn(
+                      "flex flex-col items-start gap-1 rounded-2xl px-4 py-3 text-left ring-2 transition-all",
+                      discipline === d.id ? "bg-lime text-night ring-[#160a2e]" : "bg-night text-ink ring-line hover:ring-mint",
+                    )}
+                  >
+                    <span className="flex items-center gap-2 font-display text-[18px] tracking-wide"><d.icon className="h-5 w-5" /> {d.label}</span>
+                    <span className={cn("text-[12px]", discipline === d.id ? "text-night/75" : "text-muted")}>{d.joke}</span>
+                  </button>
+                ))}
+              </div>
+            </Panel>
             <Panel
-              step="1"
-              title="Ton parcours"
+              step="2"
+              title="Ton parcours (GPX)"
               aside={
                 <span className="hidden items-center gap-1 text-[12px] text-muted sm:flex">
                   <Lock className="h-3.5 w-3.5" /> Lu sur ton appareil
@@ -274,8 +303,8 @@ export function Creator() {
                   handleFile(e.dataTransfer.files[0])
                 }}
                 className={cn(
-                  "group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-all duration-300 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0071e3]/20",
-                  drag ? "scale-[1.01] border-[#0071e3] bg-[#0071e3]/5" : "border-line hover:border-[#a1a1a6] hover:bg-mist/60",
+                  "group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-all duration-300 focus:outline-none focus-visible:ring-4 focus-visible:ring-lime/20",
+                  drag ? "scale-[1.01] border-lime bg-lime/10" : "border-line hover:border-mint hover:bg-night/60",
                 )}
               >
                 <input
@@ -345,7 +374,7 @@ export function Creator() {
 
               {!stats && (
                 <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px]">
-                  <button onClick={loadExample} className="font-medium text-[#0066cc] hover:underline">
+                  <button onClick={loadExample} className="font-medium text-lime hover:underline">
                     Essayer avec l'exemple (Crêtes Vosgiennes)
                   </button>
                   <button onClick={downloadExample} className="inline-flex items-center gap-1 text-muted hover:text-ink">
@@ -355,9 +384,9 @@ export function Creator() {
               )}
             </Panel>
 
-            <Panel step="2" title="Tes infos">
+            <Panel step="3" title="Ton nom (ou ton blaze)">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Prénom" htmlFor="f-runner">
+                <Field label="Prénom ou surnom" hint="(La Fusée, Tonton… on ne juge pas)" htmlFor="f-runner">
                   <Input id="f-runner" value={form.runner} onChange={set("runner")} placeholder="Camille" maxLength={20} autoComplete="given-name" />
                 </Field>
                 <Field label="Nom de la course" htmlFor="f-race">
@@ -405,7 +434,7 @@ export function Creator() {
               </div>
             </Panel>
 
-            <Panel step="3" title="Ta finition">
+            <Panel step="4" title="Ta finition">
               <div role="radiogroup" aria-label="Finition" className="grid gap-3 sm:grid-cols-2">
                 {FINISHES.map((f) => {
                   const active = f.id === finish
@@ -452,7 +481,7 @@ export function Creator() {
               </div>
             </Panel>
 
-            <div className="flex flex-col items-stretch gap-3 rounded-[28px] bg-ink p-6 text-white sm:flex-row sm:items-center sm:justify-between md:p-8">
+            <div className="flex flex-col items-stretch gap-3 rounded-[28px] bg-violet p-6 text-white ring-2 ring-[#160a2e] sm:flex-row sm:items-center sm:justify-between md:p-8">
               <div>
                 <p className="text-[13px] text-white/60">Total · livraison offerte</p>
                 <p className="text-[32px] font-semibold tabular-nums tracking-tight">{formatPrice(price)}</p>
@@ -476,7 +505,7 @@ export function Creator() {
           >
             <button
               onClick={() => previewRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })}
-              className="pointer-events-auto flex items-center gap-2 rounded-full bg-ink/90 px-5 py-3 text-[14px] font-medium text-white shadow-xl backdrop-blur"
+              className="pointer-events-auto flex items-center gap-2 rounded-full bg-violet/90 px-5 py-3 text-[14px] font-medium text-white shadow-xl backdrop-blur"
             >
               <Eye className="h-4 w-4" /> Voir ma carte
             </button>

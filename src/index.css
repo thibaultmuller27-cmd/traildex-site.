@@ -8,13 +8,13 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
-    @apply bg-white text-ink antialiased;
+    @apply bg-night text-ink antialiased;
     font-feature-settings: "ss01", "cv11";
     overflow-x: clip;
   }
   ::selection {
-    background: #1d1d1f;
-    color: #fff;
+    background: #c6e536;
+    color: #0f0b1e;
   }
   section[id] {
     scroll-margin-top: 52px;
@@ -23,8 +23,21 @@
 
 @layer utilities {
   .headline {
-    @apply font-semibold tracking-tightest text-balance;
-    line-height: 1.02;
+    @apply font-display text-balance;
+    line-height: 1.04;
+    letter-spacing: 0.01em;
+    paint-order: stroke fill;
+    -webkit-text-stroke: 0.04em #160a2e;
+    text-shadow: 0.05em 0.06em 0 #160a2e;
+  }
+  .text-gradient-dnf {
+    background: linear-gradient(180deg, #d8ff5c 0%, #5cf08a 50%, #14b37a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+    filter: drop-shadow(0.03em 0.03em 0 #160a2e) drop-shadow(-0.02em -0.02em 0 #160a2e) drop-shadow(0.05em 0.06em 0 #160a2e);
   }
   .eyebrow {
     @apply text-[12px] font-semibold uppercase tracking-[0.14em] sm:text-[13px] sm:tracking-[0.18em];
@@ -36,10 +49,14 @@
     scrollbar-width: none;
   }
   .text-gradient-holo {
+    -webkit-text-stroke: 0;
     background: linear-gradient(100deg, #ff6ad5 0%, #c774e8 25%, #94d0ff 50%, #8cffb0 75%, #ffd36e 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+    filter: drop-shadow(0.03em 0.03em 0 #160a2e) drop-shadow(-0.02em -0.02em 0 #160a2e) drop-shadow(0.05em 0.06em 0 #160a2e);
   }
 }
 
@@ -67,3 +84,7 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* DNF Cards dark theme: sections and panels that were white become night/plum. */
+.bg-white { background-color: #0f0b1e; }
+.bg-white\/80 { background-color: rgb(15 11 30 / 0.8); }

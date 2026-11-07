@@ -48,7 +48,7 @@ export async function renderShareImage(card: CardData, format: ShareFormat): Pro
   ctx.textBaseline = "alphabetic"
   const top = format === "story" ? 190 : 110
   ctx.textAlign = "center"
-  ctx.fillText("Ma carte TrailDex", W / 2, top)
+  ctx.fillText("Ma carte DNF Cards", W / 2, top)
   ctx.fillStyle = "rgba(255,255,255,0.55)"
   ctx.font = `500 26px ${SANS}`
   const sub = [card.race, fmtDate(card.date)].filter(Boolean).join(" · ")
@@ -85,5 +85,5 @@ export function shareCaption(card: CardData) {
     card.gain != null && `${fmtInt(card.gain)} m D+`,
     card.timeSec && `en ${fmtDuration(card.timeSec)}`,
   ].filter(Boolean)
-  return `Ma carte TrailDex ${RARITIES[card.rarity].label} : ${card.race}${parts.length ? ` — ${parts.join(", ")}` : ""}. Crée la tienne sur traildex.fr #trail #trailrunning #traildex`
+  return `Ma carte DNF Cards ${RARITIES[card.rarity].label} : ${card.race}${parts.length ? ` — ${parts.join(", ")}` : ""}. Crée la tienne sur traildex.fr #trail #trailrunning #traildex`
 }

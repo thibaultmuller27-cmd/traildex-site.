@@ -58,7 +58,7 @@ export function Collection() {
               </p>
               <button
                 onClick={() => setSharing(c)}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium text-[#0066cc] transition-colors hover:bg-mist"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium text-lime transition-colors hover:bg-mist"
               >
                 <Share2 className="h-3.5 w-3.5" /> Partager
               </button>

@@ -12,12 +12,18 @@ const LINKS = [
 
 export function Logo({ className, inverted }: { className?: string; inverted?: boolean }) {
   return (
-    <a href="#top" className={cn("inline-flex items-center gap-2 text-[17px] font-semibold tracking-tight", className)}>
-      <svg viewBox="0 0 24 32" className="h-6 w-[18px]" aria-hidden>
-        <rect x="1" y="1" width="22" height="30" rx="4" fill="currentColor" />
-        <path d="M5 21l5-7 3 4 2-3 4 6" fill="none" stroke={inverted ? "#000" : "#fff"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    <a href="#top" aria-label="DNF Cards" className={cn("inline-flex items-center gap-1 font-display text-[22px] leading-none tracking-wide", className)}>
+      <span className="text-gradient-dnf [-webkit-text-stroke:1px_#160a2e]">DNF</span>
+      <svg viewBox="0 0 14 28" className="h-6 w-3" aria-hidden>
+        <defs>
+          <linearGradient id="dnf-trail" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stopColor="#ff5cf0" /><stop offset=".35" stopColor="#5cf3ff" /><stop offset=".65" stopColor="#7dff6a" /><stop offset="1" stopColor="#fff35c" />
+          </linearGradient>
+        </defs>
+        <path d="M3 26c5-6-3-9 2-14 3-3 2-6 6-9" fill="none" stroke="#160a2e" strokeWidth="5" strokeLinecap="round" />
+        <path d="M3 26c5-6-3-9 2-14 3-3 2-6 6-9" fill="none" stroke="url(#dnf-trail)" strokeWidth="3" strokeLinecap="round" />
       </svg>
-      TrailDex
+      <span className={inverted ? "text-night" : "text-ink"}>CARDS</span>
     </a>
   )
 }
@@ -57,7 +63,7 @@ export function Nav() {
         <div className="flex items-center gap-2">
           <a
             href="#createur"
-            className="hidden h-8 items-center rounded-full bg-ink px-4 text-[13px] font-medium text-white transition-colors hover:bg-black sm:inline-flex"
+            className="hidden h-8 items-center rounded-full bg-lime px-4 text-[13px] font-display tracking-wide text-night transition-colors hover:bg-[#d8ff5c] sm:inline-flex"
           >
             Créer ma carte
           </a>
