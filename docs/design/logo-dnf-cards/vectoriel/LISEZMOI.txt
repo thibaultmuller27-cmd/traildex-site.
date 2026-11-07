@@ -1,0 +1,14 @@
+DNF Cards - logo vectoriel
+
+SVG : fichiers vectoriels (Illustrator, Inkscape, Figma, site web). Textes vectorises : aucune police necessaire.
+PDF : vectoriel, pret pour un imprimeur ou un graphiste.
+PNG : apercus haute definition (fond transparent pour DNF-Cards-logo.png).
+
+- DNF-Cards-logo           : fond transparent (a poser sur fond sombre)
+- DNF-Cards-logo-fond-sombre
+- DNF-Cards-logo-fond-clair : devise en violet
+- DNF-Cards-icone          : carre (photo de profil, icone du site)
+
+Couleurs : DNF degrade #d8ff5c -> #5cf08a -> #14b37a, relief #0b5c3c, encre #160a2e,
+CARDS #ffffff, devise #c6e536 (ou #7a2cff sur fond clair), fond #0f0b1e.
+Police : Luckiest Guy (Google Fonts, licence SIL OFL, usage commercial autorise).
