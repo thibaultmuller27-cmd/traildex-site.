@@ -121,7 +121,7 @@ export function DnfCard({ card, width = "clamp(250px, 76vw, 360px)", className, 
     setRot({ x: ((e.clientY - r.top) / r.height - 0.5) * -10, y: ((e.clientX - r.left) / r.width - 0.5) * 12 })
   }
   const label = `Carte DNF Cards ${card.race || ""} de ${card.runner || "coureur"}`.trim()
-  const face = "absolute inset-0 h-full w-full rounded-[4.4%] [backface-visibility:hidden]"
+  const face = "absolute inset-0 h-full w-full rounded-[3.9%] [backface-visibility:hidden]"
 
   return (
     <div className={cn("flex flex-col items-center gap-3", className)}>
@@ -134,11 +134,11 @@ export function DnfCard({ card, width = "clamp(250px, 76vw, 360px)", className, 
           onKeyDown={(e) => flippable && (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setFlipped((f) => !f))}
           onPointerMove={onMove}
           onPointerLeave={() => setRot({ x: 0, y: 0 })}
-          className={cn("relative aspect-[760/1200] w-full transition-transform duration-500 [transform-style:preserve-3d] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-lime/60", flippable && "cursor-pointer")}
+          className={cn("relative aspect-[860/1200] w-full transition-transform duration-500 [transform-style:preserve-3d] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-lime/60", flippable && "cursor-pointer")}
           style={{ transform: `rotateX(${rot.x}deg) rotateY(${rot.y + (flipped ? 180 : 0)}deg)` }}
         >
-          <canvas ref={front} width={1140} height={1800} className={cn(face, "shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)]")} />
-          {flippable && <canvas ref={back} width={1140} height={1800} className={cn(face, "[transform:rotateY(180deg)]")} />}
+          <canvas ref={front} width={1290} height={1800} className={cn(face, "shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)]")} />
+          {flippable && <canvas ref={back} width={1290} height={1800} className={cn(face, "[transform:rotateY(180deg)]")} />}
         </div>
       </div>
       {flippable && (
