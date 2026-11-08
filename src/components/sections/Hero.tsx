@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react"
 import { CardScrollHero } from "@/components/ui/card-scroll-hero"
 import { DnfCard } from "@/components/DnfCard"
+import { BoosterReveal } from "@/components/BoosterReveal"
 import { buttonClass } from "@/components/ui/button"
 import { HERO_CARD } from "@/lib/demo"
 
@@ -29,7 +30,9 @@ export function Hero() {
           </>
         }
       >
-        <DnfCard card={{ ...HERO_CARD, discipline: "trail", runner: HERO_CARD.runner || "Camille" }} width="clamp(240px, 70vw, 360px)" />
+        <BoosterReveal width="clamp(240px, 70vw, 360px)">
+          <DnfCard card={{ ...HERO_CARD, discipline: "trail", runner: HERO_CARD.runner || "Camille" }} width="100%" />
+        </BoosterReveal>
       </CardScrollHero>
     </div>
   )
