@@ -511,17 +511,17 @@ function iconC(ctx, x, y, s, bg) { ctx.save(); ctx.translate(x, y); ctx.scale(s,
   greenWord(ctx, "DNF", -6, -8, 92, -.04, true); trailSlash(ctx, 66, 28, .42); ctx.font = '26px "Luckiest Guy"'; ctx.textAlign = "center"; ctx.fillStyle = "#fff"; ctx.lineWidth = 6; ctx.strokeStyle = INK; ctx.strokeText("CARDS", -6, 62); ctx.fillText("CARDS", -6, 62)
   ctx.restore() }
 function backDNF(ctx) { const C = DISC === "run" ? RUNC : DISC === "bike" ? BIKEC : HOLO
+  // Official back: the cartoon scenery with the DNF Cards logo in the middle, nothing else.
   ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, W, H, 34); ctx.clip()
-  bgAnime(ctx, C, { pts: [[380, 600], [380, 600]] }, CFG[DISC].kind); ctx.fillStyle = "rgba(10,5,30,.55)"; ctx.fillRect(0, 0, W, H)
-  const g = ctx.createRadialGradient(W / 2, 250, 20, W / 2, 250, 360); g.addColorStop(0, "rgba(31,214,160,.25)"); g.addColorStop(1, "rgba(31,214,160,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, 600)
-  logoC2(ctx, W / 2 - 18, 250, .96, "#ffffff", "#c6e536")
-  const q = QR, n = q.length, size = 330, x0 = W / 2 - size / 2, y0 = 520, m = size / (n + 4)
-  ctx.beginPath(); ctx.roundRect(x0 - 20, y0 - 20, size + 40, size + 40, 28); ctx.fillStyle = holoGrad(ctx, x0, y0, x0 + size, y0 + size); ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = INK; ctx.stroke()
-  ctx.beginPath(); ctx.roundRect(x0 - 4, y0 - 4, size + 8, size + 8, 16); ctx.fillStyle = "#fff"; ctx.fill(); ctx.lineWidth = 4; ctx.stroke()
-  ctx.fillStyle = "#120a33"; for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) if (q[j][i]) ctx.fillRect(x0 + (i + 2) * m, y0 + (j + 2) * m, m + .4, m + .4)
-  dtext(ctx, "SCANNE & CRÉE LA TIENNE", W / 2, 920, 32, "#c6e536", -.02)
-  dstar(ctx, 90, 1000, 12, "#fff35c"); dstar(ctx, 680, 1000, 14, "#fff35c"); dstar(ctx, 640, 1050, 8, "#fff")
-  ctx.font = "500 18px 'JetBrains Mono'"; ctx.textAlign = "center"; ctx.fillStyle = "rgba(220,255,240,.75)"; ctx.letterSpacing = "3px"; ctx.fillText("N° " + CUR.number + " · ÉDITION " + CUR.year, W / 2, 1150); ctx.letterSpacing = "0px"
+  bgAnime(ctx, C, { pts: [[W / 2, H / 2], [W / 2, H / 2]] }, CFG[DISC].kind); ctx.fillStyle = "rgba(10,5,30,.22)"; ctx.fillRect(0, 0, W, H)
+  const cy = H / 2 - 10
+  let g = ctx.createRadialGradient(W / 2, cy, 40, W / 2, cy, W * .62); g.addColorStop(0, "rgba(12,6,34,.78)"); g.addColorStop(.6, "rgba(12,6,34,.45)"); g.addColorStop(1, "rgba(12,6,34,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+  g = ctx.createRadialGradient(W / 2, cy, 20, W / 2, cy, 380); g.addColorStop(0, "rgba(31,214,160,.28)"); g.addColorStop(1, "rgba(31,214,160,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+  ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = "rgba(200,255,230,.06)"
+  for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2; ctx.beginPath(); ctx.moveTo(W / 2, cy); ctx.lineTo(W / 2 + Math.cos(a) * 900, cy + Math.sin(a) * 900); ctx.lineTo(W / 2 + Math.cos(a + .09) * 900, cy + Math.sin(a + .09) * 900); ctx.fill() }
+  ctx.restore()
+  logoC2(ctx, W / 2 - 24, cy - 6, 1.08, "#ffffff", "#c6e536")
+  dstar(ctx, W / 2 - 330, cy - 210, 14, "#fff35c"); dstar(ctx, W / 2 + 320, cy + 200, 16, "#fff35c"); dstar(ctx, W / 2 + 300, cy - 230, 9, "#fff"); dstar(ctx, W / 2 - 300, cy + 230, 10, "#fff")
   finish(ctx, C, false); ctx.restore() }
 function card(ctx, C, bg, label, gold) {
   ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, W, H, 34); ctx.clip()
