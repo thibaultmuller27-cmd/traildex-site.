@@ -510,18 +510,47 @@ function iconC(ctx, x, y, s, bg) { ctx.save(); ctx.translate(x, y); ctx.scale(s,
   ctx.beginPath(); ctx.roundRect(-110, -110, 220, 220, 48); ctx.fillStyle = bg; ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = INK; ctx.stroke()
   greenWord(ctx, "DNF", -6, -8, 92, -.04, true); trailSlash(ctx, 66, 28, .42); ctx.font = '26px "Luckiest Guy"'; ctx.textAlign = "center"; ctx.fillStyle = "#fff"; ctx.lineWidth = 6; ctx.strokeStyle = INK; ctx.strokeText("CARDS", -6, 62); ctx.fillText("CARDS", -6, 62)
   ctx.restore() }
-function backDNF(ctx) { const C = DISC === "run" ? RUNC : DISC === "bike" ? BIKEC : HOLO
-  // Official back: the cartoon scenery with the DNF Cards logo in the middle, nothing else.
+function backDNF(ctx) { const C = HOLO
+  // Official back, the same for every card (like a TCG card back): night sky, aurora,
+  // a ring of mountains, a holo frame and the DNF Cards logo in the middle.
+  const R = rng(2026), cx = W / 2, cy = H / 2
   ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, W, H, 34); ctx.clip()
-  bgAnime(ctx, C, { pts: [[W / 2, H / 2], [W / 2, H / 2]] }, CFG[DISC].kind); ctx.fillStyle = "rgba(10,5,30,.22)"; ctx.fillRect(0, 0, W, H)
-  const cy = H / 2 - 10
-  let g = ctx.createRadialGradient(W / 2, cy, 40, W / 2, cy, W * .62); g.addColorStop(0, "rgba(12,6,34,.78)"); g.addColorStop(.6, "rgba(12,6,34,.45)"); g.addColorStop(1, "rgba(12,6,34,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
-  g = ctx.createRadialGradient(W / 2, cy, 20, W / 2, cy, 380); g.addColorStop(0, "rgba(31,214,160,.28)"); g.addColorStop(1, "rgba(31,214,160,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
-  ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = "rgba(200,255,230,.06)"
-  for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2; ctx.beginPath(); ctx.moveTo(W / 2, cy); ctx.lineTo(W / 2 + Math.cos(a) * 900, cy + Math.sin(a) * 900); ctx.lineTo(W / 2 + Math.cos(a + .09) * 900, cy + Math.sin(a + .09) * 900); ctx.fill() }
+  let g = ctx.createRadialGradient(cx, cy, 30, cx, cy, H * .75); g.addColorStop(0, "#2a1470"); g.addColorStop(.55, "#140a3a"); g.addColorStop(1, "#070414"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+  // aurora ribbons, top and bottom (mirror)
+  ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(22px)"
+  for (const [y0, col, al] of [[150, "#1fd6a0", .55], [230, "#a45bff", .45], [H - 170, "#1fd6a0", .45], [H - 250, "#a45bff", .4]]) {
+    ctx.beginPath(); for (let x = -40; x <= W + 40; x += 10) { const y = y0 + Math.sin(x / 110 + y0) * 40 + fbm(x / 140, y0 / 70) * 60 - 30; x < -30 ? ctx.moveTo(x, y) : ctx.lineTo(x, y) }
+    ctx.strokeStyle = col; ctx.globalAlpha = al; ctx.lineWidth = 60; ctx.stroke() }
   ctx.restore()
-  logoC2(ctx, W / 2 - 24, cy - 6, 1.08, "#ffffff", "#c6e536")
-  dstar(ctx, W / 2 - 330, cy - 210, 14, "#fff35c"); dstar(ctx, W / 2 + 320, cy + 200, 16, "#fff35c"); dstar(ctx, W / 2 + 300, cy - 230, 9, "#fff"); dstar(ctx, W / 2 - 300, cy + 230, 10, "#fff")
+  // stars
+  for (let i = 0; i < 260; i++) { const x = R() * W, y = R() * H, r = R() * 1.8 + .3; ctx.fillStyle = "rgba(255,255,255," + (.25 + R() * .7) + ")"; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill() }
+  // rotating sunburst
+  ctx.save(); ctx.globalCompositeOperation = "lighter"
+  for (let i = 0; i < 48; i++) { const a = i / 48 * Math.PI * 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * 1000, cy + Math.sin(a) * 1000); ctx.lineTo(cx + Math.cos(a + .05) * 1000, cy + Math.sin(a + .05) * 1000); ctx.fillStyle = i % 2 ? "rgba(164,91,255,.07)" : "rgba(31,214,160,.06)"; ctx.fill() }
+  ctx.restore()
+  // ring of mountains around the emblem (cartoon, ink outlined)
+  const RAD = 300
+  ctx.save(); ctx.translate(cx, cy)
+  for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2, h = 70 + (k % 3) * 22, w2 = .17
+    const p = (ang, r) => [Math.cos(ang) * r, Math.sin(ang) * r]
+    const base1 = p(a - w2, RAD), base2 = p(a + w2, RAD), top = p(a, RAD + h), mid = p(a + .02, RAD)
+    ctx.beginPath(); ctx.moveTo(...base1); ctx.lineTo(...top); ctx.lineTo(...mid); ctx.closePath(); ctx.fillStyle = k % 2 ? "#3a2a8f" : "#1f6f7a"; ctx.fill()
+    ctx.beginPath(); ctx.moveTo(...mid); ctx.lineTo(...top); ctx.lineTo(...base2); ctx.closePath(); ctx.fillStyle = k % 2 ? "#5a43c6" : "#1fae86"; ctx.fill()
+    ctx.beginPath(); ctx.moveTo(...base1); ctx.lineTo(...top); ctx.lineTo(...base2); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.lineJoin = "round"; ctx.stroke()
+    const s1 = p(a - w2 * .28, RAD + h * .72), s2 = p(a + w2 * .28, RAD + h * .72)
+    ctx.beginPath(); ctx.moveTo(...top); ctx.lineTo(...s1); ctx.lineTo(...p(a, RAD + h * .8)); ctx.lineTo(...s2); ctx.closePath(); ctx.fillStyle = "#f4fff9"; ctx.fill(); ctx.lineWidth = 3; ctx.stroke() }
+  // inner disc + holo rings
+  ctx.beginPath(); ctx.arc(0, 0, RAD + 4, 0, 7); ctx.fillStyle = "#120a33"; ctx.fill(); ctx.lineWidth = 9; ctx.strokeStyle = INK; ctx.stroke()
+  ctx.beginPath(); ctx.arc(0, 0, RAD - 10, 0, 7); ctx.lineWidth = 6; ctx.strokeStyle = holoGrad(ctx, -RAD, -RAD, RAD, RAD); ctx.stroke()
+  ctx.setLineDash([3, 14]); ctx.lineCap = "round"; ctx.beginPath(); ctx.arc(0, 0, RAD - 28, 0, 7); ctx.lineWidth = 4; ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.stroke(); ctx.setLineDash([])
+  g = ctx.createRadialGradient(0, 0, 10, 0, 0, RAD); g.addColorStop(0, "rgba(31,214,160,.28)"); g.addColorStop(1, "rgba(31,214,160,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, RAD - 12, 0, 7); ctx.fill()
+  ctx.restore()
+  logoC2(ctx, cx - 16, cy - 8, .86, "#ffffff", "#c6e536")
+  // frame: double border with holo inner line and corner stars
+  ctx.lineWidth = 10; ctx.strokeStyle = INK; ctx.beginPath(); ctx.roundRect(34, 34, W - 68, H - 68, 26); ctx.stroke()
+  ctx.lineWidth = 4; ctx.strokeStyle = holoGrad(ctx, 0, 0, W, H); ctx.beginPath(); ctx.roundRect(46, 46, W - 92, H - 92, 20); ctx.stroke()
+  for (const [x, y] of [[50, 50], [W - 50, 50], [50, H - 50], [W - 50, H - 50]]) dstar(ctx, x, y, 20, "#fff35c")
+  for (const [x, y] of [[cx, 46], [cx, H - 46]]) dstar(ctx, x, y, 14, "#c6e536")
   finish(ctx, C, false); ctx.restore() }
 function card(ctx, C, bg, label, gold) {
   ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, W, H, 34); ctx.clip()
