@@ -29,6 +29,8 @@ export type TrackStats = {
   /** Elevation profile as an SVG area and line in a 100×30 box. */
   profileArea: string
   profileLine: string
+  /** Full route for the print files: up to 1 500 points [lat, lon, elevation m]. */
+  track?: [number, number, number][]
 }
 
 export class GpxError extends Error {}
@@ -198,6 +200,7 @@ export function computeStats(points: TrackPoint[], name: string | null = null): 
     end: pts[pts.length - 1],
     profileArea,
     profileLine,
+    track: downsample(points, 1500).map((p) => [Math.round(p.lat * 1e5) / 1e5, Math.round(p.lon * 1e5) / 1e5, Math.round(p.ele ?? 0)]),
   }
 }
 

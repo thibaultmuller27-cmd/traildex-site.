@@ -42,6 +42,8 @@ export type CardData = {
   end?: [number, number]
   profileArea: string
   profileLine: string
+  /** Full route [lat, lon, elevation] kept for the print files (see TrackStats.track). */
+  track?: [number, number, number][]
   photo?: string
   rarity: Rarity
   number: number

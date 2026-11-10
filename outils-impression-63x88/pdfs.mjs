@@ -1,7 +1,7 @@
 // Print files for one card: impression (image + 2 mm bleed) and dorure holo (vector trace, 100 % K).
 import fs from "fs"
 import { createRequire } from "module"
-const require = createRequire("/home/user/traildex-site./package.json")
+const require = createRequire(import.meta.url)
 const { PDFDocument, pushGraphicsState, popGraphicsState, setLineWidth, setLineCap, setLineJoin, setStrokingCmykColor, setFillingCmykColor, moveTo, lineTo, stroke, fill, closePath, appendBezierCurve, LineCapStyle, LineJoinStyle } = require("pdf-lib")
 const [dir, name] = process.argv.slice(2)
 const MM = 72 / 25.4, CW = 63, CH = 88, BL = 2, PW = CW + 2 * BL, PH = CH + 2 * BL, U = CW / 860 // mm per card unit

@@ -172,6 +172,7 @@ export function Creator() {
     id: "draft",
     discipline,
     geo: stats?.geo,
+    track: stats?.track,
     runner: form.runner.trim(),
     race: form.race.trim(),
     date: form.date,

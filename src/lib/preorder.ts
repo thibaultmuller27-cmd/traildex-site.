@@ -34,6 +34,9 @@ export function validatePreorder(p: PreorderPayload): string[] {
   if (!FINISHES.some((f) => f.id === p.finish)) errors.push("Finition invalide.")
   if (!p.card || !str(p.card.race, 80) || !str(p.card.runner, 40)) errors.push("Carte incomplète.")
   if (p.card?.discipline != null && !["trail", "running", "velo"].includes(p.card.discipline)) errors.push("Discipline invalide.")
+  const t = p.card?.track
+  if (t != null && !(Array.isArray(t) && t.length <= 2000 && t.every((q) => Array.isArray(q) && q.length === 3 && q.every((v) => typeof v === "number" && Number.isFinite(v)))))
+    errors.push("Tracé invalide.")
   if (p.cgv !== CGV_VERSION) errors.push("Merci d'accepter les conditions générales de vente.")
   return errors
 }
@@ -69,7 +72,10 @@ export function buildRecord(p: PreorderPayload, reference: string) {
     // Price is taken from the server-side table, never from the browser.
     fldS8C6HkZ5ZqoK5B: finish.price,
     // Airtable long text holds 100 000 characters: drop the photo copy if it would not fit.
-    fld1aonT4lBn1QhtB: JSON.stringify(c).length < 95_000 ? JSON.stringify(c) : JSON.stringify({ ...c, photo: undefined }),
+    // Card data without the full route (it has its own column below).
+    fld1aonT4lBn1QhtB: (({ track: _t, ...rest }) => (JSON.stringify(rest).length < 95_000 ? JSON.stringify(rest) : JSON.stringify({ ...rest, photo: undefined })))(c),
+    // Full route for the print files (≈ 35 000 characters, under Airtable's 100 000 limit).
+    fldnvXG0HTlowB3gw: c.track?.length ? JSON.stringify(c.track) : undefined,
   }
   for (const k of Object.keys(fields)) if (fields[k] === undefined) delete fields[k]
   return fields
