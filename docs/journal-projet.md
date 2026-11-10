@@ -102,6 +102,12 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - 07/11 : **nom retenu : DNF Cards** (devise « Déjà Nostalgique du Finish »). DNF Club écarté (course « The DNF » à Andilly), KOM Club écarté (kom.club existe, terme Strava). Domaines dnfcards.com / .fr libres au 07/11, à réserver. Points de vigilance marque : « DNF » = aussi le jeu Dungeon & Fighter (classe 28) → vérifier INPI/TMview (16, 28, 41). Carte UTDP recto verso refaite en DNF Cards.
 
+- 08–10/11 : **modèle économique** discuté. Organisateurs : carte « toute faite » par course (même carte pour tous, QR code au dos vers le site) à ≈ 2,90–3,50 € (une médaille finisher coûte ≈ 2–5 €) ; ou option payée par le coureur à l'inscription (9–12 €), cartes commandées selon les ventes. Coureurs : carte premium personnalisée sur xTool O1 à **14,90 € port compris** avec pochette souple, +3 € la pochette rigide, 10–12 € en vente directe sur une course. Coût matière O1 ≈ 0,85–0,90 €/carte (carte holo 0,80 € + encre UV ≈ 0,05–0,10 €). **Carte d'abandon** : même carte + **tampon DNF** posé à la main au stand d'arrivée (encre pour surfaces lisses type StazOn, à tester), et tampon FINISHER pour les autres.
+- 10/11 : fichiers pour un **imprimeur local** (4 cartes, recto + verso, sans cadre, fond perdu 3 mm, traits de coupe, sans dorure). Devis MatouBrillant à demander par Thibault (dorure possible sur devis). Agence **Fraich'Touch** (talents dont Clem Qui Court, Pau Capell) : d'abord le DM à Clem, l'agence plus tard avec de vraies cartes en photo.
+
+## Vision (rappel de Thibault, 10/11)
+**On commence petit, en activité accessoire, avec un petit chiffre d'affaires** (sous le seuil CCSS ≈ 38 200 €/an). **Si ça prend, Thibault envisage de démissionner pour créer une vraie marque de sport et faire grandir le CA.** Objectif long terme : une marque forte dans le sport (le « trophée moderne » du sportif amateur, humour « Déjà Nostalgique du Finish »), d'abord le trail en France, puis d'autres sports, collection, appli, collaborations, produits dérivés. Toute recommandation doit garder ces deux temps en tête : peu de risque et peu de dépenses maintenant, des choix qui permettent de grandir ensuite (marque protégée, outils qui passent à l'échelle).
+
 ## Prochaines étapes (côté Thibault)
 1. Réponse d'Exaprint sur le format avec dorure + gabarit.
 2. Ajouter connexions et dépôt à la tâche « Point CEO TrailDex ».
