@@ -1,0 +1,76 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
+<style>@font-face{font-family:LG;src:url(LuckiestGuy.ttf)}body{margin:0;background:#111}canvas{width:430px;height:600px}</style>
+<canvas id="c" width="3440" height="4800"></canvas>
+<script src="glyphs.js"></script><script src="doodles.js"></script><script src="themes.js"></script>
+<script>
+// carte.html?carte=utdp&face=recto|verso  — gabarit unique 860 × 1200 unités = 63 × 88 mm
+const q = new URLSearchParams(location.search), CARD = CARTES[q.get("carte") || "utdp"], T = THEMES[CARD.theme], FACE = q.get("face") || "recto"
+const W = 860, H = 1200, INK = "#0f0b1e", PX = 170, PY = 300, PS = 520, BAS = 1012
+function comic(x, t, X, Y, size, fill, o = {}) { x.save(); x.font = `${size}px LG`; x.textAlign = o.align || "center"; x.lineJoin = "round"; if (o.rot) { x.translate(X, Y); x.rotate(o.rot); X = 0; Y = 0 }
+  x.fillStyle = INK; x.fillText(t, X + size * .06, Y + size * .07); x.lineWidth = size * .2; x.strokeStyle = INK; x.strokeText(t, X, Y); x.fillStyle = fill; x.fillText(t, X, Y); x.restore() }
+function chaikin(P, n) { for (let k = 0; k < n; k++) { const Q = [P[0]]; for (let i = 0; i < P.length - 1; i++) { const [a, b] = P[i], [c, d] = P[i + 1]; Q.push([.75 * a + .25 * c, .75 * b + .25 * d], [.25 * a + .75 * c, .25 * b + .75 * d]) } Q.push(P[P.length - 1]); P = Q } return P }
+let seed = 7; const R = () => (seed = seed * 16807 % 2147483647) / 2147483647
+// sème les petits dessins dans les zones libres, sans chevauchement
+function semer(x) {
+  for (const ch of CARD.t1 + CARD.runner) seed = (seed * 31 + ch.charCodeAt(0)) % 2147483647
+  const zones = [[4, 286, 162, 560], [694, 286, 162, 560], [4, 842, 852, 166], [4, 96, 150, 190], [706, 8, 150, 278]]
+  const area = zones.map(z => z[2] * z[3]), tot = area.reduce((a, b) => a + b), placed = []
+  const pick = () => { let r = R() * tot; for (let i = 0; i < zones.length; i++) { if ((r -= area[i]) <= 0) return zones[i] } return zones[0] }
+  const free = (a, b, r, pad) => placed.every(([c, d, s]) => Math.hypot(a - c, b - d) > r + s + pad)
+  let k = 0
+  for (let n = 0; n < 9000 && k < 70; n++) { const z = pick(), r = 31 + R() * 10, a = z[0] + r * .82 + R() * (z[2] - 1.64 * r), b = z[1] + r * .82 + R() * (z[3] - 1.64 * r)
+    if (!free(a, b, r, -6)) continue
+    placed.push([a, b, r]); x.save(); x.translate(a, b); x.rotate((R() - .5) * .7); x.scale(r / 30, r / 30); x.lineJoin = x.lineCap = "round"; DOODLES[T.dessins[k % T.dessins.length]](x); x.restore(); k++ }
+  const fill = ["_point", "_etoile", "_plus"]
+  for (let n = 0, m = 0; n < 9000 && m < 80; n++) { const z = pick(), r = 7, a = z[0] + r + R() * (z[2] - 2 * r), b = z[1] + r + R() * (z[3] - 2 * r)
+    if (!free(a, b, r, 3)) continue
+    placed.push([a, b, r]); x.save(); x.translate(a, b); x.rotate(R() * 3); DOODLES[fill[m % 3]](x, T.confettis[m % T.confettis.length]); x.restore(); m++ }
+}
+async function recto(x) {
+  const [dem, tr] = await Promise.all([fetch(CARD.data + "/dem.json").then(r => r.json()), fetch(CARD.data + "/track.json").then(r => r.json())])
+  x.fillStyle = T.fond; x.fillRect(0, 0, W, H)
+  // motif ton sur ton : losanges
+  x.fillStyle = T.fond2; for (let j = 0; j < 40; j++) for (let i = 0; i < 30; i++) { const a = i * 32 + (j % 2) * 16, b = j * 32; x.beginPath(); x.moveTo(a, b - 5); x.lineTo(a + 5, b); x.lineTo(a, b + 5); x.lineTo(a - 5, b); x.fill() }
+  semer(x)
+  // en-tête : logo, titre, date
+  DNFLOGO.draw(x, 30, 32, 118, { cards: "#ffffff" })
+  let ts = 100; x.font = `${ts}px LG`; while (x.measureText(CARD.t1).width > 520 && ts > 50) { ts -= 4; x.font = `${ts}px LG` }
+  comic(x, CARD.t1, W / 2, 150, ts, T.titre, { rot: -.025 }); comic(x, CARD.t2, W / 2, 214, 50, T.sousTitre, { rot: -.025 })
+  x.save(); x.font = "700 20px 'JetBrains Mono'"; x.letterSpacing = "4px"; const dw = x.measureText(CARD.date).width + 34; x.beginPath(); x.roundRect(W / 2 - dw / 2, 236, dw, 36, 18); x.fillStyle = INK; x.fill(); x.textAlign = "center"; x.fillStyle = "#ffffff"; x.fillText(CARD.date, W / 2 + 2, 261); x.restore()
+  // carré : vrai relief ombré aux couleurs du thème
+  const N = dem.N, G = dem.grid, off = document.createElement("canvas"); off.width = off.height = N; const o = off.getContext("2d"), id = o.createImageData(N, N)
+  let mn = 1e9, mx = -1e9; for (const r of G) for (const v of r) { if (v < mn) mn = v; if (v > mx) mx = v }
+  const [lo, mid, hi] = T.relief
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { const t = (G[j][i] - mn) / (mx - mn), dx = G[j][Math.min(N - 1, i + 1)] - G[j][Math.max(0, i - 1)], dy = G[Math.min(N - 1, j + 1)][i] - G[Math.max(0, j - 1)][i]
+    const sh = Math.max(.4, Math.min(1.45, 1 - (dx * .7 - dy * .7) * .018)), col = t < .55 ? lo.map((a, k) => a + (mid[k] - a) * t / .55) : mid.map((a, k) => a + (hi[k] - a) * (t - .55) / .45), p = (j * N + i) * 4
+    id.data[p] = col[0] * sh; id.data[p + 1] = col[1] * sh; id.data[p + 2] = col[2] * sh; id.data[p + 3] = 255 }
+  o.putImageData(id, 0, 0)
+  x.fillStyle = INK; x.beginPath(); x.roundRect(PX + 7, PY + 9, PS, PS, 26); x.fill() // ombre portée du carré
+  x.save(); x.beginPath(); x.roundRect(PX, PY, PS, PS, 26); x.clip(); x.imageSmoothingQuality = "high"; x.drawImage(off, PX, PY, PS, PS)
+  const [la0, la1, lo0, lo1] = dem.bbox; let P = tr.pts.map(p => [PX + (p[1] - lo0) / (lo1 - lo0) * PS, PY + (la1 - p[0]) / (la1 - la0) * PS]); window.ROUTE = P.map(p => [...p]); P = chaikin(P, 2)
+  const path = () => { x.beginPath(); P.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)) }; x.lineJoin = x.lineCap = "round"
+  path(); x.strokeStyle = INK; x.lineWidth = 5.2; x.stroke(); path(); x.strokeStyle = T.trace; x.lineWidth = 3; x.stroke(); path(); x.strokeStyle = "rgba(255,255,255,.85)"; x.lineWidth = .7; x.stroke()
+  const [s0, s1] = P[0], [e0, e1] = P[P.length - 1]
+  x.beginPath(); x.arc(s0, s1, 6.5, 0, 7); x.fillStyle = "#fff"; x.fill(); x.lineWidth = 3; x.strokeStyle = INK; x.stroke()
+  x.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 5.6 : 12.5; x.lineTo(e0 + Math.cos(a) * rr, e1 + Math.sin(a) * rr) } x.closePath(); x.lineWidth = 3.2; x.strokeStyle = INK; x.stroke(); x.fillStyle = T.trace; x.fill()
+  x.restore()
+  x.beginPath(); x.roundRect(PX, PY, PS, PS, 26); x.lineWidth = 8; x.strokeStyle = INK; x.stroke(); x.beginPath(); x.roundRect(PX + 8, PY + 8, PS - 16, PS - 16, 19); x.lineWidth = 2.5; x.strokeStyle = T.cadre; x.stroke()
+  // bandeau du bas (festonné) : les chiffres, une seule fois
+  x.beginPath(); x.moveTo(0, H); x.lineTo(0, BAS + 12); for (let a = 0; a < W; a += 43) x.quadraticCurveTo(a + 21.5, BAS - 14, a + 43, BAS + 12); x.lineTo(W, H); x.closePath(); x.fillStyle = INK; x.fill()
+  CARD.st.forEach(([l, v], i) => { const X = 44 + i * 276; x.font = "700 15px 'JetBrains Mono'"; x.textAlign = "left"; x.fillStyle = T.accent; x.letterSpacing = "3px"; x.fillText(l, X, 1062); x.letterSpacing = "0px"; comic(x, v, X, 1108, 40, "#ffffff", { align: "left" }) })
+  x.save(); x.translate(136, 1154); x.rotate(-.03); x.font = "34px LG"; const nw = Math.max(170, x.measureText(CARD.runner).width + 44); x.beginPath(); x.roundRect(-nw / 2, -27, nw, 54, 10); x.fillStyle = T.accent; x.fill(); x.lineWidth = 4.5; x.strokeStyle = "#ffffff"; x.stroke(); x.textAlign = "center"; x.fillStyle = INK; x.fillText(CARD.runner, 0, 13); x.restore()
+  x.font = "700 18px 'JetBrains Mono'"; x.textAlign = "right"; x.fillStyle = "rgba(255,255,255,.75)"; x.letterSpacing = "2px"; x.fillText("N° " + CARD.num, W - 44, 1162)
+}
+function verso(x) {
+  x.fillStyle = INK; x.fillRect(0, 0, W, H)
+  for (let j = 0; j < 30; j++) for (let i = 0; i < 22; i++) { const a = 10 + i * 40 + (j % 2) * 20, b = 10 + j * 40; x.fillStyle = "rgba(122,44,255,.20)"; x.fillRect(a - 5, b - 1.2, 10, 2.4); x.fillRect(a - 1.2, b - 5, 2.4, 10) }
+  const g = x.createRadialGradient(W / 2, H / 2, 60, W / 2, H / 2, 620); g.addColorStop(0, "rgba(122,44,255,.30)"); g.addColorStop(1, "rgba(15,11,30,0)"); x.fillStyle = g; x.fillRect(0, 0, W, H)
+  const lw = 560, lh = lw * DNFLOGO.ratio; DNFLOGO.draw(x, (W - lw) / 2 - 8, (H - lh) / 2 - 20, lw)
+  x.font = "700 19px 'JetBrains Mono'"; x.textAlign = "center"; x.fillStyle = "#c6e536"; x.letterSpacing = "7px"; x.fillText("DÉJÀ NOSTALGIQUE DU FINISH", W / 2 + 3, (H + lh) / 2 + 44)
+}
+Promise.all([document.fonts.load("40px LG"), document.fonts.load("500 20px 'JetBrains Mono'"), document.fonts.load("700 20px 'JetBrains Mono'")]).then(async () => {
+  const x = document.getElementById("c").getContext("2d"); x.scale(4, 4)
+  try { FACE === "verso" ? verso(x) : await recto(x) } catch (e) { console.log("ERR", e.message, e.stack) }
+  document.title = "done" })
+</script>

@@ -113,6 +113,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - 11/11 : carte UTDP avec **fond BD dessiné en code** (sans IA) + tracé fin et net + relief ombré : « ok pour le moment » (`docs/design/carte-fond-bd-code/`). À brancher dans l'outil d'impression si elle devient le modèle ; le style KM 60 attend PAQAP.
 
+- 11/11 : **modèle de carte à thèmes** (`docs/design/carte-themes/`) : un gabarit, un thème par organisateur (couleurs + petits dessins doodle en code). Exemples : UTDP thème Alsace (bières, flammekueche, bretzels, cigognes…) et UTMJ thème Jura. **Nouveau logo « gaming »** en blocs, 100 % vectoriel (`docs/design/logo-dnf-cards/gaming/`, PDF/SVG/PNG), utilisé au dos de la carte. En attente de l'avis de Thibault.
+
 ## Vision (rappel de Thibault, 10/11)
 **On commence petit, en activité accessoire, avec un petit chiffre d'affaires** (sous le seuil CCSS ≈ 38 200 €/an). **Si ça prend, Thibault envisage de démissionner pour créer une vraie marque de sport et faire grandir le CA.** Objectif long terme : une marque forte dans le sport (le « trophée moderne » du sportif amateur, humour « Déjà Nostalgique du Finish »), d'abord le trail en France, puis d'autres sports, collection, appli, collaborations, produits dérivés. Toute recommandation doit garder ces deux temps en tête : peu de risque et peu de dépenses maintenant, des choix qui permettent de grandir ensuite (marque protégée, outils qui passent à l'échelle).
 
