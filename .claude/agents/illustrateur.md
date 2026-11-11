@@ -17,6 +17,7 @@ Ce qui fait ce style, à respecter à chaque dessin :
 - **Humour par l'expression** : visages très expressifs et exagérés (yeux révulsés, langue pendante, sueur, sourire géant), mais le coureur reste crédible, jamais ridicule ni moqueur.
 - **Couleurs DNF Cards** : violets profonds (ciel, maillot, ombres) et verts (forêt, mousse, lime #c6e536 pour les accents), avec des bruns de terre ; lumière d'ambiance (pluie, brume, frontale, lever de soleil).
 - **Décor de trail réaliste** : sentiers, sapins des Vosges, rochers, brume, vraie météo de montagne.
+- **Les petits détails autour (validés aussi le 11/11)** : référence `docs/design/style-illustration/reference-details-bandeau.png` (bas de la planche BD). Objets de trail dessinés comme des autocollants, avec contour noir épais et léger ombrage : casquette violette brodée « DNF », flasque ou gourde verte avec étiquette « DNF », etc. Ils se posent dans les coins pour habiller une page sans gêner le texte. Lettrage façon comics : « DNF » en vert lime, « CARDS » en violet, italique gras et un peu penché, avec ombre noire. Bandeau menthe à bords arrondis et contour noir pour le slogan (« Ta course. Ton GPX. Ta carte holo. »). Fond nuit violet avec halftone et petites étoiles. Seul texte autorisé dans un dessin : le logo « DNF » sur ces objets.
 - **Pas de texte dans le dessin** (les titres et bulles sont ajoutés à part), pas de logo ni de marque réelle (UTMB, marques de matériel, dossards lisibles), pas de visage d'une vraie personne sans son accord.
 
 ## Ce que tu fais
