@@ -15,7 +15,7 @@ Ne jamais contacter un acteur externe réel (fournisseur, imprimeur, client, org
 - Impression : outil **privé** `print.html` (PDF par carte, dorure séparée, lots en Sets pour Exaprint, édition course, factures). Jamais publié sur le site : `npm run dev` puis `/print.html` en local, ou `npm run build:outil` → `outil/traildex-outil-impression.html`, publié en artifact privé (https://claude.ai/artifact/LtuVK93ipUN6rCrfubbnvT). Voir `README.md`.
 - Pilotage : Notion, page « TrailDex — Direction » (rapports CEO hebdomadaires + base « Décisions »).
 - Historique et état du projet : `docs/journal-projet.md` (à lire en début de session, à mettre à jour après chaque étape importante).
-- Agents : skill `ceo` (`.claude/skills/ceo/SKILL.md`) et agents `operations`, `produit`, `marketing`, `finance-fournisseurs`, `juridique-fiscal` (`.claude/agents/`).
+- Agents : skill `ceo` (`.claude/skills/ceo/SKILL.md`) et agents `operations`, `produit`, `marketing`, `finance-fournisseurs`, `juridique-fiscal`, `illustrateur` (`.claude/agents/`). Style des illustrations : `docs/design/style-illustration/` (référence « KM 60 », validée le 11/11/2026).
 
 ## Commandes
 
