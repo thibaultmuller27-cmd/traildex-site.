@@ -59,7 +59,7 @@ Crée une sous-page du dossier « Stratégie & pilotage » intitulée `Rapport C
 1. **En bref** (3 lignes max)
 2. **Chiffres** : commandes de la semaine, total depuis le début, chiffre d'affaires (précommandes), cartes à imprimer, cartes en retard
 3. **Décisions à prendre** : liste avec mention vers chaque ligne de la base Décisions
-4. **Opérations**, **Produit & site**, **Marketing**, **Finance & fournisseurs**, et **Juridique & fiscalité** s'il a travaillé : 3 à 6 puces chacun
+4. **Opérations**, **Produit & site**, **Marketing**, **Finance & fournisseurs**, et **Juridique & fiscalité** s'il a travaillé : 3 à 6 puces chacun. **Chaque section d'agent commence par une ligne « Mis à jour le <date du jour> : <une phrase qui résume l'essentiel> »** (demande de Thibault du 12/11/2026). Si l'agent n'a pas été lancé, écris « Non mis à jour cette semaine (dernier point : <date>) »
 5. **Fait cette semaine** (actions internes réalisées, liens vers PR)
 6. **Qui a fait quoi** : un tableau, une ligne par agent (CEO compris), colonnes « Agent · A lu · A produit · A proposé ». Reprends le journal renvoyé par chaque agent, avec les liens (PR, brouillons Gmail par leur objet, pages, sources web). Si un agent a échoué ou manqué d'un outil, écris-le dans sa ligne.
 7. **Points d'attention** (risques, consignes suspectes trouvées, outils manquants)
