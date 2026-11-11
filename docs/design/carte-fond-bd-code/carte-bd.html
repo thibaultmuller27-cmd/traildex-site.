@@ -1,0 +1,70 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
+<style>@font-face{font-family:LG;src:url(LuckiestGuy.ttf)}body{margin:0;background:#111}canvas{width:430px;height:600px}</style>
+<canvas id="c" width="3440" height="4800"></canvas>
+<script src="bdfond.js"></script>
+<script>
+const W = 860, H = 1200, INK = "#0f0b1e", LIME = "#c6e536", MINT = "#1fd6a0", VIO = "#7a2cff"
+const PX = 170, PY = 318, PS = 520
+const CARD = { t1: "UTDP", t2: "BY UTMB", date: "15 MAI 2026 · ALT. MAX 794 M", st: [["DIST.", "112,6 km"], ["D+", "3 827 m"], ["CHRONO", "22h12"]], runner: "THIBAULT", num: "001" }
+const img = s => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = s })
+function comic(x, t, X, Y, size, fill, o = {}) {
+  x.save(); x.font = `${size}px LG`; x.textAlign = o.align || "center"; x.textBaseline = "alphabetic"; x.lineJoin = "round"
+  if (o.rot) { x.translate(X, Y); x.rotate(o.rot); X = 0; Y = 0 }
+  x.fillStyle = INK; x.fillText(t, X + size * .06, Y + size * .07) // ombre portée
+  x.lineWidth = size * .2; x.strokeStyle = INK; x.strokeText(t, X, Y); x.fillStyle = fill; x.fillText(t, X, Y); x.restore()
+}
+function star(x, cx, cy, r, fill) { x.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; x.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) } x.closePath(); x.lineWidth = 3.2; x.strokeStyle = INK; x.lineJoin = "round"; x.stroke(); x.fillStyle = fill; x.fill() }
+function chaikin(P, n) { for (let k = 0; k < n; k++) { const Q = [P[0]]; for (let i = 0; i < P.length - 1; i++) { const [a, b] = P[i], [c, d] = P[i + 1]; Q.push([.75 * a + .25 * c, .75 * b + .25 * d], [.25 * a + .75 * c, .25 * b + .75 * d]) } Q.push(P[P.length - 1]); P = Q } return P }
+async function draw() {
+  const [bg, logo, dem, tr] = await Promise.all([img("fond-1.png"), img("DNF-Cards-logo.svg"), fetch("dem.json").then(r => r.json()), fetch("track.json").then(r => r.json())])
+  const c = document.getElementById("c"), x = c.getContext("2d"); x.scale(4, 4); x.imageSmoothingQuality = "high"
+  // fond illustré (rogné pour enlever le liseré)
+  bdFond(x, W, H)
+  let g = x.createLinearGradient(0, 0, 0, 330); g.addColorStop(0, "rgba(10,6,24,.82)"); g.addColorStop(1, "rgba(10,6,24,0)"); x.fillStyle = g; x.fillRect(0, 0, W, 330)
+  g = x.createLinearGradient(0, 1000, 0, H); g.addColorStop(0, "rgba(10,6,24,0)"); g.addColorStop(.35, "rgba(10,6,24,.72)"); g.addColorStop(1, "rgba(10,6,24,.86)"); x.fillStyle = g; x.fillRect(0, 1000, W, H - 1000)
+  // en-tête
+  { const lw = 150, lh = lw * logo.height / logo.width; x.drawImage(logo, 30, 34, lw, lh) }
+  x.font = "700 19px 'JetBrains Mono'"; x.textAlign = "right"; x.fillStyle = LIME; x.letterSpacing = "3px"; x.fillText("◆ TRAIL", W - 40, 60); x.letterSpacing = "0px"
+  comic(x, CARD.t1, W / 2, 168, 96, "#ffffff", { rot: -.025 })
+  comic(x, CARD.t2, W / 2, 232, 50, LIME, { rot: -.025 })
+  x.font = "500 20px 'JetBrains Mono'"; x.textAlign = "center"; x.fillStyle = "#f2eefc"; x.letterSpacing = "3px"; x.fillText(CARD.date, W / 2, 284); x.letterSpacing = "0px"
+  // carré : relief réel ombré
+  const N = dem.N, G = dem.grid, off = document.createElement("canvas"); off.width = off.height = N; const o = off.getContext("2d"), id = o.createImageData(N, N)
+  let mn = 1e9, mx = -1e9; for (const r of G) for (const v of r) { if (v < mn) mn = v; if (v > mx) mx = v }
+  const lo = [24, 14, 58], mid = [52, 44, 120], hi = [62, 150, 120]
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const v = G[j][i], t = (v - mn) / (mx - mn), dx = (G[j][Math.min(N - 1, i + 1)] - G[j][Math.max(0, i - 1)]), dy = (G[Math.min(N - 1, j + 1)][i] - G[Math.max(0, j - 1)][i])
+    const sh = Math.max(.35, Math.min(1.45, 1 - (dx * .7 - dy * .7) * .018)), col = t < .55 ? lo.map((a, k) => a + (mid[k] - a) * t / .55) : mid.map((a, k) => a + (hi[k] - a) * (t - .55) / .45)
+    const p = (j * N + i) * 4; id.data[p] = col[0] * sh; id.data[p + 1] = col[1] * sh; id.data[p + 2] = col[2] * sh; id.data[p + 3] = 255 }
+  o.putImageData(id, 0, 0)
+  x.save(); x.beginPath(); x.roundRect(PX, PY, PS, PS, 26); x.clip(); x.drawImage(off, PX, PY, PS, PS)
+  g = x.createRadialGradient(PX + PS / 2, PY + PS / 2, PS * .25, PX + PS / 2, PY + PS / 2, PS * .75); g.addColorStop(0, "rgba(10,6,24,0)"); g.addColorStop(1, "rgba(10,6,24,.55)"); x.fillStyle = g; x.fillRect(PX, PY, PS, PS)
+  // le tracé : lissé, fin, net
+  const [la0, la1, lo0, lo1] = dem.bbox
+  let R = tr.pts.map(p => [PX + (p[1] - lo0) / (lo1 - lo0) * PS, PY + (la1 - p[0]) / (la1 - la0) * PS])
+  window.ROUTE = R.map(([a, b]) => [a, b])
+  R = chaikin(R, 2)
+  const path = () => { x.beginPath(); R.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)) }
+  x.lineJoin = x.lineCap = "round"
+  path(); x.strokeStyle = "rgba(198,229,54,.22)"; x.lineWidth = 6; x.shadowColor = "rgba(198,229,54,.8)"; x.shadowBlur = 7; x.stroke(); x.shadowBlur = 0
+  path(); x.strokeStyle = INK; x.lineWidth = 4.4; x.stroke()
+  path(); x.strokeStyle = LIME; x.lineWidth = 2.6; x.stroke()
+  path(); x.strokeStyle = "#ffffff"; x.lineWidth = .8; x.stroke()
+  const [s0, s1] = R[0], [e0, e1] = R[R.length - 1]
+  x.beginPath(); x.arc(s0, s1, 6, 0, 7); x.fillStyle = "#fff"; x.fill(); x.lineWidth = 3; x.strokeStyle = INK; x.stroke()
+  star(x, e0, e1, 12, LIME)
+  x.restore()
+  x.beginPath(); x.roundRect(PX, PY, PS, PS, 26); x.lineWidth = 9; x.strokeStyle = INK; x.stroke()
+  x.beginPath(); x.roundRect(PX + 8, PY + 8, PS - 16, PS - 16, 20); x.lineWidth = 2.5; x.strokeStyle = MINT; x.stroke()
+  comic(x, "112,6 KM DE BONHEUR", PX + PS / 2, PY + PS + 14, 24, "#ffffff", { rot: -.02 })
+  // stats
+  CARD.st.forEach(([l, v], i) => { const X = 42 + i * 280; x.font = "500 16px 'JetBrains Mono'"; x.textAlign = "left"; x.fillStyle = "rgba(230,255,240,.75)"; x.letterSpacing = "3px"; x.fillText(l, X, 1052); x.letterSpacing = "0px"; comic(x, v, X, 1100, 38, i % 2 ? LIME : "#ffffff", { align: "left" }) })
+  // bandeau du nom
+  x.save(); x.translate(132, 1152); x.rotate(-.03); x.beginPath(); x.roundRect(-104, -27, 208, 54, 10); x.fillStyle = MINT; x.fill(); x.lineWidth = 5; x.strokeStyle = INK; x.stroke(); x.restore()
+  comic(x, CARD.runner, 132, 1166, CARD.runner.length > 9 ? 26 : 32, "#ffffff", { rot: -.03 })
+  x.font = "500 18px 'JetBrains Mono'"; x.textAlign = "right"; x.fillStyle = "rgba(230,255,240,.75)"; x.fillText("NO. " + CARD.num, W - 42, 1160)
+  document.title = "done"
+}
+Promise.all([document.fonts.load("40px LG"), document.fonts.load("500 20px 'JetBrains Mono'"), document.fonts.load("700 20px 'JetBrains Mono'")]).then(draw).catch(e => { console.log("ERR", e.message); document.title = "done" })
+</script>
