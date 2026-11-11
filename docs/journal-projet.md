@@ -109,6 +109,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - 11/11 : **style d'illustration validé** par Thibault : la case « KM 60 » de la BD Canva « Les aventures de Thibault – UTDP » (BD semi-réaliste façon comics, encrage épais, expressions exagérées et drôles, violets et verts, décor de trail réaliste). Référence dans `docs/design/style-illustration/` et média Canva `MAHamh7m1Xc`. Nouvel agent `illustrateur` (`.claude/agents/illustrateur.md`) qui s'en sert pour les prochaines illustrations et les fonds de carte, avec Canva (connecteur ajouté le 11/11). Point CEO du 11/11 refait à la main (tâche planifiée en échec : dépôt GitHub non rattaché ; réparé par Thibault le jour même).
 
+- 11/11 : essai logo + carte UTDP « style maison » générés avec Canva (IA) : **refusés, rendu trop IA**. Règle : l'IA d'image = maquettes seulement, jamais de visuel final (logo, fond de carte). La carte validée reste celle du moteur actuel ; le style KM 60 passera par un illustrateur humain (PAQAP) ou par du dessin en code.
+
 ## Vision (rappel de Thibault, 10/11)
 **On commence petit, en activité accessoire, avec un petit chiffre d'affaires** (sous le seuil CCSS ≈ 38 200 €/an). **Si ça prend, Thibault envisage de démissionner pour créer une vraie marque de sport et faire grandir le CA.** Objectif long terme : une marque forte dans le sport (le « trophée moderne » du sportif amateur, humour « Déjà Nostalgique du Finish »), d'abord le trail en France, puis d'autres sports, collection, appli, collaborations, produits dérivés. Toute recommandation doit garder ces deux temps en tête : peu de risque et peu de dépenses maintenant, des choix qui permettent de grandir ensuite (marque protégée, outils qui passent à l'échelle).
 

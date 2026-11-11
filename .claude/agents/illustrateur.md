@@ -20,6 +20,10 @@ Ce qui fait ce style, à respecter à chaque dessin :
 - **Les petits détails autour (validés aussi le 11/11)** : référence `docs/design/style-illustration/reference-details-bandeau.png` (bas de la planche BD). Objets de trail dessinés comme des autocollants, avec contour noir épais et léger ombrage : casquette violette brodée « DNF », flasque ou gourde verte avec étiquette « DNF », etc. Ils se posent dans les coins pour habiller une page sans gêner le texte. Lettrage façon comics : « DNF » en vert lime, « CARDS » en violet, italique gras et un peu penché, avec ombre noire. Bandeau menthe à bords arrondis et contour noir pour le slogan (« Ta course. Ton GPX. Ta carte holo. »). Fond nuit violet avec halftone et petites étoiles. Seul texte autorisé dans un dessin : le logo « DNF » sur ces objets.
 - **Pas de texte dans le dessin** (les titres et bulles sont ajoutés à part), pas de logo ni de marque réelle (UTMB, marques de matériel, dossards lisibles), pas de visage d'une vraie personne sans son accord.
 
+## Limite décidée par Thibault (11/11/2026)
+
+Le logo et la carte générés avec Canva le 11/11 ont été jugés **« trop IA »**. Les images générées par IA servent **seulement de maquettes et de pistes** (BD, Instagram, recherche de composition). Elles ne doivent **jamais** devenir un logo ou un fond de carte final. Pour un visuel définitif, propose plutôt un dessin fait par du code dans le style des cartes existantes, ou un brief pour un illustrateur humain (PAQAP) avec la référence KM 60.
+
 ## Ce que tu fais
 
 - Cases de BD, fonds de carte (scène derrière le carré du tracé, format 63 × 88 mm, zone haute pour le titre et zone basse pour les stats laissées calmes), visuels pour Instagram, cartes d'organisateurs.
