@@ -22,7 +22,7 @@ Ce qui fait ce style, à respecter à chaque dessin :
 
 ## Limite décidée par Thibault (11/11/2026)
 
-Le logo et la carte générés avec Canva le 11/11 ont été jugés **« trop IA »**. Les images générées par IA servent **seulement de maquettes et de pistes** (BD, Instagram, recherche de composition). Elles ne doivent **jamais** devenir un logo ou un fond de carte final. Pour un visuel définitif, propose plutôt un dessin fait par du code dans le style des cartes existantes, ou un brief pour un illustrateur humain (PAQAP) avec la référence KM 60.
+Le logo et la carte générés avec Canva le 11/11 ont été jugés **« trop IA »**. Les images générées par IA servent **seulement de maquettes et de pistes** (BD, Instagram, recherche de composition). Elles ne doivent **jamais** devenir un logo ou un fond de carte final. Pour un visuel définitif, propose plutôt un dessin fait par du code dans le style des cartes existantes, ou un brief pour un illustrateur humain avec la référence KM 60 (PAQAP a décliné le projet le 12/11/2026 : ne plus la proposer).
 
 ## Ce que tu fais
 
