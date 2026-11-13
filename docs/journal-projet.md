@@ -123,6 +123,10 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - 13/11 : dragon du Graoully et temple du Donon **redessinés en vraie illustration** (volumes, ombres, détails), plus grands sur les cartes ; accents dans la police du logo.
 
+- 13/11 : essai d'illustrations Canva (IA, style 3D BD) pour le Graoully et le Donon, posées en autocollants sur les cartes inchangées : **Thibault pas convaincu**, rien d'enregistré ; la règle « IA = maquettes seulement » reste en vigueur.
+
+- 13/11 : **logo holographique** (mêmes formes que le logo gaming, dégradé holo) et **nouveau dos de carte holo** : validés tels quels (« Parfait ne change rien ») : `docs/design/logo-dnf-cards/holo/`. Pas encore branché dans l'outil d'impression.
+
 ## Vision (rappel de Thibault, 10/11)
 **On commence petit, en activité accessoire, avec un petit chiffre d'affaires** (sous le seuil CCSS ≈ 38 200 €/an). **Si ça prend, Thibault envisage de démissionner pour créer une vraie marque de sport et faire grandir le CA.** Objectif long terme : une marque forte dans le sport (le « trophée moderne » du sportif amateur, humour « Déjà Nostalgique du Finish »), d'abord le trail en France, puis d'autres sports, collection, appli, collaborations, produits dérivés. Toute recommandation doit garder ces deux temps en tête : peu de risque et peu de dépenses maintenant, des choix qui permettent de grandir ensuite (marque protégée, outils qui passent à l'échelle).
 
