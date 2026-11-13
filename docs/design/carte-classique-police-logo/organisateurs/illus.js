@@ -9,15 +9,29 @@ const ILLUS = (() => {
     const m = i => [(P[i % n][0] + P[(i + 1) % n][0]) / 2, (P[i % n][1] + P[(i + 1) % n][1]) / 2]; p.moveTo(...m(n - 1)); for (let i = 0; i < n; i++) p.quadraticCurveTo(...P[i], ...m(i)); p.closePath(); return p }
   const moved = (p, dx, dy) => { const q = new Path2D(); q.addPath(p, new DOMMatrix().translate(dx, dy)); return q }
   // couleur de base + ombre (bas-droite) + reflet (haut-gauche) + encrage
+  let MODE = "bd"
   function shade(x, p, base, dark, light, lw = 4, o = 9) {
+    if (MODE === "3d") return shade3d(x, p, base, dark, light, lw, o)
     x.fillStyle = base; x.fill(p)
     if (dark) { x.save(); x.clip(p); const q = new Path2D(); q.rect(-3000, -3000, 6000, 6000); q.addPath(p, new DOMMatrix().translate(-o, -o * .8)); x.fillStyle = dark; x.fill(q, "evenodd"); x.restore() }
     if (light) { x.save(); x.clip(p); const q = new Path2D(); q.rect(-3000, -3000, 6000, 6000); q.addPath(p, new DOMMatrix().translate(o * .55, o * .5)); x.fillStyle = light; x.fill(q, "evenodd"); x.restore() }
     if (lw) { x.lineJoin = "round"; x.lineWidth = lw; x.strokeStyle = INK; x.stroke(p) } }
+  // rendu « 3D » : ombre et lumière diffuses (flou), reflet spéculaire, lumière de contour, trait fin coloré
+  function shade3d(x, p, base, dark, light, lw, o) {
+    const O = o * 1.8, B = Math.max(3, o * 1.05)
+    x.fillStyle = base; x.fill(p)
+    x.save(); x.clip(p); x.filter = `blur(${B}px)`
+    let q = new Path2D(); q.rect(-3000, -3000, 6000, 6000); q.addPath(p, new DOMMatrix().translate(-O, -O * .85))
+    x.globalCompositeOperation = "multiply"; x.globalAlpha = .85; x.fillStyle = typeof dark === "string" && dark[0] === "#" ? dark : "#9a7a9a"; x.fill(q, "evenodd")
+    q = new Path2D(); q.rect(-3000, -3000, 6000, 6000); q.addPath(p, new DOMMatrix().translate(O * .55, O * .5))
+    x.globalCompositeOperation = "screen"; x.globalAlpha = .55; x.fillStyle = "#ffffff"; x.fill(q, "evenodd")
+    x.filter = `blur(${B * .6}px)`; q = new Path2D(); q.rect(-3000, -3000, 6000, 6000); q.addPath(p, new DOMMatrix().translate(O * .22, O * .2)); x.globalAlpha = .7; x.fill(q, "evenodd")
+    x.restore()
+    if (lw) { x.lineJoin = "round"; x.lineWidth = Math.max(1.6, lw * .5); x.strokeStyle = "rgba(40,8,30,.9)"; x.stroke(p) } }
   const line = (x, P, col, lw) => { x.beginPath(); P.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); x.strokeStyle = col; x.lineWidth = lw; x.lineCap = x.lineJoin = "round"; x.stroke() }
 
   // ===================== LE GRAOULLY =====================
-  function graoully(x, o = {}) {
+  function graoully(x, o = {}) { MODE = o.style || "bd"
     const RED = "#d3121c", REDD = "#86070f", REDL = "#ff5a4a", GOLD = "#f4c13d", GOLDD = "#b7811c", IVORY = "#f6ecd2", IVD = "#c9b48c", WING = "#9a0b14", WINGD = "#5c050b"
     x.save(); x.lineCap = x.lineJoin = "round"
     if (o.glow) { const g = x.createRadialGradient(-10, -170, 20, -10, -170, 260); g.addColorStop(0, "rgba(255,80,50,.42)"); g.addColorStop(1, "rgba(255,80,50,0)"); x.fillStyle = g; x.fillRect(-300, -460, 600, 470) }
@@ -96,7 +110,7 @@ const ILLUS = (() => {
     x.restore() }
 
   // ===================== TEMPLE DU DONON =====================
-  function donon(x, o = {}) {
+  function donon(x, o = {}) { MODE = o.style || "bd"
     x.save(); x.lineJoin = x.lineCap = "round"
     const ST = "#f1e0cc", STM = "#d8bea3", STD = "#a98872", ROCK = "#c98068", ROCKD = "#8e4c3c", ROCKL = "#e8ab8f", MOSS = "#4f9a52", MOSSD = "#2e6a3a"
     if (o.glow) { const g = x.createRadialGradient(0, -150, 20, 0, -150, 260); g.addColorStop(0, "rgba(255,236,190,.5)"); g.addColorStop(1, "rgba(255,236,190,0)"); x.fillStyle = g; x.fillRect(-300, -420, 600, 430) }
