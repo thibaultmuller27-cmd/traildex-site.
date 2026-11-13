@@ -121,6 +121,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - 12/11 : **PAQAP a répondu : elle ne souhaite pas faire ce projet.** Piste illustratrice fermée ; les cartes restent dessinées en code (modèle classique + police du logo), à moins de trouver un autre illustrateur. Idée « atelier de personnalisation » (bâtons, accessoires) étudiée par l'agent finance : reportée, sous la forme d'un kit d'autocollants en option (+ 6 €) quand les cartes se vendront ; pas de marquage d'objets confiés par les clients.
 
+- 13/11 : dragon du Graoully et temple du Donon **redessinés en vraie illustration** (volumes, ombres, détails), plus grands sur les cartes ; accents dans la police du logo.
+
 ## Vision (rappel de Thibault, 10/11)
 **On commence petit, en activité accessoire, avec un petit chiffre d'affaires** (sous le seuil CCSS ≈ 38 200 €/an). **Si ça prend, Thibault envisage de démissionner pour créer une vraie marque de sport et faire grandir le CA.** Objectif long terme : une marque forte dans le sport (le « trophée moderne » du sportif amateur, humour « Déjà Nostalgique du Finish »), d'abord le trail en France, puis d'autres sports, collection, appli, collaborations, produits dérivés. Toute recommandation doit garder ces deux temps en tête : peu de risque et peu de dépenses maintenant, des choix qui permettent de grandir ensuite (marque protégée, outils qui passent à l'échelle).
 

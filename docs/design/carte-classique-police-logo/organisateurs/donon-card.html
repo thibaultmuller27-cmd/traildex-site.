@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Patrick+Hand&family=Inter:wght@500;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>body{margin:0;background:#111;display:flex;gap:28px;padding:28px}figure{margin:0;color:#ddd;font:600 15px Inter,sans-serif;text-align:center}canvas{width:320px;height:505px;border-radius:14px;display:block;margin-bottom:10px}</style>
 <canvas id="trail-recto" width="3440" height="4800"></canvas><canvas id="trail-verso" width="3440" height="4800"></canvas>
-<script>const PRINT = true</script><script src="data.js"></script><script src="tracks.js"></script><script src="qr.js"></script><script src="glyphs.js"></script>
+<script>const PRINT = true</script><script src="data.js"></script><script src="tracks.js"></script><script src="qr.js"></script><script src="glyphs.js"></script><script src="illus.js"></script>
 <script>
 const W = 860, H = 1200 // format 63 × 88 mm (carte « Pokémon »)
 const RUNC = { bg0: "#1a0b1f", bg1: "#2b0f3a", a: "#ffb03d", b: "#ff5c8a", c: "#5cc8ff", txt: "#fff6ee", mute: "rgba(255,235,220,.65)" }
@@ -592,32 +592,15 @@ function backDNF(ctx) { const C = HOLO
   finish(ctx, C, false); ctx.restore() }
 
 // Temple du Donon (cartoon, ink outline): steps, 4 columns, entablature, pediment.
-function temple(ctx, x, y, s, glow) {
-  ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.lineJoin = "round"
-  if (glow) { const g = ctx.createRadialGradient(0, -60, 10, 0, -60, 140); g.addColorStop(0, "rgba(255,243,170,.55)"); g.addColorStop(1, "rgba(255,243,170,0)"); ctx.fillStyle = g; ctx.fillRect(-150, -200, 300, 260) }
-  const stone = "#efe6d2", shade = "#c9bd9f", lw = 4
-  poly(ctx, [[-74, 0], [74, 0], [74, -10], [-74, -10]], shade, lw)          // steps
-  poly(ctx, [[-66, -10], [66, -10], [66, -20], [-66, -20]], stone, lw)
-  poly(ctx, [[-58, -20], [58, -20], [58, -28], [-58, -28]], shade, lw)
-  ctx.fillStyle = "#3a2a6e"; ctx.fillRect(-46, -92, 92, 64)                   // dark cella behind the columns
-  for (const cx of [-44, -15, 15, 44]) {                                       // columns with fluting
-    poly(ctx, [[cx - 8, -28], [cx + 8, -28], [cx + 7, -92], [cx - 7, -92]], stone, lw)
-    ctx.beginPath(); ctx.moveTo(cx - 2.5, -32); ctx.lineTo(cx - 2.5, -88); ctx.moveTo(cx + 2.5, -32); ctx.lineTo(cx + 2.5, -88); ctx.lineWidth = 1.6; ctx.strokeStyle = shade; ctx.stroke()
-    poly(ctx, [[cx - 11, -92], [cx + 11, -92], [cx + 11, -98], [cx - 11, -98]], stone, 3)
-  }
-  poly(ctx, [[-62, -98], [62, -98], [62, -114], [-62, -114]], stone, lw)       // entablature
-  poly(ctx, [[-68, -114], [68, -114], [0, -150]], stone, lw)                   // pediment
-  poly(ctx, [[-46, -119], [46, -119], [0, -142]], shade, 2.5)
-  ctx.restore()
-}
+function temple(ctx, x, y, s, glow) { ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ILLUS.donon(ctx, { glow }); ctx.restore() }
 function templeOnCard(ctx, rt) {
   // big temple on the right-hand hill, above the forest
-  temple(ctx, W - 122, 948, .82, true)
+  temple(ctx, W - 122, 1004, .64, true)
   // small temple marker at the summit of the route (highest point)
   let k = 0; TRACK.pts.forEach((p, i) => { if (p[2] > TRACK.pts[k][2]) k = i })
   const [x, y] = rt.pts[Math.min(k, rt.pts.length - 1)]
   ctx.save(); ctx.beginPath(); ctx.arc(x, y + 40, 24, 0, 7); ctx.fillStyle = "#fff35c"; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke(); ctx.restore()
-  temple(ctx, x, y + 40 + 12, .2, false)
+  temple(ctx, x + 2, y + 40 + 12, .075, false)
 }
 function card(id, C, bg, label, gold) {
   const ctx = document.getElementById(id).getContext("2d"); ctx.setTransform(4, 0, 0, 4, 0, 0)

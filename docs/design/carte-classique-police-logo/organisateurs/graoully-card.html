@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Patrick+Hand&family=Inter:wght@500;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>body{margin:0;background:#111;display:flex;gap:28px;padding:28px}figure{margin:0;color:#ddd;font:600 15px Inter,sans-serif;text-align:center}canvas{width:320px;height:505px;border-radius:14px;display:block;margin-bottom:10px}</style>
 <canvas id="trail-recto" width="3440" height="4800"></canvas><canvas id="trail-verso" width="3440" height="4800"></canvas>
-<script>const PRINT = true</script><script src="data.js"></script><script src="tracks.js"></script><script src="qr.js"></script><script src="glyphs.js"></script>
+<script>const PRINT = true</script><script src="data.js"></script><script src="tracks.js"></script><script src="qr.js"></script><script src="glyphs.js"></script><script src="illus.js"></script>
 <script>
 const W = 860, H = 1200 // format 63 × 88 mm (carte « Pokémon »)
 const RUNC = { bg0: "#1a0b1f", bg1: "#2b0f3a", a: "#ffb03d", b: "#ff5c8a", c: "#5cc8ff", txt: "#fff6ee", mute: "rgba(255,235,220,.65)" }
@@ -592,47 +592,12 @@ function backDNF(ctx) { const C = HOLO
   finish(ctx, C, false); ctx.restore() }
 
 // Le Graoully: cartoon dragon (ink outline), wings spread, breathing a little fire.
-function dragon(ctx, x, y, s, glow) {
-  ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.lineJoin = ctx.lineCap = "round"
-  if (glow) { const g = ctx.createRadialGradient(0, -80, 10, 0, -80, 170); g.addColorStop(0, "rgba(255,90,60,.45)"); g.addColorStop(1, "rgba(255,90,60,0)"); ctx.fillStyle = g; ctx.fillRect(-190, -260, 380, 300) }
-  const red = "#d7141e", dark = "#7a0a10", belly = "#f5c542"
-  // tail
-  const tail = () => { ctx.beginPath(); ctx.moveTo(-30, -30); ctx.bezierCurveTo(-90, -10, -110, -60, -150, -40); ctx.bezierCurveTo(-175, -28, -170, -5, -150, 0) }
-  tail(); ctx.lineWidth = 26; ctx.strokeStyle = INK; ctx.stroke(); tail(); ctx.lineWidth = 17; ctx.strokeStyle = red; ctx.stroke()
-  poly(ctx, [[-150, 0], [-172, -14], [-160, 10], [-182, 16], [-150, 12]], dark, 4)
-  // back wing
-  poly(ctx, [[-10, -95], [-70, -190], [-80, -150], [-110, -165], [-95, -120], [-120, -120], [-60, -85]], dark, 5)
-  // body
-  ctx.beginPath(); ctx.ellipse(0, -55, 58, 42, -.15, 0, 7); ctx.fillStyle = red; ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = INK; ctx.stroke()
-  ctx.beginPath(); ctx.ellipse(12, -45, 30, 26, -.2, 0, 7); ctx.fillStyle = belly; ctx.fill(); ctx.lineWidth = 3; ctx.stroke()
-  for (let k = 0; k < 4; k++) { ctx.beginPath(); ctx.moveTo(-6 + k * 9, -64 + k * 6); ctx.lineTo(24 + k * 6, -58 + k * 8); ctx.lineWidth = 2; ctx.strokeStyle = "#c9932a"; ctx.stroke() }
-  // legs
-  for (const lx of [-30, 26]) { poly(ctx, [[lx - 10, -25], [lx + 10, -25], [lx + 12, 0], [lx - 14, 0]], red, 4); for (let c = 0; c < 3; c++) poly(ctx, [[lx - 12 + c * 9, 0], [lx - 8 + c * 9, 0], [lx - 10 + c * 9, 7]], "#fff", 2) }
-  // spikes on the back
-  for (let k = 0; k < 5; k++) poly(ctx, [[-50 + k * 18, -86 + k * 3], [-42 + k * 18, -104 + k * 2], [-34 + k * 18, -84 + k * 3]], belly, 3)
-  // neck + head
-  const neck = () => { ctx.beginPath(); ctx.moveTo(30, -75); ctx.quadraticCurveTo(60, -120, 70, -140) }
-  neck(); ctx.lineWidth = 34; ctx.strokeStyle = INK; ctx.stroke(); neck(); ctx.lineWidth = 25; ctx.strokeStyle = red; ctx.stroke()
-  poly(ctx, [[48, -150], [70, -170], [100, -160], [128, -150], [130, -134], [100, -128], [70, -122], [52, -132]], red, 5)
-  poly(ctx, [[100, -136], [130, -134], [128, -124], [100, -126]], dark, 3)                 // jaw
-  poly(ctx, [[62, -166], [52, -196], [74, -170]], "#fff", 3); poly(ctx, [[80, -168], [80, -198], [92, -166]], "#fff", 3)   // horns
-  ctx.beginPath(); ctx.ellipse(86, -150, 8, 7, 0, 0, 7); ctx.fillStyle = "#fff"; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke()
-  ctx.beginPath(); ctx.arc(88, -150, 3.6, 0, 7); ctx.fillStyle = INK; ctx.fill()
-  ctx.beginPath(); ctx.moveTo(78, -162); ctx.lineTo(96, -158); ctx.lineWidth = 4; ctx.stroke()
-  ctx.beginPath(); ctx.arc(122, -146, 2.5, 0, 7); ctx.fill()
-  // fire
-  poly(ctx, [[132, -134], [170, -150], [158, -136], [190, -132], [158, -126], [172, -112], [132, -128]], "#ff8a1e", 3)
-  poly(ctx, [[134, -132], [160, -138], [154, -131], [170, -130], [150, -126]], "#ffe14d", 0)
-  // front wing
-  poly(ctx, [[10, -90], [40, -200], [52, -160], [80, -185], [78, -140], [110, -150], [70, -100], [30, -78]], red, 5)
-  for (const [a, b] of [[[40, -200], [22, -86]], [[80, -185], [34, -84]], [[110, -150], [40, -82]]]) { ctx.beginPath(); ctx.moveTo(...a); ctx.lineTo(...b); ctx.lineWidth = 3; ctx.strokeStyle = dark; ctx.stroke() }
-  ctx.restore()
-}
+function dragon(ctx, x, y, s, glow) { ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ILLUS.graoully(ctx, { glow, fire: glow, fireLen: .85 }); ctx.restore() }
 function dragonOnCard(ctx, rt) {
-  dragon(ctx, W - 175, 945, .86, true)
+  dragon(ctx, W - 128, 1004, .6, true)
   const [x, y] = rt.pts[0]
   ctx.save(); ctx.beginPath(); ctx.arc(x, y + 40, 26, 0, 7); ctx.fillStyle = "#1a0507"; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = "#ff2a33"; ctx.stroke(); ctx.restore()
-  dragon(ctx, x - 4, y + 40 + 14, .14, false)
+  dragon(ctx, x - 6, y + 40 + 16, .075, false)
 }
 function card(id, C, bg, label, gold) {
   const ctx = document.getElementById(id).getContext("2d"); ctx.setTransform(4, 0, 0, 4, 0, 0)

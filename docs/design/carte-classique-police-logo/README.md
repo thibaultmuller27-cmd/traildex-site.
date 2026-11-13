@@ -12,3 +12,5 @@ Le style d'origine « dessin animé » (ciel violet, fanions, montagnes, panneau
 - **Légende du Graoully** (Woippy) : rouge et noir, dragon, bulle « GRAOU ! », panneau DRAGON.
 - **Marathon du Donon** : vert forêt et grès rose (couleurs choisies par Claude, à caler sur le logo officiel), temple du Donon, panneau TEMPLE, bulle « HOPLA ! ».
 Pour une nouvelle course : partir d'une carte « dessin animé », changer `HOLO`, `SKY.holo` et les `bands` du relief, ajouter le dessin emblématique, puis lancer `patch.py <card.html> <couleur de l'ombre du titre>`. Tracés indicatifs, chiffres officiels des courses.
+
+- 13/11 : **illustrations redessinées** (`organisateurs/illus.js`) : Graoully (dragon en volume, ailes membraneuses, écailles, cornes, flammes) et temple du Donon (perspective, colonnes cannelées, toit, rocher de grès rose, sapins). Plus grandes sur la carte. Police : accents É/È.
