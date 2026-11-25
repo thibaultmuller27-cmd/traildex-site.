@@ -127,6 +127,8 @@ Résumé des décisions et de l'état du projet, pour reprendre dans une nouvell
 
 - 13/11 : **logo holographique** (mêmes formes que le logo gaming, dégradé holo) et **nouveau dos de carte holo** : validés tels quels (« Parfait ne change rien ») : `docs/design/logo-dnf-cards/holo/`. Pas encore branché dans l'outil d'impression.
 
+- 25/11 : point CEO automatique (rapport Notion « Rapport CEO — semaine du 25 novembre 2026 »). 0 commande réelle, code inchangé depuis le 13/11, npm audit à 0. **Gmail déconnecté** (DEC-23). Domaines dnfcards.fr/.com toujours libres. Message Graoully prêt dans le rapport (à envoyer par Thibault avant le 30/11). Nouvelle décision DEC-24 : prix organisateur 2,90 €/carte, forfait min. 200 €, acompte 30 %.
+
 ## Vision (rappel de Thibault, 10/11)
 **On commence petit, en activité accessoire, avec un petit chiffre d'affaires** (sous le seuil CCSS ≈ 38 200 €/an). **Si ça prend, Thibault envisage de démissionner pour créer une vraie marque de sport et faire grandir le CA.** Objectif long terme : une marque forte dans le sport (le « trophée moderne » du sportif amateur, humour « Déjà Nostalgique du Finish »), d'abord le trail en France, puis d'autres sports, collection, appli, collaborations, produits dérivés. Toute recommandation doit garder ces deux temps en tête : peu de risque et peu de dépenses maintenant, des choix qui permettent de grandir ensuite (marque protégée, outils qui passent à l'échelle).
 
